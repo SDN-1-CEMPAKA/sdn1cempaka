@@ -48,7 +48,7 @@
 
             <div class="space-y-4">
                 <!-- Opsi Daftar -->
-                <a href="index.html" class="group flex items-center gap-4 p-5 rounded-2xl border-2 border-slate-100 hover:border-blue-600 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md">
+                <a href="pendaftaran.html" class="group flex items-center gap-4 p-5 rounded-2xl border-2 border-slate-100 hover:border-blue-600 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md">
                     <div class="bg-blue-100 text-blue-600 w-14 h-14 rounded-xl flex items-center justify-center text-2xl group-hover:bg-blue-600 group-hover:text-white transition-colors">
                         <i class="fas fa-user-plus"></i>
                     </div>
@@ -79,7 +79,7 @@
             <!-- Login Area -->
             <div id="login-area" class="hidden mt-8 pt-8 border-t border-slate-100">
                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Gunakan 16 Digit NIK</label>
-                <input type="number" id="nik-input" placeholder="Masukkan NIK Siswa" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-xl focus:border-orange-500 outline-none font-bold text-lg tracking-[0.1em]">
+                <input type="number" id="nik-input" oninput="if(this.value.length > 16) this.value = this.value.slice(0, 16);" placeholder="Masukkan NIK Siswa" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-xl focus:border-orange-500 outline-none font-bold text-lg tracking-[0.1em]">
                 <button onclick="doLogin()" class="mt-4 w-full bg-slate-900 text-white py-4 rounded-xl font-bold uppercase tracking-widest hover:bg-black transition-all shadow-lg flex items-center justify-center gap-2">
                     Masuk ke Sistem <i class="fas fa-arrow-right text-xs"></i>
                 </button>
@@ -87,7 +87,7 @@
             </div>
 
             <div class="mt-12 text-center">
-                <a href="beranda.html" class="text-xs text-slate-400 hover:text-blue-600 font-medium transition flex items-center justify-center gap-2">
+                <a href="index.html" class="text-xs text-slate-400 hover:text-blue-600 font-medium transition flex items-center justify-center gap-2">
                     <i class="fas fa-long-arrow-alt-left"></i> Kembali ke Beranda
                 </a>
             </div>
@@ -103,11 +103,11 @@
         }
         function doLogin() {
             const nik = document.getElementById('nik-input').value;
-            if(nik.length < 1) {
-                alert("Silakan masukkan NIK pendaftaran Anda.");
+            if(nik.length !== 16) {
+                alert("Harap masukkan 16 digit NIK pendaftaran Anda.");
                 return;
             }
-            window.location.href = "index.html?nik=" + nik;
+            window.location.href = "pendaftaran.html?nik=" + nik;
         }
     </script>
 </body>
