@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDN 1 Cempaka - Mencerdaskan Generasi Bangsa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .hero-gradient {
+            background: linear-gradient(rgba(0, 31, 63, 0.7), rgba(0, 31, 63, 0.7)), url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+        .vision-card, .academic-card, .facility-card {
+            transition: all 0.3s ease;
+        }
+        .vision-card:hover, .academic-card:hover, .facility-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .step-number {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: #3b82f6;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        /* Penyesuaian Ukuran Logo agar lebih proporsional */
+        .img-logo-header {
+            height: 42px; /* Ukuran lebih kecil dari sebelumnya */
+            width: auto;
+            object-fit: contain;
+        }
+        .img-logo-footer {
+            height: 48px; /* Ukuran lebih kecil untuk footer */
+            width: auto;
+            object-fit: contain;
+            background: white;
+            padding: 4px;
+            border-radius: 8px;
+        }
+        .list-dot {
+            width: 6px;
+            height: 6px;
+            background-color: #3b82f6;
+            border-radius: 50%;
+            margin-top: 8px;
+            flex-shrink: 0;
+        }
+        .badge-kondisi {
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 99px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header / Navbar -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <!-- Penggantian Ikon dengan Logo Sekolah -->
+                <img src="https://lh3.googleusercontent.com/u/0/d/1V9AKgKbsmg5CNZIdGskpeG4ANBnhCTBP" alt="Logo SDN 1 Cempaka" class="img-logo-header">
+                <div>
+                    <h1 class="text-xl font-bold text-blue-900 leading-none uppercase">SDN 1 CEMPAKA</h1>
+                    <p class="text-xs text-gray-500 tracking-widest uppercase mt-1">Cerdas, Berkarakter, Berbudaya</p>
+                </div>
+            </div>
+            
+            <!-- Desktop Menu -->
+            <div class="hidden lg:flex items-center space-x-8 font-medium">
+                <a href="beranda.html" class="text-blue-600 border-b-2 border-blue-600 pb-1">Beranda</a>
+                <a href="#visi-misi" class="hover:text-blue-600 transition">Visi & Misi</a>
+                <a href="#akademik" class="hover:text-blue-600 transition">Akademik</a>
+                <a href="#staff-section" class="text-blue-600 border-b-2 border-blue-600 pb-1">Guru & Tendik</a>
+                <a href="#fasilitas" class="hover:text-blue-600 transition">Fasilitas</a>
+                <a href="#ppdb" class="hover:text-blue-600 transition">PPDB 2026</a>
+                <a href="#kontak" class="hover:text-blue-600 transition">Kontak</a>
+                
+                <!-- Link diperbarui untuk pindah ke index -->
+                <a href="login.html" class="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2 rounded-full transition shadow-md flex items-center gap-2">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Daftar Sekarang</span>
+                </a>
+            </div>
+
+            <button class="lg:hidden text-2xl" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-gradient h-[500px] flex items-center justify-center text-center text-white px-6">
+        <div class="max-w-3xl">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4">Membangun Masa Depan Gemilang di SDN 1 Cempaka</h2>
+            <p class="text-lg md:text-xl mb-8 opacity-90">Lingkungan belajar yang aman dan nyaman didukung oleh fasilitas modern untuk mendukung potensi siswa.</p>
+            <div class="flex flex-col md:flex-row justify-center gap-4">
+                <!-- Link diperbarui untuk pindah ke index -->
+                <a href="login.html" class="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-full font-semibold transition shadow-lg flex items-center justify-center gap-2">
+                    <i class="fas fa-file-signature"></i> Info PPDB 2026
+                </a>
+                <a href="#fasilitas" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-semibold transition shadow-lg">Lihat Fasilitas</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section Updated: Tenaga Pendidik & Kependidikan -->
+    <section class="container mx-auto px-6 -mt-12 relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-white p-6 rounded-2xl shadow-xl text-center border-b-4 border-blue-600">
+                <div class="text-blue-600 text-3xl mb-1 font-black">270+</div>
+                <p class="text-gray-500 font-bold uppercase tracking-widest text-[10px]">Siswa Aktif</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-xl text-center border-b-4 border-green-600">
+                <div class="text-green-600 text-3xl mb-1 font-black">11</div>
+                <p class="text-gray-500 font-bold uppercase tracking-widest text-[10px]">Tenaga Pendidik (Guru)</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-xl text-center border-b-4 border-teal-600">
+                <div class="text-teal-600 text-3xl mb-1 font-black">3</div>
+                <p class="text-gray-500 font-bold uppercase tracking-widest text-[10px]">Tenaga Kependidikan</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-xl text-center border-b-4 border-orange-600">
+                <div class="text-orange-600 text-3xl mb-1 font-black">B</div>
+                <p class="text-gray-500 font-bold uppercase tracking-widest text-[10px]">Akreditasi Sekolah</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Visi & Misi Section -->
+    <section id="visi-misi" class="py-24 bg-white relative overflow-hidden">
+        <div class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-50"></div>
+        
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center mb-16">
+                <h3 class="text-blue-600 font-semibold mb-2 uppercase tracking-wide text-sm">Landasan Utama</h3>
+                <h2 class="text-3xl md:text-4xl font-bold text-blue-900 uppercase tracking-tight">Visi & Misi Sekolah</h2>
+                <div class="w-24 h-1 bg-orange-500 mx-auto mt-4"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch">
+                <!-- Bagian Visi -->
+                <div class="lg:col-span-5 flex flex-col justify-center">
+                    <div class="bg-blue-900 text-white p-10 rounded-3xl shadow-2xl relative overflow-hidden h-full flex flex-col justify-center vision-card">
+                        <div class="absolute -top-10 -left-10 opacity-10">
+                            <i class="fas fa-quote-left text-9xl"></i>
+                        </div>
+                        <h3 class="text-orange-400 font-bold mb-6 uppercase tracking-widest flex items-center gap-2">
+                            <span class="w-8 h-px bg-orange-400"></span> Visi Sekolah
+                        </h3>
+                        <p class="text-2xl md:text-3xl font-bold leading-tight italic">
+                            "Terwujudnya peserta didik yang cerdas, terampil dan berakhlak mulia."
+                        </p>
+                        <div class="mt-8 flex items-center gap-3 text-blue-300 text-sm">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bagian Misi -->
+                <div class="lg:col-span-7">
+                    <div class="bg-gray-50 p-8 md:p-10 rounded-3xl border border-gray-100 shadow-sm h-full flex flex-col">
+                        <div class="flex items-center gap-4 mb-8">
+                            <div class="bg-orange-100 p-3 rounded-xl">
+                                <i class="fas fa-bullseye text-orange-600 text-2xl"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-blue-900 uppercase tracking-tight">Misi Sekolah</h3>
+                        </div>
+                        
+                        <p class="text-gray-600 mb-8 leading-relaxed italic border-l-4 border-orange-500 pl-4 text-sm md:text-base">
+                            Misi SD Negeri 1 Cempaka disusun agar visi dapat tercapai. Misi disosialisasikan kepada seluruh warga Sekolah yang dijabarkan dalam program dan kegiatan:
+                        </p>
+
+                        <div class="space-y-5 flex-grow">
+                            <div class="flex items-start gap-4 group">
+                                <div class="bg-blue-600 text-white w-8 h-8 rounded-lg flex shrink-0 items-center justify-center font-bold text-sm shadow-md group-hover:bg-orange-500 transition-colors">1</div>
+                                <p class="text-gray-700 font-medium pt-1 text-sm md:text-base">Peningkatan manajemen sekolah dalam mewujudkan visi.</p>
+                            </div>
+                            <div class="flex items-start gap-4 group">
+                                <div class="bg-blue-600 text-white w-8 h-8 rounded-lg flex shrink-0 items-center justify-center font-bold text-sm shadow-md group-hover:bg-orange-500 transition-colors">2</div>
+                                <p class="text-gray-700 font-medium pt-1 text-sm md:text-base">Pengoptimalan proses pembelajaran aktif, inovatif, kreatif, dan menyenangkan.</p>
+                            </div>
+                            <div class="flex items-start gap-4 group">
+                                <div class="bg-blue-600 text-white w-8 h-8 rounded-lg flex shrink-0 items-center justify-center font-bold text-sm shadow-md group-hover:bg-orange-500 transition-colors">3</div>
+                                <p class="text-gray-700 font-medium pt-1 text-sm md:text-base">Pengembangan keterampilan di bidang prestasi akademik maupun non akademik.</p>
+                            </div>
+                            <div class="flex items-start gap-4 group">
+                                <div class="bg-blue-600 text-white w-8 h-8 rounded-lg flex shrink-0 items-center justify-center font-bold text-sm shadow-md group-hover:bg-orange-500 transition-colors">4</div>
+                                <p class="text-gray-700 font-medium pt-1 text-sm md:text-base">Peningkatan keterampilan Baca Tulis Al-Qur’an.</p>
+                            </div>
+                            <div class="flex items-start gap-4 group">
+                                <div class="bg-blue-600 text-white w-8 h-8 rounded-lg flex shrink-0 items-center justify-center font-bold text-sm shadow-md group-hover:bg-orange-500 transition-colors">5</div>
+                                <p class="text-gray-700 font-medium pt-1 text-sm md:text-base">Meningkatkan volume praktek dalam pembelajaran PJOK dan SBDP.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Akademik Section Updated -->
+    <section id="akademik" class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h3 class="text-blue-600 font-semibold mb-2 uppercase tracking-wide text-sm">Kurikulum & Pembelajaran</h3>
+                <h2 class="text-3xl md:text-4xl font-bold text-blue-900 uppercase">Informasi Akademik</h2>
+                <div class="w-24 h-1 bg-orange-500 mx-auto mt-4"></div>
+            </div>
+
+            <!-- Penjelasan Kebijakan -->
+            <div class="max-w-4xl mx-auto mb-16 bg-blue-50 p-8 rounded-3xl border border-blue-100 shadow-sm">
+                <div class="flex gap-4 items-start">
+                    <i class="fas fa-info-circle text-blue-600 text-2xl mt-1"></i>
+                    <p class="text-gray-700 leading-relaxed italic">
+                        Berdasarkan arah kebijakan pemerintah yang menekankan penyesuaian dengan kebutuhan murid, perkembangan zaman, dan tujuan pendidikan, kurikulum ini mencakup kompetensi yang harus dikuasai murid mulai <strong>Tahun Ajaran 2025/2026</strong>. Pelajaran <strong>Koding dan Kecerdasan Artifisial (KKA)</strong> diterapkan untuk mempersiapkan generasi unggul di masa depan.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                <!-- Mata Pelajaran -->
+                <div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-5">
+                        <i class="fas fa-book-open text-9xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-blue-900 mb-6 flex items-center gap-3">
+                        <i class="fas fa-list-check text-orange-500"></i> Muatan Kurikulum
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+                        <div class="flex gap-3 items-start"><div class="list-dot"></div><span class="text-gray-700 font-medium">Pend. Agama dan Budi Pekerti</span></div>
+                        <div class="flex gap-3 items-start"><div class="list-dot"></div><span class="text-gray-700 font-medium">Pendidikan Pancasila</span></div>
+                        <div class="flex gap-3 items-start"><div class="list-dot"></div><span class="text-gray-700 font-medium">Bahasa Indonesia</span></div>
+                        <div class="flex gap-3 items-start"><div class="list-dot"></div><span class="text-gray-700 font-medium">Matematika</span></div>
+                        <div class="flex gap-3 items-start"><div class="list-dot"></div><span class="text-gray-700 font-medium">Ilmu Pengetahuan Alam & Sosial</span></div>
+                        <div class="flex gap-3 items-start"><div class="list-dot"></div><span class="text-gray-700 font-medium">Pend. Jasmani, Olahraga & Kesehatan</span></div>
+                        <div class="flex gap-3 items-start"><div class="list-dot"></div><span class="text-gray-700 font-medium">Seni dan Budaya (Seni Rupa)</span></div>
+                        <div class="flex gap-3 items-start"><div class="list-dot"></div><span class="text-gray-700 font-medium">Bahasa Inggris</span></div>
+                    </div>
+
+                    <div class="mt-8 pt-6 border-t border-dashed border-gray-200">
+                        <h4 class="font-bold text-blue-700 mb-4 uppercase text-sm tracking-widest">Mata Pelajaran Pilihan</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3 bg-orange-50 p-3 rounded-xl border border-orange-100">
+                                <i class="fas fa-language text-orange-600"></i>
+                                <span class="text-gray-800 font-bold">Bahasa dan Sastra Sunda (Mulok)</span>
+                            </div>
+                            <div class="flex items-center gap-3 bg-blue-100 p-3 rounded-xl border border-blue-200 shadow-sm animate-pulse">
+                                <i class="fas fa-robot text-blue-700"></i>
+                                <span class="text-blue-900 font-bold">Koding dan Kecerdasan Artifisial (KKA)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Struktur Kurikulum -->
+                <div class="space-y-6">
+                    <div class="bg-blue-900 text-white p-8 rounded-3xl shadow-xl">
+                        <h3 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                            <i class="fas fa-sitemap text-blue-400"></i> Struktur Kurikulum
+                        </h3>
+                        <p class="text-blue-200 text-sm mb-6">Terdiri dari Intrakurikuler dan Kokurikuler yang dibagi menjadi 3 fase pembelajaran utama:</p>
+                        
+                        <div class="space-y-4">
+                            <div class="bg-white/10 p-4 rounded-2xl border border-white/10 hover:bg-white/20 transition cursor-default">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-lg">FASE A</span>
+                                    <span class="bg-blue-500 text-[10px] px-2 py-1 rounded-full font-black uppercase">Kelas 1 & 2</span>
+                                </div>
+                            </div>
+                            <div class="bg-white/10 p-4 rounded-2xl border border-white/10 hover:bg-white/20 transition cursor-default">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-lg">FASE B</span>
+                                    <span class="bg-green-500 text-[10px] px-2 py-1 rounded-full font-black uppercase">Kelas 3 & 4</span>
+                                </div>
+                            </div>
+                            <div class="bg-white/10 p-4 rounded-2xl border border-white/10 hover:bg-white/20 transition cursor-default">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-lg">FASE C</span>
+                                    <span class="bg-orange-500 text-[10px] px-2 py-1 rounded-full font-black uppercase">Kelas 5 & 6</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 flex gap-4 items-center bg-black/20 p-4 rounded-2xl border border-white/5">
+                            <div class="text-center border-r border-white/20 pr-4">
+                                <p class="text-[10px] uppercase opacity-60">Durasi 1 JP</p>
+                                <p class="text-xl font-black">35 Menit</p>
+                            </div>
+                            <div class="pl-2">
+                                <p class="text-[10px] uppercase opacity-60">Minggu Efektif</p>
+                                <p class="text-lg font-bold">36 Minggu / Tahun</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Staff Section (Integrasi Kode Guru & Tendik) -->
+    <section id="staff-section" class="py-24 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h3 class="text-blue-600 font-semibold mb-2 uppercase tracking-wide text-sm">Sumber Daya Manusia</h3>
+                <h2 class="text-3xl md:text-4xl font-bold text-blue-900 uppercase">Guru & Tenaga Kependidikan</h2>
+                <div class="w-24 h-1 bg-orange-500 mx-auto mt-4"></div>
+            </div>
+
+            <!-- Bagian Guru -->
+            <div class="mb-16">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="bg-blue-600 w-2 h-8 rounded-full"></div>
+                    <h3 class="text-2xl font-bold text-slate-800">I. Dewan Guru (11 Orang)</h3>
+                </div>
+                <div id="guru-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <!-- Dinamis via JS -->
+                </div>
+            </div>
+
+            <!-- Bagian Tendik -->
+            <div>
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="bg-teal-500 w-2 h-8 rounded-full"></div>
+                    <h3 class="text-2xl font-bold text-slate-800">II. Tenaga Kependidikan (3 Orang)</h3>
+                </div>
+                <div id="tendik-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Dinamis via JS -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fasilitas Section Updated -->
+    <section id="fasilitas" class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h3 class="text-blue-600 font-semibold mb-2 uppercase tracking-wide text-sm">Sarana & Prasarana</h3>
+                <h2 class="text-3xl md:text-4xl font-bold text-blue-900">FASILITAS SEKOLAH</h2>
+                <div class="w-24 h-1 bg-orange-500 mx-auto mt-4"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 1. Ruang Kelas -->
+                <div class="bg-white rounded-3xl p-8 facility-card flex flex-col h-full shadow-sm">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="bg-blue-100 text-blue-600 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <span class="badge-kondisi bg-orange-100 text-orange-600">6 Ruang</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-blue-900 mb-3">Ruang Kelas</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed mb-6 flex-grow">
+                        Digunakan untuk kegiatan belajar mengajar harian. Dilengkapi dengan meja, kursi, dan papan tulis untuk menunjang kenyamanan belajar siswa.
+                    </p>
+                    <div class="bg-gray-50 p-4 rounded-xl">
+                        <p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Status Sarana:</p>
+                        <p class="text-xs text-orange-600 font-medium italic"><i class="fas fa-tools mr-1"></i> Perlu perbaikan kapasitas</p>
+                    </div>
+                </div>
+
+                <!-- 2. Ruang Guru -->
+                <div class="bg-white rounded-3xl p-8 facility-card flex flex-col h-full shadow-sm">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="bg-green-100 text-green-600 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl">
+                            <i class="fas fa-users-rectangle"></i>
+                        </div>
+                        <span class="badge-kondisi bg-green-100 text-green-600">1 Ruang</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-blue-900 mb-3">Ruang Guru</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed mb-6 flex-grow">
+                        Area kerja dewan guru untuk mempersiapkan materi pembelajaran dan beristirahat. Dilengkapi meja, kursi, lemari dokumen, dan Printer.
+                    </p>
+                    <div class="bg-gray-50 p-4 rounded-xl">
+                        <p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Status Sarana:</p>
+                        <p class="text-xs text-orange-600 font-medium italic"><i class="fas fa-tools mr-1"></i> Perlu peningkatan luas ruang</p>
+                    </div>
+                </div>
+
+                <!-- 3. Perpustakaan -->
+                <div class="bg-white rounded-3xl p-8 facility-card flex flex-col h-full shadow-sm">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="bg-purple-100 text-purple-600 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl">
+                            <i class="fas fa-book-reader"></i>
+                        </div>
+                        <span class="badge-kondisi bg-purple-100 text-purple-600">Terbuka</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-blue-900 mb-3">Perpustakaan</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed mb-6 flex-grow">
+                        Pusat literasi dengan koleksi buku yang cukup untuk menunjang pembelajaran. Tersedia rak buku, meja baca, dan fasilitas komputer.
+                    </p>
+                    <div class="bg-gray-50 p-4 rounded-xl">
+                        <p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Fasilitas Tambahan:</p>
+                        <p class="text-xs text-blue-600 font-medium"><i class="fas fa-desktop mr-1"></i> Unit Komputer Siswa</p>
+                    </div>
+                </div>
+
+                <!-- 4. Lapangan Olahraga -->
+                <div class="bg-white rounded-3xl p-8 facility-card flex flex-col h-full shadow-sm">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="bg-orange-100 text-orange-600 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl">
+                            <i class="fas fa-running"></i>
+                        </div>
+                        <span class="badge-kondisi bg-green-100 text-green-600">Kondisi Baik</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-blue-900 mb-3">Lapangan Olahraga</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed mb-6 flex-grow">
+                        Area serbaguna yang luas untuk kegiatan olahraga dan upacara bendera. Mampu menampung seluruh peserta didik dengan nyaman.
+                    </p>
+                    <div class="bg-green-50 p-3 rounded-xl border border-green-100">
+                        <p class="text-xs text-green-700 font-bold text-center">Fasilitas Utama Outdoor</p>
+                    </div>
+                </div>
+
+                <!-- 5. Toilet Sekolah -->
+                <div class="bg-white rounded-3xl p-8 facility-card flex flex-col h-full shadow-sm">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="bg-teal-100 text-teal-600 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl">
+                            <i class="fas fa-restroom"></i>
+                        </div>
+                        <span class="badge-kondisi bg-teal-100 text-teal-600">4 Unit</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-blue-900 mb-3">Toilet Terpisah</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed mb-6 flex-grow">
+                        Tersedia 2 toilet untuk peserta didik dan 2 toilet terpisah khusus untuk dewan guru guna menjaga privasi dan kebersihan.
+                    </p>
+                    <div class="bg-gray-50 p-4 rounded-xl flex justify-between">
+                        <span class="text-[10px] font-bold text-orange-500">Siswa (Cukup)</span>
+                        <span class="text-[10px] font-bold text-green-500">Guru (Baik)</span>
+                    </div>
+                </div>
+
+                <!-- 6. CCTV Keamanan -->
+                <div class="bg-white rounded-3xl p-8 facility-card flex flex-col h-full shadow-sm border-2 border-dashed border-blue-200">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="bg-red-100 text-red-600 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl animate-pulse">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <span class="badge-kondisi bg-red-600 text-white">Aktif 24 Jam</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-blue-900 mb-3">Keamanan CCTV</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed mb-6 flex-grow">
+                        Sistem pemantauan kamera keamanan di berbagai titik strategis sekolah untuk menjamin keamanan siswa dan lingkungan sekolah.
+                    </p>
+                    <div class="bg-red-50 p-3 rounded-xl border border-red-100">
+                        <p class="text-xs text-red-700 font-bold text-center">Keamanan Terpadu</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Detailed PPDB Section -->
+    <section id="ppdb" class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h3 class="text-orange-600 font-semibold mb-2 uppercase tracking-wide text-sm">Penerimaan Siswa Baru</h3>
+                <h2 class="text-3xl md:text-4xl font-bold text-blue-900">PPDB Tahun Ajaran 2026/2027</h2>
+                <div class="w-24 h-1 bg-orange-500 mx-auto mt-4"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Alur & Jadwal Pendaftaran -->
+                <div>
+                    <h3 class="text-2xl font-bold text-blue-900 mb-8 flex items-center gap-3">
+                        <i class="fas fa-calendar-alt text-orange-500"></i> Jadwal & Alur Pendaftaran
+                    </h3>
+                    <div class="space-y-8">
+                        <div class="flex gap-4">
+                            <div class="step-number shrink-0">1</div>
+                            <div>
+                                <h4 class="font-bold text-lg text-gray-800">Tahap 1: Pra-Pendaftaran</h4>
+                                <p class="text-blue-600 font-semibold text-sm">Mandiri & Online</p>
+                                <p class="text-gray-600 text-sm mt-1 italic">Pendataan awal dan pembuatan akun pendaftaran calon siswa baru secara mandiri.</p>
+                                <a href="login.html" class="mt-3 inline-flex items-center gap-2 text-xs font-bold bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 transition shadow-md">
+                                    <i class="fas fa-sign-in-alt"></i> LOGIN / MULAI DAFTAR
+                                </a>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="step-number shrink-0">2</div>
+                            <div>
+                                <h4 class="font-bold text-lg text-gray-800">Pendaftaran Tahap 1</h4>
+                                <p class="text-blue-600 font-semibold text-sm">Minggu ke-2 Juni 2026</p>
+                                <p class="text-gray-600 text-sm mt-1">Khusus jalur Prestasi dan Afirmasi (Siswa kurang mampu/disabilitas).</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="step-number shrink-0">3</div>
+                            <div>
+                                <h4 class="font-bold text-lg text-gray-800">Pendaftaran Tahap 2</h4>
+                                <p class="text-blue-600 font-semibold text-sm">Akhir Juni - Awal Juli 2026</p>
+                                <p class="text-gray-600 text-sm mt-1">Jalur Zonasi (Radius tempat tinggal) dan jalur Umum/Perpindahan orang tua.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="step-number shrink-0 text-green-600 bg-green-100 border border-green-200">4</div>
+                            <div>
+                                <h4 class="font-bold text-lg text-gray-800">Pengumuman Hasil</h4>
+                                <p class="text-green-600 font-semibold text-sm">Awal Juli 2026</p>
+                                <p class="text-gray-600 text-sm mt-1">Hasil seleksi resmi diumumkan melalui website dan papan informasi sekolah.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Syarat & Ketentuan & Kontak -->
+                <div class="space-y-6">
+                    <div class="bg-blue-50 p-8 rounded-3xl border border-blue-100 shadow-inner">
+                        <h3 class="text-2xl font-bold text-blue-900 mb-6 flex items-center gap-3">
+                            <i class="fas fa-clipboard-list text-blue-600"></i> Syarat & Ketentuan Umum
+                        </h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-start gap-3 bg-white p-4 rounded-xl shadow-sm border-l-4 border-green-500">
+                                <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                                <span class="text-gray-700">Berusia minimal 6 tahun pada 1 Juli 2026.</span>
+                            </li>
+                            <li class="flex items-start gap-3 bg-white p-4 rounded-xl shadow-sm border-l-4 border-blue-500">
+                                <i class="fas fa-file-alt text-blue-500 mt-1"></i>
+                                <span class="text-gray-700">Fotokopi Akta Kelahiran & Kartu Keluarga (masing-masing 2 lembar).</span>
+                            </li>
+                            <li class="flex items-start gap-3 bg-white p-4 rounded-xl shadow-sm border-l-4 border-blue-500">
+                                <i class="fas fa-id-card text-blue-500 mt-1"></i>
+                                <span class="text-gray-700">Fotokopi KTP Orang Tua/Wali.</span>
+                            </li>
+                            <li class="flex items-start gap-3 bg-white p-4 rounded-xl shadow-sm border-l-4 border-blue-500">
+                                <i class="fas fa-id-card text-blue-500 mt-1"></i>
+                                <span class="text-gray-700">Ijazah Paud/TK (Jika Ada).</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                <!-- Kontak Panitia PPDB Updated with ALL ADM -->
+                <div class="space-y-6">
+                    <div class="bg-blue-900 p-8 rounded-3xl text-white shadow-xl relative overflow-hidden">
+                        <div class="relative z-10">
+                            <p class="text-orange-400 text-xs uppercase font-bold tracking-widest mb-2">Pusat Bantuan PPDB</p>
+                            <h3 class="text-2xl font-black mb-6 flex items-center gap-2">
+                                <i class="fas fa-headset text-orange-400"></i> HUBUNGI PANITIA
+                            </h3>
+                            
+                            <div class="space-y-3">
+                                <!-- Admin 1 -->
+                                <a href="https://wa.me/6283894666566" target="_blank" class="flex items-center justify-between bg-white/10 hover:bg-white/20 p-4 rounded-2xl transition border border-white/10 group">
+                                    <div class="flex items-center gap-4">
+                                        <div class="bg-green-500 w-10 h-10 rounded-full flex items-center justify-center text-xl">
+                                            <i class="fab fa-whatsapp"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-semibold opacity-70">Admin 1</p>
+                                            <p class="text-sm font-bold">0838-9466-6566</p>
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-external-link-alt text-xs opacity-0 group-hover:opacity-100 transition"></i>
+                                </a>
+
+                                <!-- Admin 2 -->
+                                <a href="https://wa.me/6287871321043" target="_blank" class="flex items-center justify-between bg-white/10 hover:bg-white/20 p-4 rounded-2xl transition border border-white/10 group">
+                                    <div class="flex items-center gap-4">
+                                        <div class="bg-green-500 w-10 h-10 rounded-full flex items-center justify-center text-xl">
+                                            <i class="fab fa-whatsapp"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-semibold opacity-70">Admin 2</p>
+                                            <p class="text-sm font-bold">0878-7132-1043</p>
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-external-link-alt text-xs opacity-0 group-hover:opacity-100 transition"></i>
+                                </a>
+
+                                <!-- Admin 3 -->
+                                <a href="https://wa.me/6281315571610" target="_blank" class="flex items-center justify-between bg-white/10 hover:bg-white/20 p-4 rounded-2xl transition border border-white/10 group">
+                                    <div class="flex items-center gap-4">
+                                        <div class="bg-green-500 w-10 h-10 rounded-full flex items-center justify-center text-xl">
+                                            <i class="fab fa-whatsapp"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-semibold opacity-70">Admin 3</p>
+                                            <p class="text-sm font-bold">0813-1557-1610</p>
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-external-link-alt text-xs opacity-0 group-hover:opacity-100 transition"></i>
+                                </a>
+                            </div>
+
+                            <!-- Jam Layanan diperbarui sesuai permintaan -->
+                            <div class="mt-6 pt-6 border-t border-white/20 flex flex-col gap-3">
+                                <div class="flex items-center gap-3 text-sm">
+                                    <i class="fas fa-clock text-orange-400 w-5"></i>
+                                    <span>Senin - Kamis: 08.00 - 14.00 WIB</span>
+                                </div>
+                                <div class="flex items-center gap-3 text-sm">
+                                    <i class="fas fa-clock text-orange-400 w-5"></i>
+                                    <span>Jumat: 08.00 - 11.00 WIB</span>
+                                </div>
+                                <div class="flex items-center gap-3 text-sm">
+                                    <i class="fas fa-calendar-check text-orange-400 w-5"></i>
+                                    <span>Sabtu: Hanya Konsultasi</span>
+                                </div>
+                        </div>
+                        <!-- Background decoration -->
+                        <i class="fas fa-comments absolute -bottom-10 -right-10 text-9xl opacity-10 transform -rotate-12"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+        
+    <!-- Footer yang telah dirapikan -->
+    <footer id="kontak" class="bg-blue-950 text-white pt-16 pb-6">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+                
+                <!-- Kolom 1: Tentang Sekolah -->
+                <div>
+                    <div class="flex items-center space-x-3 mb-6">
+                        <img src="https://lh3.googleusercontent.com/u/0/d/1V9AKgKbsmg5CNZIdGskpeG4ANBnhCTBP" alt="Logo SDN 1 Cempaka" class="img-logo-footer">
+                        <div>
+                            <h4 class="text-lg font-bold leading-none uppercase">SDN 1</h4>
+                            <h4 class="text-lg font-bold leading-none uppercase">CEMPAKA</h4>
+                        </div>
+                    </div>
+                    <p class="text-blue-100/70 text-sm leading-relaxed mb-6">
+                        Berkomitmen melahirkan generasi cerdas, berkarakter, dan berbudaya di lingkungan Kabupaten Lebak sejak dini.
+                    </p>
+                    <div class="flex space-x-3">
+                        <a href="#" class="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center hover:bg-orange-500 hover:text-white transition-all text-blue-200" title="Instagram">
+                            <i class="fab fa-instagram text-lg"></i>
+                        </a>
+                        <a href="#" class="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center hover:bg-orange-500 hover:text-white transition-all text-blue-200" title="Facebook">
+                            <i class="fab fa-facebook-f text-lg"></i>
+                        </a>
+                        <a href="#" class="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center hover:bg-orange-500 hover:text-white transition-all text-blue-200" title="YouTube">
+                            <i class="fab fa-youtube text-lg"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Kolom 2: Navigasi Cepat -->
+                <div>
+                    <h4 class="text-sm font-bold mb-6 text-orange-400 tracking-widest uppercase">Eksplorasi</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#visi-misi" class="text-blue-100/70 hover:text-orange-400 text-sm transition flex items-center gap-2"><i class="fas fa-chevron-right text-[10px]"></i> Profil Sekolah</a></li>
+                        <li><a href="#akademik" class="text-blue-100/70 hover:text-orange-400 text-sm transition flex items-center gap-2"><i class="fas fa-chevron-right text-[10px]"></i> Info Akademik</a></li>
+                        <li><a href="#fasilitas" class="text-blue-100/70 hover:text-orange-400 text-sm transition flex items-center gap-2"><i class="fas fa-chevron-right text-[10px]"></i> Fasilitas Siswa</a></li>
+                        <li><a href="#ppdb" class="text-blue-100/70 hover:text-orange-400 text-sm transition flex items-center gap-2"><i class="fas fa-chevron-right text-[10px]"></i> Informasi PPDB</a></li>
+                    </ul>
+                </div>
+
+                <!-- Kolom 3: Tautan Eksternal -->
+                <div>
+                    <h4 class="text-sm font-bold mb-6 text-orange-400 tracking-widest uppercase">Tautan Resmi</h4>
+                    <ul class="space-y-3">
+                        <li><a href="https://disdik.lebakkab.go.id/" target="_blank" class="text-blue-100/70 hover:text-orange-400 text-sm transition flex items-center gap-2"><i class="fas fa-external-link-alt text-[10px]"></i> Disdik Kab. Lebak</a></li>
+                        <li><a href="https://dapo.kemendikdasmen.go.id/" target="_blank" class="text-blue-100/70 hover:text-orange-400 text-sm transition flex items-center gap-2"><i class="fas fa-external-link-alt text-[10px]"></i> Portal Dapodik</a></li>
+                        <li><a href="https://pip.kemendikdasmen.go.id/" target="_blank" class="text-blue-100/70 hover:text-orange-400 text-sm transition flex items-center gap-2"><i class="fas fa-external-link-alt text-[10px]"></i> PIP Kemdikbud</a></li>
+                        <li><a href="https://sekolah.data.kemendikdasmen.go.id/profil-sekolah/20AC5456-31F5-E011-ADF9-7938353F0CEF" target="_blank" class="text-blue-100/70 hover:text-orange-400 text-sm transition flex items-center gap-2"><i class="fas fa-external-link-alt text-[10px]"></i> Profil NPSN</a></li>
+                    </ul>
+                </div>
+
+                <!-- Kolom 4: Lokasi -->
+                <div>
+                    <h4 class="text-sm font-bold mb-6 tracking-widest uppercase">Kontak & Lokasi</h4>
+                    <div class="space-y-4">
+                        <div class="flex gap-3 items-start group">
+                            <i class="fas fa-map-marker-alt text-orange-500 mt-1"></i>
+                            <p class="text-blue-100/70 text-xs leading-relaxed group-hover:text-white transition">
+                                Kp. Cemplang RT.006 RW.002 Desa Cempaka Kec. Warunggunung Kab. Lebak - Banten.
+                            </p>
+                        </div>
+                        <div class="flex gap-3 items-center group">
+                            <i class="fas fa-envelope text-orange-500"></i>
+                            <p class="text-blue-100/70 text-xs group-hover:text-white transition">helojagoanhosting@gmail.com</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Hak Cipta -->
+            <div class="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-blue-400 font-medium">
+                <p>&copy; 2026 SDN 1 CEMPAKA. Semua Hak Dilindungi.</p>
+                <div class="flex space-x-6">
+                    <a href="#" class="hover:text-white">Kebijakan Privasi</a>
+                    <a href="#" class="hover:text-white">Syarat & Ketentuan</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        // Logika menu mobile bisa ditambahkan di sini
+    </script>
+
+        <script>
+        // Data Staf
+        const guruData = [
+            { nip: "19870613 202221 2 005", name: "Endrik Mukhtarudin, S.Pd.", role: "Guru Kelas VI A", img: "https://lh3.googleusercontent.com/d/12fS2o8ZS5-z21-haGlpRwR9CcY5iIIKS" },
+            { nip: "19920401 201903 2 005", name: "Ira Siti Humairoh, S.Pd.", role: "Guru Kelas VI B", img: "https://lh3.googleusercontent.com/d/1YGmaE5cEpbvYZYs86U3n82iZJGwe9yHG" },
+            { nip: "19891005 202012 2 006", name: "Kusmayanti, S.Pd.", role: "Guru Kelas V", img: "https://lh3.googleusercontent.com/d/1XILnieOmUDc-MDyuLjzQRXshZZpRfQzb" },
+            { nip: "19750816 2014406 1 001", name: "Endi Supardi, S.Pd.", role: "Guru Kelas IV A", img: "https://lh3.googleusercontent.com/d/1_C-mKRZYpQTX6NLWG6RQ8CAt7jZ4XZGS" },
+            { nip: "GURU-2026-001", name: "Shinta Suryani, S.Pd.", role: "Guru Kelas IV B", img: "https://lh3.googleusercontent.com/d/1pzBF-4dPpge7ArglaOe_eYNOjViVdzzT" },
+            { nip: "19830502 200801 2 008", name: "Fineu Pendinastin, S.Pd.", role: "Guru Kelas III", img: "https://lh3.googleusercontent.com/d/1TaOGQZBjZ6HLBuXgakwBJWf_XSwMfnbd" },
+            { nip: "19820721 202521 2 0057", name: "Ucih Sukaesih, S.Pd.", role: "Guru Kelas II", img: "https://lh3.googleusercontent.com/d/1fAXauF5YEDpiZCzk7mm4r72YrU6jPvhG" },
+            { nip: "19840406 202321 2 029", name: "Badriah, S.Pd.I.", role: "Guru Kelas I A", img: "https://lh3.googleusercontent.com/d/1JOo0hPOo0XmRl4H0RZRAilFXo0bu_TFh" },
+            { nip: "19761206 200802 2 004", name: "Enok Iis Isnaeniah", role: "Guru Kelas I B", img: "https://lh3.googleusercontent.com/d/1E9ph5nRbOK-WGByVN9ia9lrO6grmPr4g" },
+            { nip: "19760315 200801 2 005", name: "Siti Huraeroh, S.Pd.I.", role: "Guru Mapel PAI", img: "https://lh3.googleusercontent.com/d/1hUhvAwOcks2PhuU9qcDNTiZcxcY_76aZ" },
+            { nip: "19950529 202221 1 004", name: "Firman Hadi Saputra, S.Pd.", role: "Guru Mapel PJOK", img: "https://lh3.googleusercontent.com/d/1EGfRTjbQTHIBtO3eVnWWxSXg1px8F7aA" },
+        ];
+
+        const tendikData = [
+            { nip: "19800206 200701 2 008", name: "NENAH, M.Pd.", role: "Kepala Sekolah", img: "https://lh3.googleusercontent.com/d/1StOCVNIgXiS412zjZYezkpMgwZcslRRn" },
+            { nip: "19890906 202521 1 004", name: "Kurniawan Saputra", role: "Tenaga Administrasi/Operator Sekolah", img: "https://lh3.googleusercontent.com/d/1_djJktGcridr3JgsHyJeXUSdyxJYJNrF" },
+            { nip: "19970401 202521 1 108", name: "Ismail", role: "Penjaga Sekolah", img: "https://lh3.googleusercontent.com/d/15nkPcQhUF01Orhy3Sa5TsySm6TxvhkKC" }
+        ];
+
+        function createStaffCard(staf) {
+            return `
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col items-center text-center staff-card">
+                    <div class="w-20 h-20 rounded-full bg-blue-50 mb-4 overflow-hidden border-2 border-blue-100">
+                        <img src="${staf.img}" alt="${staf.name}" class="w-full h-full object-cover">
+                    </div>
+                    <h4 class="font-bold text-blue-900 text-sm mb-1 leading-tight">${staf.name}</h4>
+                    <p class="text-orange-500 font-bold text-[10px] uppercase tracking-wider mb-3">${staf.role}</p>
+                    <div class="w-full pt-3 border-t border-gray-50">
+                        <p class="text-gray-400 text-[9px] uppercase font-bold tracking-tighter">NIP/Identitas</p>
+                        <p class="text-gray-600 text-[10px] font-mono">${staf.nip}</p>
+                    </div>
+                </div>
+            `;
+        }
+        window.onload = () => {
+            document.getElementById('guru-container').innerHTML = guruData.map(s => createStaffCard(s)).join('');
+            document.getElementById('tendik-container').innerHTML = tendikData.map(s => createStaffCard(s)).join('');
+        };
+    </script>
+</body>
+</html>
