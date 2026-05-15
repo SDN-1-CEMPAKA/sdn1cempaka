@@ -469,7 +469,7 @@
                     </section>
 
                     <div class="pt-10 flex justify-end">
-                        <button type="submit" class="w-full md:w-auto bg-blue-700 text-white px-12 py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl hover:bg-blue-800 transition-all flex items-center justify-center gap-3">
+                        <button type="submit" class="w-full md:w-auto bg-blue-700 text-white px-12 py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl hover:bg-blue-800 transition-all flex items-center justify-center gap-2">
                             <i data-lucide="save" class="w-5 h-5"></i> Simpan Data PPDB
                         </button>
                     </div>
@@ -521,8 +521,8 @@
                 <h3 class="text-xl font-black text-gray-800 uppercase italic">Login Siswa</h3>
                 <p class="text-[10px] text-gray-500 font-bold">Pendataan awal & akses akun pendaftaran mandiri</p>
             </div>
-            <input type="number" id="login-nik" placeholder="Masukkan 16 Digit NIK Siswa" class="w-full p-4 border-2 border-gray-100 rounded-xl mb-4 focus:border-orange-500 outline-none font-bold text-center tracking-widest">
-            <button onclick="handleLogin()" class="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-xl font-black uppercase tracking-widest shadow-lg transition-all mb-3">Masuk Ke Sistem</button>
+            <input type="number" id="login-nik" placeholder="Masukkan 16 Digit NIK Siswa" class="w-full p-4 border-2 border-gray-100 rounded-xl mb-4 focus:border-orange-500 outline-none font-bold text-lg">
+            <button onclick="handleLogin()" class="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-xl font-black uppercase tracking-widest shadow-lg transition-all mb-3">Masuk Ke Portal</button>
             <button onclick="closeLoginModal()" class="w-full text-gray-400 text-xs font-bold hover:text-gray-600 uppercase">Batal</button>
         </div>
     </div>
@@ -725,9 +725,9 @@
                 <li>Saya menyerahkan sepenuhnya proses pendidikan, pembinaan, dan tata tertib anak saya kepada pihak sekolah selama menjadi peserta didik di sekolah ini.</li>
                 <li>Saya bersedia mematuhi seluruh peraturan dan ketentuan yang berlaku di sekolah.</li>
                 <li>Saya siap bekerja sama dengan pihak sekolah dalam mendukung pendidikan, kedisiplinan, dan perkembangan karakter anak saya.</li>
-                <li>Apabila di kemudian hari terdapat pelanggaran yang dilakukan oleh anak saya terhadap tata tertib sekolah, maka saya bersedia menerima keputusan dan tindakan yang diberikan oleh pihak sekolah sesuai aturan yang berlaku.</li>
+                <li>Apabila di kemudian hari terdapat pelanggaran yang dilakukan oleh anak saya terhadap tata tertib sekolah, maka saya bersedia menerima keputusan dan tindakan yang diberikan oleh sekolah.</li>
                 <li>Saya menyatakan bahwa seluruh data dan dokumen yang diberikan dalam proses Penerimaan Peserta Didik Baru (PPDB) Tahun 2026 adalah benar dan dapat dipertanggungjawabkan.</li>
-                <li>Saya bersedia apabila ditemukan data yang tidak benar atau tidak sesuai, maka pihak sekolah berhak membatalkan proses pendaftaran atau status penerimaan peserta didik sesuai ketentuan yang berlaku.</li>
+                <li>Saya bersedia apabila ditemukan data yang tidak benar atau tidak sesuai, maka pihak sekolah berhak membatalkan proses pendaftaran atau status penerimaan peserta didik sesuai kebijakan yang berlaku.</li>
             </ol>
 
             <p style="font-size: 10pt; margin-top: 15px;">Demikian Surat Pernyataan Tanggung Jawab Mutlak (SPTJM) ini saya buat dengan sadar, tanpa paksaan dari pihak mana pun, untuk dipergunakan sebagaimana mestinya.</p>
@@ -845,6 +845,7 @@
                 tr.innerHTML = `
                     <td class="p-4 flex gap-2">
                         <button onclick='printTicket(${JSON.stringify(item)})' class="p-1.5 bg-gray-50 text-gray-600 rounded-lg hover:bg-black hover:text-white" title="Cetak"><i data-lucide="printer" class="w-4 h-4"></i></button>
+                        <button onclick='editRecord(${JSON.stringify(item)})' class="p-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white" title="Edit"><i data-lucide="edit" class="w-4 h-4"></i></button>
                     </td>
                     <td class="p-4 font-mono font-bold text-blue-700">${item.id}</td>
                     <td class="p-4 font-bold uppercase">${item.nama}</td>
@@ -998,37 +999,17 @@
         function filterTable() {
             const q = document.getElementById('searchInput').value.toLowerCase();
             const filtered = allRecords.filter(r => 
-                (r.nama && r.nama.toLowerCase().includes(q)) || (r.nik && r.nik.toString().includes(q))
+                r.nama.toLowerCase().includes(q) || r.nik.toLowerCase().includes(q)
             );
             renderRecords(filtered);
         }
-
-        function openLoginModal() { document.getElementById('login-ui').classList.remove('hidden'); lucide.createIcons(); }
-        function closeLoginModal() { document.getElementById('login-ui').classList.add('hidden'); document.getElementById('login-nik').value = ''; }
-        
-        function handleLogin() {
-            const nikInput = document.getElementById('login-nik').value;
-            if (!nikInput) return showUI("Peringatan", "Silakan masukkan NIK Anda.", "error");
-            
-            // Cari data di allRecords yang sudah di-load saat window.onload
-            const student = allRecords.find(r => r.nik == nikInput);
-            if (student) {
-                closeLoginModal();
-                editRecord(student); // Otomatis mengisi form dan masuk ke mode edit
-                showUI("Login Berhasil", `Selamat datang kembali, ${student.nama}. Silakan periksa atau lengkapi data Anda.`, "success");
-            } else {
-                showUI("Gagal Login", "NIK tidak ditemukan. Pastikan Anda sudah mendaftar sebelumnya.", "error");
-            }
+        function closeLoginModal() { document.getElementById('login-ui').classList.add('hidden'); }
+        async function handleLogin() {
+            const nik = document.getElementById('login-nik').value;
+            if (!nik) return alert('Masukkan NIK terlebih dahulu');
+            window.location.href = `login.html?nik=${nik}`;
         }
-
-        function checkAutoLogin() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const nik = urlParams.get('nik');
-            if (nik) {
-                document.getElementById('login-nik').value = nik;
-                handleLogin();
-            }
-        }
+        function checkAutoLogin() {}
     </script>
 </body>
 </html>
