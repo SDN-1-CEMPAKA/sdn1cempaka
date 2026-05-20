@@ -15,31 +15,6 @@
         .input-group label { display: block; font-size: 0.75rem; font-weight: 600; color: #475569; text-transform: uppercase; margin-bottom: 0.25rem; }
         .input-field { width: 100%; border: 1px solid #cbd5e1; padding: 0.5rem; border-radius: 0.375rem; outline: none; transition: all 0.2s; font-size: 0.875rem; }
         .input-field:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1); }
-        
-        /* Gaya Kotak Eksklusif untuk Cetakan Model Excel */
-        .excel-box-container {
-            display: flex;
-            align-items: center;
-            gap: 2px;
-        }
-        .excel-box {
-            width: 22px;
-            height: 22px;
-            border: 1px solid #000;
-            text-align: center;
-            line-height: 20px;
-            font-family: 'Times New Roman', serif;
-            font-size: 10pt;
-            font-weight: bold;
-            background: #fff;
-            color: #000;
-        }
-        .excel-divider {
-            font-size: 12pt;
-            font-weight: bold;
-            padding: 0 2px;
-            color: #000;
-        }
 
         @media print {
             @page { 
@@ -572,22 +547,6 @@
                 <h2 style="font-size: 9pt; margin: 0; font-weight: bold;">TAHUN PELAJARAN 2026/2027</h2>
             </div>
 
-            <!-- INTEGRASI MODEL EXCEL (TANGGAL & NO PENDAFTAR KOTAK-KOTAK) -->
-            <div style="display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #000; padding: 6px 10px; margin-bottom: 12px; font-family: 'Times New Roman', serif;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 10pt; font-weight: bold;">Tanggal :</span>
-                    <div class="excel-box-container" id="excel-date-boxes">
-                        <!-- Diisi otomatis oleh Javascript berdasarkan kolom time_added dari Spreadsheet -->
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 10pt; font-weight: bold;">No. Pendaftar :</span>
-                    <div class="excel-box-container" id="excel-id-boxes">
-                        <!-- Otomatis diisi oleh JavaScript sesuai format ID pendaftar -->
-                    </div>
-                </div>
-            </div>
-
             <!-- TABEL DATA UTAMA -->
             <table class="print-table">
                 <thead>
@@ -660,11 +619,6 @@
                     <td style="border-right: none;">Nomor Telp / HP</td>
                     <td style="border-left: none; border-right: none; text-align: center;">:</td>
                     <td id="p-telp" style="border-left: none;"></td>
-            </tr>
-            <tr>
-                <td style="border-right: none;">Tanggal Pendaftaran</td>
-                <td style="border-left: none; border-right: none; text-align: center;">:</td>
-                <td id="p-tgl-daftar" style="border-left: none; font-weight: bold;"></td>
                 </tr>
             </table>
 
@@ -918,9 +872,6 @@
             document.getElementById('p-asal').innerText = item.asal_sekolah || '0';
             document.getElementById('p-ibu').innerText = item.ibu || '0';
             document.getElementById('p-telp').innerText = item.telp || '0';
-            
-            // Menampilkan Tanggal Pendaftaran yang diambil dari Spreadsheet (kolom time_added)
-            document.getElementById('p-tgl-daftar').innerText = item.time_added ? item.time_added.split(',')[0] : "-";
 
             document.getElementById('s-id').innerText = item.id;
 
@@ -976,37 +927,8 @@
                 }
             }
 
-            const dayStr = regDate.getDate().toString().padStart(2, '0');
-            const monthStr = (regDate.getMonth() + 1).toString().padStart(2, '0');
-            const yearStr = regDate.getFullYear().toString();
-
-            // Render Kotak Tanggal di preview (DD / MM / YYYY)
-            const dateContainer = document.getElementById('excel-date-boxes');
-            dateContainer.innerHTML = `
-                <div class="excel-box">${dayStr[0]}</div><div class="excel-box">${dayStr[1]}</div>
-                <div class="excel-divider">/</div>
-                <div class="excel-box">${monthStr[0]}</div><div class="excel-box">${monthStr[1]}</div>
-                <div class="excel-divider">/</div>
-                <div class="excel-box">${yearStr[0]}</div><div class="excel-box">${yearStr[1]}</div><div class="excel-box">${yearStr[2]}</div><div class="excel-box">${yearStr[3]}</div>
-            `;
-
-            // Render Kotak ID Pendaftaran di preview
-            const idContainer = document.getElementById('excel-id-boxes');
-            idContainer.innerHTML = '';
-            const fullID = item.id || "PPDB-2627-01";
-            for(let char of fullID) {
-                if(char === '-') {
-                    idContainer.innerHTML += `<div class="excel-divider">-</div>`;
-                } else {
-                    idContainer.innerHTML += `<div class="excel-box">${char}</div>`;
-                }
-            }
-
             // Atur Tanggal Tanda Tangan Cetakan dengan Tanggal Pendaftaran dari Spreadsheet
             const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-            document.getElementById('p-date').innerText = `${regDate.getDate()} ${months[regDate.getMonth()]} ${regDate.getFullYear()}`;
-            document.getElementById('s-date').innerText = `${regDate.getDate()} ${months[regDate.getMonth()]} ${regDate.getFullYear()}`;
-            
             const regDateFormatted = `${regDate.getDate()} ${months[regDate.getMonth()]} ${regDate.getFullYear()}`;
             document.getElementById('p-date').innerText = regDateFormatted;
             document.getElementById('s-date').innerText = regDateFormatted;
