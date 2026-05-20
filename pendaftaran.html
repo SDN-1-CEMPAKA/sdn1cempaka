@@ -660,6 +660,11 @@
                     <td style="border-right: none;">Nomor Telp / HP</td>
                     <td style="border-left: none; border-right: none; text-align: center;">:</td>
                     <td id="p-telp" style="border-left: none;"></td>
+            </tr>
+            <tr>
+                <td style="border-right: none;">Tanggal Pendaftaran</td>
+                <td style="border-left: none; border-right: none; text-align: center;">:</td>
+                <td id="p-tgl-daftar" style="border-left: none; font-weight: bold;"></td>
                 </tr>
             </table>
 
@@ -1012,21 +1017,26 @@
             const qrImg = document.getElementById('p-qr-validasi');
             const ksQrImg = document.getElementById('s-qr-ks');
             
-            qrImg.src = "https://lh3.googleusercontent.com/d/" + driveFileId;
-            ksQrImg.src = "https://lh3.googleusercontent.com/d/" + ksSignatureId;
-            
             let imgsLoaded = 0;
             const checkLoaded = () => {
                 imgsLoaded++;
                 if (imgsLoaded === 2) setTimeout(() => { window.print(); }, 500);
             };
+
+            // Pasang listener SEBELUM menentukan .src untuk menghindari race condition
             qrImg.onload = checkLoaded;
             ksQrImg.onload = checkLoaded;
-
             qrImg.onerror = () => {
-                console.error("Gambar QR gagal dimuat. Pastikan ID Drive benar dan akses Publik.");
-                window.print();
-            }
+                console.error("QR Panitia gagal dimuat");
+                checkLoaded(); // Tetap jalankan print meski gambar gagal
+            };
+            ksQrImg.onerror = () => {
+                console.error("TTD KS gagal dimuat");
+                checkLoaded(); // Tetap jalankan print meski gambar gagal
+            };
+
+            qrImg.src = "https://lh3.googleusercontent.com/d/" + driveFileId;
+            ksQrImg.src = "https://lh3.googleusercontent.com/d/" + ksSignatureId;
         }
         
         async function handleSubmit(e) {
