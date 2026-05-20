@@ -1,195 +1,1094 @@
-/**
- * INTEGRASI PENGAMBILAN TANGGAL DARI GOOGLE SHEETS
- * File: js/fetch-date.js
- * Fungsi untuk mengambil tanggal terakhir dari Google Sheet
- * dan mengisikan ke form pendaftaran
- */
-
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO2f1gpvDBxQM3b9CR5FqSdTP5vtazDgdU0w-zR5CbRJ4OllYHHHxxrq8veX5_sqOF/exec";
-
-/**
- * Fetch tanggal terakhir dari Google Sheets
- * Mengambil data dari kolom time_added (waktu pendaftaran)
- */
-async function fetchLatestDateFromSheet() {
-    try {
-        const response = await fetch(`${SCRIPT_URL}?action=readAll&sheet=pendaftar`);
-        const data = await response.json();
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Data Pendaftar - SDN 1 Cempaka</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f0f4f8; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .form-card { border-top: 4px solid #1d4ed8; }
+        .input-group label { display: block; font-size: 0.75rem; font-weight: 600; color: #475569; text-transform: uppercase; margin-bottom: 0.25rem; }
+        .input-field { width: 100%; border: 1px solid #cbd5e1; padding: 0.5rem; border-radius: 0.375rem; outline: none; transition: all 0.2s; font-size: 0.875rem; }
+        .input-field:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1); }
         
-        if (data.status === "sukses" && data.records && data.records.length > 0) {
-            // Ambil record terakhir
-            const lastRecord = data.records[data.records.length - 1];
+        /* Gaya Kotak Eksklusif untuk Cetakan Model Excel */
+        .excel-box-container {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .excel-box {
+            width: 22px;
+            height: 22px;
+            border: 1px solid #000;
+            text-align: center;
+            line-height: 20px;
+            font-family: 'Times New Roman', serif;
+            font-size: 10pt;
+            font-weight: bold;
+            background: #fff;
+            color: #000;
+        }
+        .excel-divider {
+            font-size: 12pt;
+            font-weight: bold;
+            padding: 0 2px;
+            color: #000;
+        }
+
+        @media print {
+            @page { 
+                size: A4; 
+                margin: 1cm; 
+            }
+            .no-print { display: none !important; }
+            #print-area { 
+                display: block !important; 
+                width: 100%; 
+                background: white; 
+                font-family: 'Times New Roman', serif; 
+                color: black;
+                font-size: 10pt;
+            }
+            body { background: white; margin: 0; padding: 0; }
+            .print-table { 
+                width: 100%; 
+                border-collapse: collapse; 
+                margin-top: 4px; 
+            }
+            .print-table th, .print-table td { 
+                border: 1px solid black; 
+                padding: 2px 5px; 
+                text-align: left; 
+                line-height: 1.1;
+                font-size: 9pt;
+            }
+            .kop-border { 
+                border-bottom: 3px solid black; 
+                margin-bottom: 2px; 
+                padding-bottom: 4px; 
+            }
+            h1, h2, h3, p, td, th { color: black !important; margin: 0; }
             
-            // Ambil time_added dari record terakhir
-            if (lastRecord.time_added) {
-                return parseSheetDate(lastRecord.time_added);
+            .print-wrapper {
+                page-break-inside: avoid;
             }
         }
         
-        // Fallback ke tanggal hari ini
-        return new Date();
-    } catch (error) {
-        console.error('Error fetching date from Google Sheets:', error);
-        return new Date(); // Fallback ke tanggal hari ini
-    }
-}
+        #print-area { display: none; }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
 
-/**
- * Parse tanggal dari format Google Sheets
- * Format: "DD/MM/YYYY, HH:MM:SS" atau "YYYY-MM-DD HH:MM:SS"
- */
-function parseSheetDate(dateString) {
-    if (!dateString || typeof dateString !== 'string') {
-        return new Date();
-    }
-    
-    // Bersihkan string
-    const cleanDate = dateString.trim();
-    
-    try {
-        // Format: "20/5/2026, 10:30:45" (dari toLocaleString('id-ID'))
-        if (cleanDate.includes('/') && cleanDate.includes(',')) {
-            const parts = cleanDate.split(',')[0].split('/');
-            if (parts.length === 3) {
-                const day = parseInt(parts[0], 10);
-                const month = parseInt(parts[1], 10) - 1; // 0-indexed
-                const year = parseInt(parts[2], 10);
-                const parsed = new Date(year, month, day);
-                if (!isNaN(parsed.getTime())) {
-                    return parsed;
+    <!-- Loading State -->
+    <div id="loader" class="hidden fixed inset-0 z-50 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center text-blue-700">
+        <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent mb-4"></div>
+        <p class="font-bold tracking-widest animate-pulse uppercase text-[10px]">Sinkronisasi Cloud...</p>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-blue-800 text-white shadow-xl sticky top-0 z-40 no-print">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-4">
+            <a href="index.html" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                <div style="width: 15%; text-align: right;">
+                    <img src="https://lh3.googleusercontent.com/u/0/d/1V9AKgKbsmg5CNZIdGskpeG4ANBnhCTBP" style="width: 75px; height: auto;">
+                </div>
+                <div>
+                    <h1 class="text-xl font-black italic tracking-tighter">SDN 1 CEMPAKA</h1>
+                    <p class="text-[10px] opacity-80 font-medium uppercase tracking-widest">PPDB Online TA 2026/2027</p>
+                </div>
+            </a>
+            <nav class="flex bg-blue-900/50 p-1 rounded-xl">
+                <a href="index.html" class="px-6 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2 hover:bg-white/10">
+                    <i data-lucide="home" class="w-4 h-4"></i> Beranda
+                </a>
+                <button onclick="switchTab('table'); loadData();" id="btn-table" class="px-6 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2">
+                    <i data-lucide="database" class="w-4 h-4"></i> Pendaftar
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 mt-6 no-print">
+        
+        <div id="tab-form" class="tab-content active">
+            <div class="bg-white rounded-2xl shadow-sm overflow-hidden form-card">
+                <div class="p-6 border-b bg-gray-50 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-extrabold text-gray-800" id="form-title">Pendaftaran Siswa Baru</h2>
+                        <p class="text-[10px] text-blue-600 font-bold uppercase">Sesuaikan Data dengan Dokumen Resmi (KK/Akta)</p>
+                    </div>
+                    <button onclick="resetForm()" class="text-xs font-bold text-gray-400 hover:text-red-500 flex items-center gap-1">
+                        <i data-lucide="rotate-ccw" class="w-3 h-3"></i> RESET
+                    </button>
+                </div>
+                
+                <form id="regForm" onsubmit="handleSubmit(event)" class="p-8 space-y-10">
+                    <input type="hidden" name="action" id="form-action" value="insert">
+                    <input type="hidden" name="sheet" value="pendaftar">
+                    <input type="hidden" name="time_added" id="f-time_added">
+
+                    <!-- IDENTITAS SISWA -->
+                    <section>
+                        <div class="flex items-center gap-2 mb-6 text-blue-600">
+                            <i data-lucide="id-card" class="w-5 h-5"></i>
+                            <h3 class="font-black text-sm uppercase tracking-widest">Identitas Siswa</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <div class="input-group">
+                                <label>ID Pendaftaran</label>
+                                <input type="text" name="id" id="f-id" readonly class="input-field bg-gray-50 font-mono font-bold text-blue-700">
+                            </div>
+                            <div class="input-group">
+                                <label>NIK Siswa *</label>
+                                <input type="number" name="nik" required class="input-field" placeholder="16 Digit NIK">
+                            </div>
+                            <div class="input-group">
+                                <label>NISN</label>
+                                <input type="number" name="nisn" class="input-field" placeholder="10 Digit NISN">
+                            </div>
+                            <div class="input-group">
+                                <label>Nama Lengkap *</label>
+                                <input type="text" name="nama" required class="input-field uppercase">
+                            </div>
+                            <div class="input-group">
+                                <label>Jenis Kelamin</label>
+                                <select name="jk" class="input-field">
+                                    <option value="L">Laki-laki</option>
+                                    <option value="P">Perempuan</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>Tempat Lahir</label>
+                                <input type="text" name="tempat_lahir" class="input-field">
+                            </div>
+                            <div class="input-group">
+                                <label>Tgl Lahir *</label>
+                                <input type="date" name="tgl_lahir" id="f-tgl-lahir" required class="input-field" onchange="calculateAge()">
+                            </div>
+                            <div class="input-group">
+                                <label>Umur (Otomatis)</label>
+                                <input type="text" name="umur" id="f-umur" readonly class="input-field bg-blue-50 font-bold text-blue-700">
+                            </div>
+                            <div class="input-group">
+                                <label>Agama</label>
+                                <select name="agama" class="input-field">
+                                    <option value="Islam">Islam</option>
+                                    <option value="Kristen">Kristen</option>
+                                    <option value="Katolik">Katolik</option>
+                                    <option value="Hindu">Hindu</option>
+                                    <option value="Budha">Budha</option>
+                                    <option value="Lainnya">Lainnya</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>Anak Ke- *</label>
+                                <input type="number" name="anak_ke" required class="input-field" placeholder="Contoh: 1">
+                            </div>
+                            <div class="input-group">
+                                <label>No. Akta Kelahiran</label>
+                                <input type="text" name="no_akta" class="input-field">
+                            </div>
+                            <div class="input-group">
+                                <label>No. Kartu Keluarga (KK)</label>
+                                <input type="number" name="no_kk" class="input-field">
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ASAL SEKOLAH -->
+                    <section class="bg-amber-50/50 -mx-8 px-8 py-8 border-y border-amber-100">
+                        <div class="flex items-center gap-2 mb-6 text-amber-700">
+                            <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+                            <h3 class="font-black text-sm uppercase tracking-widest">Pendidikan Sebelumnya</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="input-group">
+                                <label>Pernah PAUD?</label>
+                                <select name="pernah_paud" class="input-field">
+                                    <option value="Tidak">Tidak</option>
+                                    <option value="Ya">Ya</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>Pernah TK / RA?</label>
+                                <select name="pernah_tk" class="input-field">
+                                    <option value="Tidak">Tidak</option>
+                                    <option value="Ya">Ya</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>Nama Sekolah Asal (PAUD/TK)</label>
+                                <input type="text" name="asal_sekolah" class="input-field uppercase" placeholder="Nama TK/PAUD Asal">
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- DOMISILI & TRANSPORTASI -->
+                    <section>
+                        <div class="flex items-center gap-2 mb-6 text-blue-600">
+                            <i data-lucide="map-pin" class="w-5 h-5"></i>
+                            <h3 class="font-black text-sm uppercase tracking-widest">Domisili & Mobilitas</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <div class="md:col-span-2 input-group">
+                                <label>Alamat Jalan / Kampung</label>
+                                <input type="text" name="alamat" class="input-field">
+                            </div>
+                            <div class="input-group">
+                                <label>Dusun</label>
+                                <input type="text" name="dusun" class="input-field">
+                            </div>
+                            <div class="input-group">
+                                <label>RT / RW</label>
+                                <div class="flex gap-2">
+                                    <input type="text" name="rt_nya" placeholder="RT" class="input-field text-center">
+                                    <input type="text" name="rw_nya" placeholder="RW" class="input-field text-center">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Provinsi</label>
+                                <input type="text" name="prov" class="input-field" value="Banten">
+                            </div>
+                            <div class="input-group">
+                                <label>Kabupaten / Kota</label>
+                                <input type="text" name="kota" class="input-field" value="Lebak">
+                            </div>
+                            <div class="input-group">
+                                <label>Kecamatan</label>
+                                <input type="text" name="kecamatan" class="input-field" value="Warunggunung">
+                            </div>
+                            <div class="input-group">
+                                <label>Kelurahan</label>
+                                <input type="text" name="kelurahan" class="input-field">
+                            </div>
+                            <div class="input-group">
+                                <label>Kode Pos</label>
+                                <input type="number" name="kode_pos" class="input-field">
+                            </div>
+                            <div class="input-group">
+                                <label>Tinggal Bersama</label>
+                                <select name="tinggal" class="input-field" required>
+                                    <option value="">-- Pilih --</option>
+                                    <option value="Bersama Orang Tua">Bersama Orang Tua</option>
+                                    <option value="Wali / Saudara">Wali / Saudara</option>
+                                    <option value="Asrama">Asrama</option>
+                                    <option value="Panti Asuhan">Panti Asuhan</option>
+                                    <option value="Lainnya">Lainnya</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>Moda Transportasi</label>
+                                <select name="transportasi" class="input-field">
+                                    <option value="">-- Pilih --</option>
+                                    <option value="Jalan Kaki">Jalan Kaki</option>
+                                    <option value="Motor">Sepeda Motor</option>
+                                    <option value="Mobil">Mobil Pribadi</option>
+                                    <option value="Antar Jemput">Antar Jemput / Ojek</option>
+                                    <option value="Angkutan Umum">Angkutan Umum</option>
+                                    <option value="Lainnya">Lainnya</option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- DATA ORANG TUA KANDUNG -->
+                    <section class="bg-gray-50 -mx-8 px-8 py-8 border-y border-gray-100">
+                        <div class="flex items-center gap-2 mb-8 text-blue-600">
+                            <i data-lucide="users" class="w-5 h-5"></i>
+                            <h3 class="font-black text-sm uppercase tracking-widest">Data Orang Tua Kandung</h3>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            <!-- AYAH -->
+                            <div class="space-y-6">
+                                <div class="flex items-center gap-2 border-b border-gray-200 pb-2">
+                                    <span class="w-3 h-3 bg-blue-500 rounded-full"></span>
+                                    <label class="text-xs font-black text-gray-700 uppercase">Detail Ayah</label>
+                                </div>
+                                <div class="grid grid-cols-1 gap-4">
+                                    <div class="input-group">
+                                        <label>Nama Lengkap Ayah</label>
+                                        <input type="text" name="ayah" class="input-field uppercase">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>NIK Ayah</label>
+                                        <input type="number" name="nik_ayah" class="input-field">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Tahun Lahir Ayah</label>
+                                        <input type="number" name="tahun_ayah" class="input-field" placeholder="Contoh: 1980">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Pendidikan Ayah</label>
+                                        <select name="pendidikan_ayah" class="input-field">
+                                            <option value="">-- Pilih Pendidikan --</option>
+                                            <option value="Tidak Sekolah">Tidak Sekolah</option>
+                                            <option value="SD">SD / Sederajat</option>
+                                            <option value="SMP">SMP / Sederajat</option>
+                                            <option value="SMA">SMA / Sederajat</option>
+                                            <option value="D1">D1</option>
+                                            <option value="D2">D2</option>
+                                            <option value="D3">D3</option>
+                                            <option value="S1">S1 / D4</option>
+                                            <option value="S2">S2</option>
+                                            <option value="S3">S3</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Pekerjaan Ayah</label>
+                                        <select name="pekerjaan_ayah" class="input-field">
+                                            <option value="">-- Pilih Pekerjaan --</option>
+                                            <option value="Tidak Bekerja">Tidak Bekerja</option>
+                                            <option value="Buruh">Buruh</option>
+                                            <option value="Tani">Tani</option>
+                                            <option value="Wiraswasta">Wiraswasta</option>
+                                            <option value="PNS">PNS / TNI / Polri</option>
+                                            <option value="Karyawan Swasta">Karyawan Swasta</option>
+                                            <option value="Pedagang">Pedagang</option>
+                                            <option value="Nelayan">Nelayan</option>
+                                            <option value="Lainnya">Lainnya</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Penghasilan Ayah</label>
+                                        <select name="penghasilan_ayah" class="input-field">
+                                            <option value="">-- Pilih Penghasilan --</option>
+                                            <option value="Kurang dari 500rb">Kurang dari 500rb</option>
+                                            <option value="500rb - 1jt">500rb - 1jt</option>
+                                            <option value="1jt - 2jt">1jt - 2jt</option>
+                                            <option value="2jt - 5jt">2jt - 5jt</option>
+                                            <option value="Lebih dari 5jt">Lebih dari 5jt</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- IBU -->
+                            <div class="space-y-6">
+                                <div class="flex items-center gap-2 border-b border-gray-200 pb-2">
+                                    <span class="w-3 h-3 bg-pink-500 rounded-full"></span>
+                                    <label class="text-xs font-black text-gray-700 uppercase">Detail Ibu</label>
+                                </div>
+                                <div class="grid grid-cols-1 gap-4">
+                                    <div class="input-group">
+                                        <label>Nama Lengkap Ibu *</label>
+                                        <input type="text" name="ibu" required class="input-field uppercase">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>NIK Ibu</label>
+                                        <input type="number" name="nik_ibu" class="input-field">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Tahun Lahir Ibu</label>
+                                        <input type="number" name="tahun_ibu" class="input-field">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Pendidikan Ibu</label>
+                                        <select name="pendidikan_ibu" class="input-field">
+                                            <option value="">-- Pilih Pendidikan --</option>
+                                            <option value="Tidak Sekolah">Tidak Sekolah</option>
+                                            <option value="SD">SD / Sederajat</option>
+                                            <option value="SMP">SMP / Sederajat</option>
+                                            <option value="SMA">SMA / Sederajat</option>
+                                            <option value="D1">D1</option>
+                                            <option value="D2">D2</option>
+                                            <option value="D3">D3</option>
+                                            <option value="S1">S1 / D4</option>
+                                            <option value="S2">S2</option>
+                                            <option value="S3">S3</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Pekerjaan Ibu</label>
+                                        <select name="pekerjaan_ibu" class="input-field" required>
+                                            <option value="">-- Pilih --</option>
+                                            <option value="Tidak Bekerja">Tidak Bekerja</option>
+                                            <option value="Ibu Rumah Tangga">Ibu Rumah Tangga</option>
+                                            <option value="Buruh">Buruh</option>
+                                            <option value="Tani">Tani</option>
+                                            <option value="Wiraswasta">Wiraswasta</option>
+                                            <option value="PNS">PNS / TNI / Polri</option>
+                                            <option value="Karyawan Swasta">Karyawan Swasta</option>
+                                            <option value="Pedagang">Pedagang</option>
+                                            <option value="Lainnya">Lainnya</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Penghasilan Ibu Per Bulan</label>
+                                        <select name="penghasilan_ibu" class="input-field">
+                                            <option value="">-- Pilih --</option>
+                                            <option value="Tidak Ada">Tidak Ada</option>
+                                            <option value="< 500rb">Di bawah 500rb</option>
+                                            <option value="500rb - 1jt">500rb - 1jt</option>
+                                            <option value="1jt - 2jt">1jt - 2jt</option>
+                                            <option value="> 2jt">Lebih dari 2jt</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- KONTAK & FISIK -->
+                    <section class="bg-blue-50/30 -mx-8 px-8 py-8">
+                        <div class="flex items-center gap-2 mb-6 text-blue-600">
+                            <i data-lucide="phone" class="w-5 h-5"></i>
+                            <h3 class="font-black text-sm uppercase tracking-widest">Detail Kontak & Fisik</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <div class="input-group">
+                                <label>No HP / Telp *</label>
+                                <input type="text" name="telp" required class="input-field" placeholder="08xxxxxxxx">
+                            </div>
+                            <div class="input-group">
+                                <label>Email Aktif</label>
+                                <input type="email" name="email" class="input-field" placeholder="contoh@gmail.com">
+                            </div>
+                            <div class="input-group">
+                                <label>Jml Saudara Kandung</label>
+                                <input type="number" name="saudara" class="input-field" placeholder="0">
+                            </div>
+                            <div class="input-group">
+                                <label>Berat Badan (kg)</label>
+                                <input type="number" name="berat" class="input-field">
+                            </div>
+                            <div class="input-group">
+                                <label>Tinggi Badan (cm)</label>
+                                <input type="number" name="tinggi" class="input-field">
+                            </div>
+                            <div class="input-group">
+                                <label>Lingkar Kepala (cm)</label>
+                                <input type="number" name="kepala" class="input-field" placeholder="cm">
+                            </div>
+                            <div class="input-group">
+                                <label>Jarak Ke Sekolah (km)</label>
+                                <input type="number" step="0.1" name="jarak" class="input-field">
+                            </div>
+                            <div class="input-group">
+                                <label>Waktu Tempuh</label>
+                                <div class="flex gap-2">
+                                    <div class="flex-1 flex flex-col">
+                                        <input type="number" name="waktu_jam" placeholder="Jam" class="input-field text-center">
+                                    </div>
+                                    <div class="flex-1 flex flex-col">
+                                        <input type="number" name="waktu_menit" placeholder="Menit" class="input-field text-center">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="pt-10 flex justify-end">
+                        <button type="submit" class="w-full md:w-auto bg-blue-700 text-white px-12 py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl hover:bg-blue-800 transition-all flex items-center justify-center gap-3">
+                            <i data-lucide="save" class="w-5 h-5"></i> Simpan Data PPDB
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- TABLE TAB -->
+        <div id="tab-table" class="tab-content">
+            <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                <div class="p-6 bg-gray-50 border-b flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div>
+                        <h2 class="text-xl font-extrabold text-gray-800 uppercase tracking-tighter">Database Pendaftar</h2>
+                        <p id="record-count" class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">0 Total Siswa</p>
+                    </div>
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Cari Nama/NIK..." class="px-4 py-2 border rounded-xl w-full text-sm">
+                        <button onclick="loadData()" class="bg-white border text-gray-600 p-2 rounded-xl hover:bg-gray-100">
+                            <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-100 text-gray-500 text-[10px] uppercase font-black">
+                            <tr>
+                                <th class="p-4 border-b">Aksi</th>
+                                <th class="p-4 border-b">ID</th>
+                                <th class="p-4 border-b">Nama Siswa</th>
+                                <th class="p-4 border-b">Umur</th>
+                                <th class="p-4 border-b">Asal Sekolah</th>
+                                <th class="p-4 border-b">Kontak</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataTableBody" class="text-sm divide-y"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL LOGIN SISWA -->
+    <div id="login-ui" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl border-t-4 border-orange-500">
+            <div class="text-center mb-6">
+                <div class="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-orange-600">
+                    <i data-lucide="user-check" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-black text-gray-800 uppercase italic">Login Siswa</h3>
+                <p class="text-[10px] text-gray-500 font-bold">Pendataan awal & akses akun pendaftaran mandiri</p>
+            </div>
+            <input type="number" id="login-nik" placeholder="Masukkan 16 Digit NIK Siswa" class="w-full p-4 border-2 border-gray-100 rounded-xl mb-4 focus:border-orange-500 outline-none font-bold text-center tracking-widest">
+            <button onclick="handleLogin()" class="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-xl font-black uppercase tracking-widest shadow-lg transition-all mb-3">Masuk Ke Sistem</button>
+            <button onclick="closeLoginModal()" class="w-full text-gray-400 text-xs font-bold hover:text-gray-600 uppercase">Batal</button>
+        </div>
+    </div>
+
+    <!-- AREA CETAK (VERSI PROFESIONAL + INTEGRASI MODEL EXCEL) -->
+    <div id="print-area">
+        <div class="print-wrapper">
+            <div class="kop-border" style="display: flex; align-items: center; justify-content: center;">
+                <div style="width: 15%; text-align: left;">
+                    <img src="https://lh3.googleusercontent.com/u/0/d/1bW82RmwnfForzqt4GGsGyNCj5GVMvD3s" style="width: 70px; height: auto;">
+                </div>
+                <div style="width: 76%; text-align: center;">
+                    <h2 style="font-size: 11pt; font-weight: normal; text-transform: uppercase; margin: 0; line-height: 1.1;">Pemerintah Kabupaten Lebak</h2>
+                    <h2 style="font-size: 11pt; font-weight: normal; text-transform: uppercase; margin: 0; line-height: 1.1;">Dinas Pendidikan</h2>
+                    <h1 style="font-size: 12pt; font-weight: bold; text-transform: uppercase; margin: 1px 0; line-height: 1.1;">UPTD Satuan Pendidikan SD Negeri 1 Cempaka</h1>
+                    <h1 style="font-size: 12pt; font-weight: bold; text-transform: uppercase; margin: 1px 0; line-height: 1.1;">Kecamatan Warunggunung</h1>
+                    <h1 style="font-size: 12pt; font-weight: normal; font-style: italic; margin: 1px 0; line-height: 1.1;">Akreditasi B</h1>
+                    <p style="font-size: 8pt; margin: 2px 0 0 0; font-style: italic; line-height: 1.1;">Alamat: Kp. Cemplang RT 006/RW 002 Desa Cempaka Kec. Warunggunung</p>
+                    <p style="font-size: 7.5pt; margin: 1px 0 0 0; font-style: italic; line-height: 1.1;">NPSN: 20602495 | NSS: 101020304048 | Email: helojagoanhosting@gmail.com | Kode Pos: 42352</p>
+                </div>
+                <div style="width: 15%; text-align: right;">
+                    <img src="https://lh3.googleusercontent.com/u/0/d/1V9AKgKbsmg5CNZIdGskpeG4ANBnhCTBP" style="width: 130px; height: auto;">
+                </div>
+            </div>
+            <div style="border-bottom: 1px solid black; margin-bottom: 8px;"></div>
+
+            <!-- JUDUL SURAT -->
+            <div style="text-align: center; margin-bottom: 10px;">
+                <h1 style="font-size: 13pt; text-decoration: underline; margin-bottom: 3px; font-weight: bold;">TANDA BUKTI PENDAFTARAN</h1>
+                <h2 style="font-size: 9pt; margin: 0; font-weight: bold;">PENERIMAAN PESERTA DIDIK BARU (PPDB)</h2>
+                <h2 style="font-size: 9pt; margin: 0; font-weight: bold;">TAHUN PELAJARAN 2026/2027</h2>
+            </div>
+
+            <!-- TABEL DATA UTAMA -->
+            <table class="print-table">
+                <thead>
+                    <tr style="background: #e5e7eb;">
+                        <th style="width: 50%; text-align: center; font-weight: bold; font-size: 11pt;">Nomor Peserta</th>
+                        <th style="width: 50%; text-align: center; font-weight: bold; font-size: 11pt;">NIK (Nomor Induk Kependudukan)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="p-id" style="text-align: center; font-size: 12pt; font-weight: bold; padding: 5px;">-</td>
+                        <td id="p-nik" style="text-align: center; font-size: 12pt; font-weight: bold; padding: 5px;">-</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="margin: 8px 0 4px 0; font-weight: bold; font-size: 9pt;">Identitas Calon Peserta Didik:</div>
+            <table class="print-table">
+                <tr>
+                    <td style="width: 35%; border-right: none;">NISN</td>
+                    <td style="width: 2%; border-left: none; border-right: none; text-align: center;">:</td>
+                    <td id="p-nisn" style="border-left: none; font-weight: bold;"></td>
+                </tr>
+                <tr>
+                    <td style="border-right: none;">Nama Lengkap</td>
+                    <td style="border-left: none; border-right: none; text-align: center;">:</td>
+                    <td id="p-nama" style="border-left: none; font-weight: bold; text-transform: uppercase;"></td>
+                </tr>
+                <tr>
+                    <td style="border-right: none;">Jenis Kelamin</td>
+                    <td style="border-left: none; border-right: none; text-align: center;">:</td>
+                    <td id="p-jk" style="border-left: none;"></td>
+                </tr>
+                <tr>
+                    <td style="border-right: none;">Tempat dan Tanggal Lahir</td>
+                    <td style="border-left: none; border-right: none; text-align: center;">:</td>
+                    <td id="p-ttl" style="border-left: none;"></td>
+                </tr>
+                <tr>
+                    <td style="border-right: none;">Alamat Jalan / Kampung</td>
+                    <td style="border-left: none; border-right: none; text-align: center;">:</td>
+                    <td id="p-alamat" style="border-left: none;"></td>
+                </tr>
+                <tr>
+                    <td style="border-right: none;">RT / RW</td>
+                    <td style="border-left: none; border-right: none; text-align: center;">:</td>
+                    <td id="p-rtrw" style="border-left: none;"></td>
+                </tr>
+                <tr>
+                    <td style="border-right: none;">Kelurahan / Desa</td>
+                    <td style="border-left: none; border-right: none; text-align: center;">:</td>
+                    <td id="p-kelurahan" style="border-left: none;"></td>
+                </tr>
+                <tr>
+                    <td style="border-right: none;">Kecamatan</td>
+                    <td style="border-left: none; border-right: none; text-align: center;">:</td>
+                    <td id="p-kecamatan" style="border-left: none;"></td>
+                </tr>
+                <tr>
+                    <td style="border-right: none;">Sekolah Asal</td>
+                    <td style="border-left: none; border-right: none; text-align: center;">:</td>
+                    <td id="p-asal" style="border-left: none;"></td>
+                </tr>
+                <tr>
+                    <td style="border-right: none;">Nama Ibu Kandung</td>
+                    <td style="border-left: none; border-right: none; text-align: center;">:</td>
+                    <td id="p-ibu" style="border-left: none;"></td>
+                </tr>
+                <tr>
+                    <td style="border-right: none;">Nomor Telp / HP</td>
+                    <td style="border-left: none; border-right: none; text-align: center;">:</td>
+                    <td id="p-telp" style="border-left: none;"></td>
+            </tr>
+            <tr>
+                <td style="border-right: none;">Tanggal Pendaftaran</td>
+                <td style="border-left: none; border-right: none; text-align: center;">:</td>
+                <td id="p-tgl-daftar" style="border-left: none; font-weight: bold;"></td>
+                </tr>
+            </table>
+
+            <!-- CATATAN -->
+            <div style="margin-top: 15px; border: 1px solid black; padding: 8px;">
+                <div style="font-weight: bold; text-decoration: underline; margin-bottom: 5px;">Catatan Penting:</div>
+                <ul style="margin: 0; padding-left: 20px; font-size: 9pt; line-height: 1.3;">
+                    <li>Simpan lembar ini sebagai bukti pendaftaran yang sah.</li>
+                    <li>SPTJM wajib ditandatangani oleh orang tua/wali dan diserahkan saat proses verifikasi berkas PPDB.</li>
+                    <li>Bawa fotokopi Akta Kelahiran saat verifikasi berkas.</li>
+                    <li>Bawa fotokopi Kartu Keluarga saat verifikasi berkas.</li>
+                    <li>Bawa fotokopi KTP Orang Tua saat verifikasi berkas.</li>
+                    <li>Bawa fotokopi Ijazah Paud/TK (Jika Ada) saat verifikasi berkas.</li>
+                    <li>Verifikasi berkas dilakukan di ruang sekretariat PPDB SDN 1 Cempaka sesuai jadwal.</li>
+                </ul>
+            </div>
+
+            <div style="margin-top: 15px; display: flex; justify-content: space-between; font-size: 9pt; align-items: flex-end;">
+                <div style="text-align: center; width: 180px;">
+                    <p>Orang Tua/Wali,</p>
+                    <div style="height: 75px;"></div>
+                    <p>( <span id="p-ortu-nama-bawah" style="font-weight: bold; text-transform: uppercase;"></span> )</p>
+                </div>
+                <div style="text-align: center; width: 220px;">
+                    <p>Warunggunung, <span id="p-date"></span></p>
+                    <p>Panitia PPDB,</p>
+                    <div style="margin: 2px auto; width: 60px; height: 60px;">
+                        <img id="p-qr-validasi" src="" style="width: 60px; height: 60px; display: block; margin: 0 auto;">
+                    </div>
+                    <p><strong>Kurniawan Saputra</strong><br><span style="font-size: 7.5pt;">NIP. 19890906 202521 1 004</span></p>
+                </div>
+            </div>
+
+            <div style="margin-top: 100px; padding-top: 8px; border-top: 0.5px solid black; font-size: 7pt; color: #333; line-height: 1.4; display: flex; align-items: center; gap: 15px;">
+                <img src="https://lh3.googleusercontent.com/d/1ur_70TW9DX1I-Iq2GAt0rjPr9xDXT5GF" style="height: 35px; width: auto;">
+                <div>
+                    <p><em><strong>UU ITE No 11 Tahun 2008 Pasal 5 Ayat 1:</strong> "Informasi Elektronik dan/atau Dokumen Elektronik dan/atau hasil cetaknya merupakan alat bukti hukum yang sah."</em></p>
+                    <p>Dokumen ini telah ditandatangani secara elektronik menggunakan sertifikat elektronik yang diterbitkan BSrE</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SPTJM PAGE -->
+        <div class="print-wrapper" style="page-break-before: always; padding-top: 20px;">
+            <div class="kop-border" style="display: flex; align-items: center; justify-content: center;">
+                <div style="width: 15%; text-align: left;">
+                    <img src="https://lh3.googleusercontent.com/u/0/d/1bW82RmwnfForzqt4GGsGyNCj5GVMvD3s" style="width: 70px; height: auto;">
+                </div>
+                <div style="width: 76%; text-align: center;">
+                    <h2 style="font-size: 11pt; font-weight: normal; text-transform: uppercase; margin: 0; line-height: 1.1;">Pemerintah Kabupaten Lebak</h2>
+                    <h2 style="font-size: 11pt; font-weight: normal; text-transform: uppercase; margin: 0; line-height: 1.1;">Dinas Pendidikan</h2>
+                    <h1 style="font-size: 12pt; font-weight: bold; text-transform: uppercase; margin: 1px 0; line-height: 1.1;">UPTD Satuan Pendidikan SD Negeri 1 Cempaka</h1>
+                    <h1 style="font-size: 12pt; font-weight: bold; text-transform: uppercase; margin: 1px 0; line-height: 1.1;">Kecamatan Warunggunung</h1>
+                    <h1 style="font-size: 12pt; font-weight: normal; font-style: italic; margin: 1px 0; line-height: 1.1;">Akreditasi B</h1>
+                    <p style="font-size: 8pt; margin: 2px 0 0 0; font-style: italic; line-height: 1.1;">Alamat: Kp. Cemplang RT 006/RW 002 Desa Cempaka Kec. Warunggunung</p>
+                    <p style="font-size: 7.5pt; margin: 1px 0 0 0; font-style: italic; line-height: 1.1;">NPSN: 20602495 | NSS: 101020304048 | Email: helojagoanhosting@gmail.com | Kode Pos: 42352</p>
+                </div>
+                <div style="width: 15%; text-align: right;">
+                    <img src="https://lh3.googleusercontent.com/u/0/d/1V9AKgKbsmg5CNZIdGskpeG4ANBnhCTBP" style="width: 130px; height: auto;">
+                </div>
+            </div>
+            <div style="border-bottom: 1px solid black; margin-bottom: 8px;"></div>
+
+            <div style="text-align: center; margin: 20px 0;">
+                <h1 style="font-size: 12pt; text-decoration: underline; font-weight: bold;">SURAT PERNYATAAN TANGGUNG JAWAB MUTLAK (SPTJM)</h1>
+                <p style="font-size: 10pt; font-weight: bold;">PENERIMAAN PESERTA DIDIK BARU (PPDB) TAHUN 2026</p>
+            </div>
+
+            <p style="font-size: 10pt; margin-bottom: 10px;">Nomor Peserta Pendaftaran : <span id="s-id" style="font-weight: bold;"></span></p>
+            
+            <p style="font-size: 10pt; margin-bottom: 5px;">Yang bertanda tangan di bawah ini:</p>
+            <table class="print-table" style="margin-bottom: 15px;">
+                <tr><td style="width: 30%;">Nama Orang Tua/Wali</td><td style="width: 2%; text-align: center;">:</td><td id="s-ortu-nama" style="font-weight: bold; text-transform: uppercase;"></td></tr>
+                <tr><td>Tahun Lahir</td><td style="text-align: center;">:</td><td id="s-ortu-ttl"></td></tr>
+                <tr><td>Pekerjaan</td><td style="text-align: center;">:</td><td id="s-ortu-kerja" style="text-transform: capitalize;"></td></tr>
+                <tr><td>Alamat</td><td style="text-align: center;">:</td><td id="s-ortu-alamat"></td></tr>
+                <tr><td>Nomor HP</td><td style="text-align: center;">:</td><td id="s-ortu-hp"></td></tr>
+            </table>
+
+            <p style="font-size: 10pt; margin-bottom: 5px;">Selaku orang tua/wali dari calon peserta didik:</p>
+            <table class="print-table" style="margin-bottom: 15px;">
+                <tr><td style="width: 30%;">Nama Anak</td><td style="width: 2%; text-align: center;">:</td><td id="s-anak-nama" style="font-weight: bold; text-transform: uppercase;"></td></tr>
+                <tr><td>Tempat, Tanggal Lahir</td><td style="text-align: center;">:</td><td id="s-anak-ttl"></td></tr>
+                <tr><td>Asal Sekolah</td><td style="text-align: center;">:</td><td id="s-anak-asal" style="text-transform: uppercase;"></td></tr>
+                <tr><td>Alamat</td><td style="text-align: center;">:</td><td id="s-anak-alamat"></td></tr>
+            </table>
+
+            <p style="font-size: 10pt; margin-bottom: 10px;">Dengan ini menyatakan dengan sebenar-benarnya bahwa:</p>
+            <ol style="font-size: 9.5pt; margin-left: 20px; line-height: 1.4; text-align: justify; list-style-type: decimal;">
+                <li>Saya menyerahkan sepenuhnya proses pendidikan, pembinaan, dan tata tertib anak saya kepada pihak sekolah selama menjadi peserta didik di sekolah ini.</li>
+                <li>Saya bersedia mematuhi seluruh peraturan dan ketentuan yang berlaku di sekolah.</li>
+                <li>Saya siap bekerja sama dengan pihak sekolah dalam mendukung pendidikan, kedisiplinan, dan perkembangan karakter anak saya.</li>
+                <li>Apabila di kemudian hari terdapat pelanggaran yang dilakukan oleh anak saya terhadap tata tertib sekolah, maka saya bersedia menerima keputusan dan tindakan yang diberikan oleh pihak sekolah sesuai aturan yang berlaku.</li>
+                <li>Saya menyatakan bahwa seluruh data dan dokumen yang diberikan dalam proses Penerimaan Peserta Didik Baru (PPDB) Tahun 2026 adalah benar dan dapat dipertanggungjawabkan.</li>
+                <li>Saya bersedia apabila ditemukan data yang tidak benar atau tidak sesuai, maka pihak sekolah berhak membatalkan proses pendaftaran atau status penerimaan peserta didik sesuai ketentuan yang berlaku.</li>
+            </ol>
+
+            <p style="font-size: 10pt; margin-top: 15px;">Demikian Surat Pernyataan Tanggung Jawab Mutlak (SPTJM) ini saya buat dengan sadar, tanpa paksaan dari pihak mana pun, untuk dipergunakan sebagaimana mestinya.</p>
+
+            <div style="margin-top: 25px; display: flex; justify-content: space-between; font-size: 10pt;">
+                <div style="text-align: center; width: 220px;">
+                    <p>Mengetahui,</p>
+                    <p>Kepala Sekolah,</p>
+                    <div style="margin: 2px auto; width: 60px; height: 60px;">
+                        <img id="s-qr-ks" src="" style="width: 60px; height: 60px; display: block; margin: 0 auto;">
+                    </div>
+                    <p><strong>NENAH, M.Pd.</strong></p>
+                    <p>NIP. 19800206 200701 2 008</p>
+                </div>
+                <div style="text-align: center; width: 220px;">
+                    <p>Warunggunung, <span id="s-date"></span></p>
+                    <p>Yang Membuat Pernyataan,</p>
+                    <div style="height: 30px;"></div>
+                    <p style="font-size: 7pt; color: #999 !important;">Materai Rp10.000</p>
+                    <div style="height: 30px;"></div>
+                    <p>( <span id="s-ortu-nama-bawah" style="font-weight: bold; text-transform: uppercase;"></span> )</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 40px; padding-top: 8px; border-top: 0.5px solid black; font-size: 7pt; color: #333; line-height: 1.4; display: flex; align-items: center; gap: 15px;">
+                <img src="https://lh3.googleusercontent.com/d/1ur_70TW9DX1I-Iq2GAt0rjPr9xDXT5GF" style="height: 30px; width: auto;">
+                <div>
+                    <p><em><strong>UU ITE No 11 Tahun 2008 Pasal 5 Ayat 1:</strong> "Informasi Elektronik dan/atau Dokumen Elektronik dan/atau hasil cetaknya merupakan alat bukti hukum yang sah."</em></p>
+                    <p>Dokumen ini telah ditandatangani secara elektronik menggunakan sertifikat elektronik yang diterbitkan BSrE</p>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+    <!-- MODAL & SCRIPT -->
+    <div id="modal-ui" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50">
+        <div class="bg-white rounded-2xl p-8 max-w-sm w-full text-center">
+            <div id="modal-icon" class="flex justify-center mb-4"></div>
+            <h3 id="modal-title" class="text-xl font-bold mb-2"></h3>
+            <p id="modal-message" class="text-gray-600 mb-6"></p>
+            <button onclick="closeModal()" class="w-full bg-blue-700 text-white py-3 rounded-xl font-bold">Tutup</button>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO2f1gpvDBxQM3b9CR5FqSdTP5vtazDgdU0w-zR5CbRJ4OllYHHHxxrq8veX5_sqOF/exec";
+        let allRecords = [];
+
+        const toDMY = (dateStr) => {
+            if (!dateStr || !dateStr.includes('-')) return dateStr;
+            const parts = dateStr.split('-');
+            if (parts[0].length === 2) return dateStr; 
+            return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        };
+
+        const toYMD = (dateStr) => {
+            if (!dateStr || !dateStr.includes('-')) return dateStr;
+            const parts = dateStr.split('-');
+            if (parts[0].length === 4) return dateStr; 
+            return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        };
+
+        window.onload = async () => {
+            lucide.createIcons();
+            await loadData();
+            checkAutoLogin();
+        };
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+        }
+
+        function calculateAge() {
+            const birthDateInput = document.getElementById('f-tgl-lahir').value;
+            if (!birthDateInput) return;
+
+            const birthDate = new Date(birthDateInput);
+            const today = new Date();
+            
+            let years = today.getFullYear() - birthDate.getFullYear();
+            let months = today.getMonth() - birthDate.getMonth();
+            
+            if (months < 0 || (months === 0 && today.getDate() < birthDate.getDate())) {
+                years--;
+                months += 12;
+            }
+
+            document.getElementById('f-umur').value = `${years} Tahun ${months} Bulan`;
+        }
+
+        function generateNextID() {
+            if (allRecords.length === 0) {
+                document.getElementById('f-id').value = "PPDB-2627-01";
+            } else {
+                const ids = allRecords.map(r => parseInt(r.id?.split('-').pop()) || 0);
+                const nextNum = Math.max(...ids, 0) + 1;
+                document.getElementById('f-id').value = "PPDB-2627-" + nextNum.toString().padStart(2, '0');
+            }
+        }
+
+        async function loadData() {
+            try {
+                toggleLoader(true);
+                const res = await fetch(`${SCRIPT_URL}?action=readAll&sheet=pendaftar`);
+                const data = await res.json();
+                if (data.status === "sukses") {
+                    allRecords = data.records || [];
+                    renderRecords(allRecords);
+                    generateNextID();
+                }
+            } catch (err) { console.error(err); } finally { toggleLoader(false); }
+        }
+
+        function renderRecords(records) {
+            const tbody = document.getElementById('dataTableBody');
+            tbody.innerHTML = '';
+            document.getElementById('record-count').innerText = `${records.length} Total Siswa`;
+            records.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-4 flex gap-2">
+                        <button onclick='printTicket(${JSON.stringify(item)})' class="p-1.5 bg-gray-50 text-gray-600 rounded-lg hover:bg-black hover:text-white" title="Cetak"><i data-lucide="printer" class="w-4 h-4"></i></button>
+                    </td>
+                    <td class="p-4 font-mono font-bold text-blue-700">${item.id}</td>
+                    <td class="p-4 font-bold uppercase">${item.nama}</td>
+                    <td class="p-4 text-gray-600">${item.umur || '-'}</td>
+                    <td class="p-4 text-xs uppercase text-gray-500">${item.asal_sekolah || '-'}</td>
+                    <td class="p-4 font-medium text-green-700">${item.telp || '-'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            lucide.createIcons();
+        }
+
+        function printTicket(item) {
+            const formatTgl = (str) => {
+                if (!str || str === '-' || str === '0') return '-';
+                const d = new Date(toYMD(str));
+                if (isNaN(d.getTime())) return str.split('T')[0]; 
+                const bln = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                return `${d.getDate()} ${bln[d.getMonth()]} ${d.getFullYear()}`;
+            };
+            const tglLahirFormatted = formatTgl(item.tgl_lahir);
+
+            document.getElementById('p-id').innerText = item.id;
+            document.getElementById('p-nik').innerText = item.nik;
+            document.getElementById('p-nisn').innerText = item.nisn || '0';
+            document.getElementById('p-nama').innerText = item.nama;
+            document.getElementById('p-jk').innerText = item.jk === 'L' ? 'Laki-laki' : 'Perempuan';
+            document.getElementById('p-ttl').innerText = `${item.tempat_lahir || '-'}, ${tglLahirFormatted}`;
+            document.getElementById('p-alamat').innerText = item.alamat || '0';
+            document.getElementById('p-rtrw').innerText = `${item.rt_nya || '0'} / ${item.rw_nya || '0'}`;
+            document.getElementById('p-kecamatan').innerText = item.kecamatan || '0';
+            document.getElementById('p-kelurahan').innerText = item.kelurahan || '0';
+            document.getElementById('p-asal').innerText = item.asal_sekolah || '0';
+            document.getElementById('p-ibu').innerText = item.ibu || '0';
+            document.getElementById('p-telp').innerText = item.telp || '0';
+            
+            // Menampilkan Tanggal Pendaftaran yang diambil dari Spreadsheet (kolom time_added)
+            document.getElementById('p-tgl-daftar').innerText = item.time_added ? item.time_added.split(',')[0] : "-";
+
+            document.getElementById('s-id').innerText = item.id;
+
+            let oNama = "-", oTahun = "-", oKerja = "-";
+            if (item.ayah && item.ayah.trim() !== "") {
+                oNama = item.ayah;
+                oTahun = item.tahun_ayah || "-";
+                oKerja = item.pekerjaan_ayah || "-";
+            } else if (item.ibu && item.ibu.trim() !== "") {
+                oNama = item.ibu;
+                oTahun = item.tahun_ibu || "-";
+                oKerja = item.pekerjaan_ibu || "-";
+            }
+
+            document.getElementById('s-ortu-nama').innerText = oNama;
+            document.getElementById('s-ortu-ttl').innerText = oTahun;
+            document.getElementById('s-ortu-kerja').innerText = oKerja;
+            document.getElementById('s-ortu-alamat').innerText = item.alamat || '-';
+            document.getElementById('s-ortu-hp').innerText = item.telp || '-';
+            document.getElementById('s-anak-nama').innerText = item.nama;
+            document.getElementById('s-anak-ttl').innerText = `${item.tempat_lahir || '-'}, ${tglLahirFormatted}`;
+            document.getElementById('s-anak-asal').innerText = item.asal_sekolah || '-';
+            document.getElementById('s-anak-alamat').innerText = item.alamat || '-';
+            document.getElementById('s-ortu-nama-bawah').innerText = oNama;
+            document.getElementById('p-ortu-nama-bawah').innerText = oNama;
+
+            // --- INTEGRASI TANGGAL PENDAFTAR DARI SPREADSHEET (time_added) ---
+            let regDate = new Date(); // Fallback jika tidak ada data time_added
+            if (item.time_added) {
+                const cleanTime = item.time_added.trim();
+                const dateOnlyString = cleanTime.split(',')[0]; // Ambil bagian tanggal saja, e.g., "20/5/2026"
+                
+                // Asumsikan format DD/MM/YYYY dari toLocaleString('id-ID')
+                const parts = dateOnlyString.split('/'); 
+                
+                if (parts.length === 3) {
+                    const d = parseInt(parts[0], 10);
+                    const m = parseInt(parts[1], 10) - 1; // Bulan adalah 0-indexed
+                    const y = parseInt(parts[2], 10);
+                    
+                    const tempDate = new Date(y, m, d); // Buat objek Date
+                    if (!isNaN(tempDate.getTime())) {
+                        regDate = tempDate;
+                    }
+                } else {
+                    // Fallback untuk format lain yang mungkin, coba parsing langsung
+                    // Ini akan mencoba mengurai string tanggal seperti "YYYY-MM-DD" atau "MM/DD/YYYY"
+                    // jika format DD/MM/YYYY tidak berhasil.
+                    const tempDate = new Date(dateOnlyString);
+                    if (!isNaN(tempDate.getTime())) {
+                        regDate = tempDate;
+                    }
                 }
             }
+
+            // Atur Tanggal Tanda Tangan Cetakan dengan Tanggal Pendaftaran dari Spreadsheet
+            const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            document.getElementById('p-date').innerText = `${regDate.getDate()} ${months[regDate.getMonth()]} ${regDate.getFullYear()}`;
+            document.getElementById('s-date').innerText = `${regDate.getDate()} ${months[regDate.getMonth()]} ${regDate.getFullYear()}`;
+            
+            const regDateFormatted = `${regDate.getDate()} ${months[regDate.getMonth()]} ${regDate.getFullYear()}`;
+            document.getElementById('p-date').innerText = regDateFormatted;
+            document.getElementById('s-date').innerText = regDateFormatted;
+
+            const driveFileId = "10NDYq48XXBawXsfZTQ74qLgu6eTbObUo"; 
+            const ksSignatureId = "1mqZujjT7uQCCs2jC29pQg82Lx6pvFVlc"; 
+            
+            const qrImg = document.getElementById('p-qr-validasi');
+            const ksQrImg = document.getElementById('s-qr-ks');
+            
+            let imgsLoaded = 0;
+            const checkLoaded = () => {
+                imgsLoaded++;
+                if (imgsLoaded === 2) setTimeout(() => { window.print(); }, 500);
+            };
+
+            // Pasang listener SEBELUM menentukan .src untuk menghindari race condition
+            qrImg.onload = checkLoaded;
+            ksQrImg.onload = checkLoaded;
+            qrImg.onerror = () => {
+                console.error("QR Panitia gagal dimuat");
+                checkLoaded(); // Tetap jalankan print meski gambar gagal
+            };
+            ksQrImg.onerror = () => {
+                console.error("TTD KS gagal dimuat");
+                checkLoaded(); // Tetap jalankan print meski gambar gagal
+            };
+
+            qrImg.src = "https://lh3.googleusercontent.com/d/" + driveFileId;
+            ksQrImg.src = "https://lh3.googleusercontent.com/d/" + ksSignatureId;
         }
         
-        // Format: "2026-05-20 10:30:45"
-        if (cleanDate.includes('-') && cleanDate.includes(' ')) {
-            const parts = cleanDate.split(' ')[0].split('-');
-            if (parts.length === 3) {
-                const year = parseInt(parts[0], 10);
-                const month = parseInt(parts[1], 10) - 1;
-                const day = parseInt(parts[2], 10);
-                const parsed = new Date(year, month, day);
-                if (!isNaN(parsed.getTime())) {
-                    return parsed;
+        async function handleSubmit(e) {
+            e.preventDefault();
+            toggleLoader(true);
+            document.getElementById('f-time_added').value = new Date().toLocaleString('id-ID');
+            
+            try {
+                const formData = new FormData(e.target);
+                if (formData.get('tgl_lahir')) formData.set('tgl_lahir', toDMY(formData.get('tgl_lahir')));
+                
+                const params = new URLSearchParams(formData);
+                const response = await fetch(`${SCRIPT_URL}?${params.toString()}`);
+                const res = await response.json();
+                if (res.status === "sukses") {
+                    showUI("Berhasil!", "Data calon siswa telah diamankan di sistem.", "success");
+                    resetForm();
+                    await loadData();
+                    switchTab('table');
+                }
+            } catch (err) { showUI("Error", "Gagal menghubungi database.", "error"); } finally { toggleLoader(false); }
+        }
+
+        function editRecord(item) {
+            switchTab('form');
+            document.getElementById('form-action').value = 'update';
+            document.getElementById('form-title').innerText = 'Edit Data Siswa: ' + item.nama;
+            const form = document.getElementById('regForm');
+            for (let i = 0; i < form.elements.length; i++) {
+                const el = form.elements[i];
+                if (el.name && item[el.name] !== undefined) {
+                    if (el.type === 'date') {
+                        el.value = toYMD(item[el.name]);
+                    } else {
+                        el.value = item[el.name];
+                    }
                 }
             }
-        }
-        
-        // Coba parse langsung
-        const parsed = new Date(cleanDate);
-        if (!isNaN(parsed.getTime())) {
-            return parsed;
-        }
-    } catch (e) {
-        console.error('Error parsing date:', dateString, e);
-    }
-    
-    return new Date(); // Fallback
-}
-
-/**
- * Set nilai tanggal ke input field form
- * Format yang diharapkan: YYYY-MM-DD (untuk input type="date")
- */
-function setDateToFormField(dateObj, fieldId = 'f-tgl-lahir') {
-    if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) {
-        dateObj = new Date();
-    }
-    
-    // Format untuk input type="date": YYYY-MM-DD
-    const year = dateObj.getFullYear();
-    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const day = String(dateObj.getDate()).padStart(2, '0');
-    
-    const formattedDate = `${year}-${month}-${day}`;
-    
-    const field = document.getElementById(fieldId);
-    if (field) {
-        field.value = formattedDate;
-        
-        // Trigger change event untuk calculate age
-        if (typeof calculateAge === 'function') {
             calculateAge();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+
+        function toggleLoader(show) { document.getElementById('loader').classList.toggle('hidden', !show); }
+        function showUI(title, msg, type) {
+            const icons = {
+                success: '<div class="bg-green-100 p-4 rounded-full text-green-600"><i data-lucide="check-circle"></i></div>',
+                error: '<div class="bg-red-100 p-4 rounded-full text-red-600"><i data-lucide="x-circle"></i></div>'
+            };
+            document.getElementById('modal-icon').innerHTML = icons[type] || '';
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = msg;
+            document.getElementById('modal-ui').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function closeModal() { document.getElementById('modal-ui').classList.add('hidden'); }
+        function resetForm() {
+            document.getElementById('regForm').reset();
+            document.getElementById('form-action').value = 'insert';
+            document.getElementById('form-title').innerText = 'Pendaftaran Siswa Baru';
+            generateNextID();
+        }
+        function filterTable() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allRecords.filter(r => 
+                (r.nama && r.nama.toLowerCase().includes(q)) || (r.nik && r.nik.toString().includes(q))
+            );
+            renderRecords(filtered);
+        }
+
+        function openLoginModal() { document.getElementById('login-ui').classList.remove('hidden'); lucide.createIcons(); }
+        function closeLoginModal() { document.getElementById('login-ui').classList.add('hidden'); document.getElementById('login-nik').value = ''; }
         
-        return true;
-    }
-    
-    return false;
-}
-
-/**
- * Initialize: Fetch dan set tanggal saat halaman dimuat
- */
-async function initializeDateFromSheet() {
-    const date = await fetchLatestDateFromSheet();
-    setDateToFormField(date, 'f-tgl-lahir');
-}
-
-/**
- * Refresh tanggal dengan tombol (optional)
- */
-async function refreshDateFromSheet() {
-    const loader = document.getElementById('loader');
-    if (loader) {
-        loader.classList.remove('hidden');
-    }
-    
-    try {
-        const date = await fetchLatestDateFromSheet();
-        const success = setDateToFormField(date, 'f-tgl-lahir');
-        
-        // Tampilkan notifikasi
-        if (success) {
-            showNotification('Tanggal berhasil diambil dari Google Sheet!', 'success');
+        function handleLogin() {
+            const nikInput = document.getElementById('login-nik').value;
+            if (!nikInput) return showUI("Peringatan", "Silakan masukkan NIK Anda.", "error");
+            
+            const student = allRecords.find(r => r.nik == nikInput);
+            if (student) {
+                closeLoginModal();
+                editRecord(student); 
+                showUI("Login Berhasil", `Selamat datang kembali, ${student.nama}. Silakan periksa atau lengkapi data Anda.`, "success");
+            } else {
+                showUI("Gagal Login", "NIK tidak ditemukan. Pastikan Anda sudah mendaftar sebelumnya.", "error");
+            }
         }
-    } catch (error) {
-        console.error('Error refreshing date:', error);
-        showNotification('Gagal mengambil tanggal dari Google Sheet', 'error');
-    } finally {
-        if (loader) {
-            loader.classList.add('hidden');
+
+        function checkAutoLogin() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const nik = urlParams.get('nik');
+            if (nik) {
+                document.getElementById('login-nik').value = nik;
+                handleLogin();
+            }
         }
-    }
-}
-
-/**
- * Helper: Tampilkan notifikasi ke user
- */
-function showNotification(message, type = 'info') {
-    // Gunakan modal yang sudah ada atau alert
-    const modalTitle = document.getElementById('modal-title');
-    const modalMessage = document.getElementById('modal-message');
-    const modalIcon = document.getElementById('modal-icon');
-    
-    if (modalTitle && modalMessage) {
-        modalTitle.textContent = type === 'success' ? '✓ Berhasil' : '⚠ Informasi';
-        modalMessage.textContent = message;
-        
-        // Update warna berdasarkan tipe
-        const modal = document.getElementById('modal-ui');
-        if (modal) {
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 3000);
-        }
-    } else {
-        alert(message);
-    }
-}
-
-/**
- * Auto-trigger saat DOM ready
- */
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeDateFromSheet);
-} else {
-    initializeDateFromSheet();
-}
-
-// Export untuk digunakan di file lain
-window.fetchLatestDateFromSheet = fetchLatestDateFromSheet;
-window.setDateToFormField = setDateToFormField;
-window.refreshDateFromSheet = refreshDateFromSheet;
-window.initializeDateFromSheet = initializeDateFromSheet;
+    </script>
+</body>
+</html>
