@@ -914,6 +914,9 @@
             document.getElementById('p-ibu').innerText = item.ibu || '0';
             document.getElementById('p-telp').innerText = item.telp || '0';
             
+            // Menampilkan Tanggal Pendaftaran yang diambil dari Spreadsheet (kolom time_added)
+            document.getElementById('p-tgl-daftar').innerText = item.time_added ? item.time_added.split(',')[0] : "-";
+
             document.getElementById('s-id').innerText = item.id;
 
             let oNama = "-", oTahun = "-", oKerja = "-";
@@ -943,27 +946,25 @@
             let regDate = new Date(); // Fallback jika tidak ada data time_added
             if (item.time_added) {
                 const cleanTime = item.time_added.trim();
-                const datePart = cleanTime.split(' ')[0]; // Ambil bagian tanggal
-                const parts = datePart.split(/[\/\-\.]/);
+                const dateOnlyString = cleanTime.split(',')[0]; // Ambil bagian tanggal saja, e.g., "20/5/2026"
+                
+                // Asumsikan format DD/MM/YYYY dari toLocaleString('id-ID')
+                const parts = dateOnlyString.split('/'); 
                 
                 if (parts.length === 3) {
-                    let d = parseInt(parts[0], 10);
-                    let m = parseInt(parts[1], 10) - 1;
-                    let y = parseInt(parts[2], 10);
+                    const d = parseInt(parts[0], 10);
+                    const m = parseInt(parts[1], 10) - 1; // Bulan adalah 0-indexed
+                    const y = parseInt(parts[2], 10);
                     
-                    // Antisipasi jika format tanggal ISO (YYYY-MM-DD)
-                    if (parts[0].length === 4) {
-                        y = parseInt(parts[0], 10);
-                        m = parseInt(parts[1], 10) - 1;
-                        d = parseInt(parts[2], 10);
-                    }
-                    
-                    const tempDate = new Date(y, m, d);
+                    const tempDate = new Date(y, m, d); // Buat objek Date
                     if (!isNaN(tempDate.getTime())) {
                         regDate = tempDate;
                     }
                 } else {
-                    const tempDate = new Date(cleanTime);
+                    // Fallback untuk format lain yang mungkin, coba parsing langsung
+                    // Ini akan mencoba mengurai string tanggal seperti "YYYY-MM-DD" atau "MM/DD/YYYY"
+                    // jika format DD/MM/YYYY tidak berhasil.
+                    const tempDate = new Date(dateOnlyString);
                     if (!isNaN(tempDate.getTime())) {
                         regDate = tempDate;
                     }
@@ -1000,6 +1001,10 @@
             const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
             document.getElementById('p-date').innerText = `${regDate.getDate()} ${months[regDate.getMonth()]} ${regDate.getFullYear()}`;
             document.getElementById('s-date').innerText = `${regDate.getDate()} ${months[regDate.getMonth()]} ${regDate.getFullYear()}`;
+            
+            const regDateFormatted = `${regDate.getDate()} ${months[regDate.getMonth()]} ${regDate.getFullYear()}`;
+            document.getElementById('p-date').innerText = regDateFormatted;
+            document.getElementById('s-date').innerText = regDateFormatted;
 
             const driveFileId = "10NDYq48XXBawXsfZTQ74qLgu6eTbObUo"; 
             const ksSignatureId = "1mqZujjT7uQCCs2jC29pQg82Lx6pvFVlc"; 
