@@ -840,6 +840,7 @@
         function renderRecords(records) {
             const tbody = document.getElementById('dataTableBody');
             tbody.innerHTML = '';
+            document.getElementById('record-count').innerText = `${records.length} Total Siswa`;
             records.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
