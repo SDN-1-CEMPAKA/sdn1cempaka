@@ -626,6 +626,11 @@
                 <td style="border-left: none; border-right: none; text-align: center;">:</td>
                 <td id="p-telp" style="border-left: none;"></td>
             </tr>
+            <tr>
+                <td style="border-right: none;">Tanggal Pendaftaran</td>
+                <td style="border-left: none; border-right: none; text-align: center;">:</td>
+                <td id="p-tgl-daftar" style="border-left: none; font-weight: bold;"></td>
+            </tr>
         </table>
 
         <!-- CATATAN -->
@@ -882,6 +887,9 @@
             document.getElementById('p-asal').innerText = item.asal_sekolah || '0';
             document.getElementById('p-ibu').innerText = item.ibu || '0';
             document.getElementById('p-telp').innerText = item.telp || '0';
+
+            // Menampilkan Tanggal Pendaftaran yang diambil dari Spreadsheet (kolom time_added)
+            document.getElementById('p-tgl-daftar').innerText = item.time_added ? item.time_added.split(',')[0] : "-";
             
             // Isi data ke dalam SPTJM
             document.getElementById('s-id').innerText = item.id;
@@ -923,10 +931,12 @@
             qrImg.src = "https://lh3.googleusercontent.com/d/" + driveFileId;
             ksQrImg.src = "https://lh3.googleusercontent.com/d/" + ksSignatureId;
 
-            const now = new Date();
             const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-            document.getElementById('p-date').innerText = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-            document.getElementById('s-date').innerText = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+            
+            // Menggunakan tanggal dari spreadsheet untuk area tanda tangan agar konsisten
+            const regDate = item.time_added ? item.time_added.split(',')[0] : `${new Date().getDate()} ${months[new Date().getMonth()]} ${new Date().getFullYear()}`;
+            document.getElementById('p-date').innerText = regDate;
+            document.getElementById('s-date').innerText = regDate;
             
             // Menunggu kedua gambar (Panitia & KS) dimuat sebelum memicu perintah cetak
             let imgsLoaded = 0;
