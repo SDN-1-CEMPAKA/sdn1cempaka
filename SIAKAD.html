@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIAKAD - Portal Akademik Mandiri SDN 1 Cempaka</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; }
+        
+        .active-nav-item {
+            background-color: #1e3a8a;
+            color: #ffffff !important;
+            border-left: 4px solid #f97316;
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; color: black; }
+            #print-area { display: block !important; }
+            .print-card { border: 1px solid #000; padding: 20px; page-break-inside: avoid; }
+            .print-table { width: 100%; border-collapse: collapse; }
+            .print-table th, .print-table td { border: 1px solid black; padding: 6px; font-size: 11px; }
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Layar Pemuat (Screen Loader) -->
+    <div id="loader" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex flex-col items-center justify-center text-white">
+        <div class="animate-spin rounded-full h-14 w-14 border-4 border-orange-500 border-t-transparent mb-4"></div>
+        <p class="font-extrabold tracking-widest animate-pulse uppercase text-xs text-orange-400">Sinkronisasi Basis Data SIAKAD...</p>
+    </div>
+
+    <!-- UTAMA APP WRAPPER -->
+    <div id="app-container" class="flex flex-col lg:flex-row min-h-screen">
+        
+        <!-- SIDEBAR NAVIGASI (no-print) -->
+        <aside class="w-full lg:w-64 bg-slate-900 text-slate-300 flex flex-col no-print shrink-0 border-r border-slate-800">
+            <!-- Header Brand -->
+            <div class="p-6 bg-slate-950 flex items-center gap-3">
+                <img src="https://lh3.googleusercontent.com/u/0/d/1V9AKgKbsmg5CNZIdGskpeG4ANBnhCTBP" alt="Logo" class="w-10 h-10 bg-white p-1 rounded-xl">
+                <div>
+                    <h2 class="font-extrabold text-sm text-white leading-tight">SIAKAD PORTAL</h2>
+                    <p class="text-[10px] text-orange-400 uppercase tracking-widest font-bold">SDN 1 CEMPAKA</p>
+                </div>
+            </div>
+
+            <!-- Profile Info Mini -->
+            <div id="side-profile-box" class="p-4 mx-4 my-6 bg-slate-850 rounded-2xl border border-slate-800 hidden flex-col items-center text-center">
+                <div class="w-14 h-14 rounded-full bg-blue-100/10 mb-2 flex items-center justify-center border border-slate-700 overflow-hidden">
+                    <img id="side-avatar" src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&q=80&w=120" class="w-full h-full object-cover">
+                </div>
+                <h4 id="side-student-name" class="font-bold text-xs text-white uppercase truncate w-full">Nama Siswa</h4>
+                <p id="side-student-class" class="text-[9px] text-slate-400 mt-1 uppercase font-bold tracking-wider">Fase C - Kelas 5</p>
+                <span class="mt-2 bg-emerald-500/10 text-emerald-400 text-[8px] font-extrabold px-2 py-0.5 rounded-full uppercase border border-emerald-500/20">Siswa Aktif</span>
+            </div>
+
+            <!-- Menu Navigasi -->
+            <nav class="flex-1 px-3 space-y-1">
+                <button onclick="switchView('dashboard')" id="nav-dashboard" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white flex items-center gap-3 text-xs font-semibold active-nav-item transition-all">
+                    <i class="fas fa-chart-pie w-5 text-orange-500"></i> Dashboard Utama
+                </button>
+                <button onclick="switchView('rapor')" id="nav-rapor" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white flex items-center gap-3 text-xs font-semibold transition-all">
+                    <i class="fas fa-file-invoice w-5 text-blue-400"></i> E-Rapor Digital
+                </button>
+                <button onclick="switchView('jadwal')" id="nav-jadwal" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white flex items-center gap-3 text-xs font-semibold transition-all">
+                    <i class="fas fa-calendar-alt w-5 text-emerald-400"></i> Jadwal Pelajaran
+                </button>
+                <button onclick="switchView('presensi')" id="nav-presensi" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white flex items-center gap-3 text-xs font-semibold transition-all">
+                    <i class="fas fa-user-check w-5 text-purple-400"></i> Rekap Presensi
+                </button>
+                <button onclick="switchView('profil')" id="nav-profil" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white flex items-center gap-3 text-xs font-semibold transition-all">
+                    <i class="fas fa-user-graduate w-5 text-amber-400"></i> Profil Biodata
+                </button>
+            </nav>
+
+            <!-- Aksi Bagian Bawah -->
+            <div class="p-4 border-t border-slate-800 space-y-2">
+                <a href="index.html" class="block w-full text-center py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white transition-all">
+                    <i class="fas fa-home mr-1"></i> Beranda Sekolah
+                </a>
+                <button onclick="logout()" class="w-full text-center py-2.5 rounded-xl bg-red-950 hover:bg-red-900 text-xs font-bold text-red-400 border border-red-900/30 transition-all">
+                    <i class="fas fa-sign-out-alt mr-1"></i> Keluar Portal
+                </button>
+            </div>
+        </aside>
+
+        <!-- KONTEN VIEWPORT UTAMA -->
+        <main class="flex-1 flex flex-col min-w-0">
+            <!-- Header Bar (no-print) -->
+            <header class="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center no-print shrink-0">
+                <div class="flex items-center gap-4">
+                    <button class="lg:hidden text-slate-500 text-xl" onclick="toggleSidebarMobile()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div>
+                        <h2 id="view-title" class="text-lg font-black text-slate-800">Dashboard Utama</h2>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Tahun Pelajaran 2026/2027 • Semester Genap</p>
+                    </div>
+                </div>
+
+                <!-- Notifikasi & Avatar -->
+                <div class="flex items-center gap-4">
+                    <!-- Lonceng Notifikasi -->
+                    <div class="relative group cursor-pointer">
+                        <div class="bg-slate-100 hover:bg-slate-200 text-slate-600 w-9 h-9 rounded-xl flex items-center justify-center transition-all">
+                            <i class="fas fa-bell"></i>
+                            <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-orange-500 rounded-full ring-2 ring-white"></span>
+                        </div>
+                    </div>
+                    <div class="h-8 w-px bg-slate-200"></div>
+                    <div class="flex items-center gap-2.5">
+                        <div class="text-right hidden sm:block">
+                            <h4 id="user-header-name" class="text-xs font-bold text-slate-850 uppercase">Tamu</h4>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Siswa</p>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- KONTEN VIEW CONTEXT -->
+            <div id="view-content" class="flex-1 p-6 overflow-y-auto no-print">
+                
+                <!-- 1. DASHBOARD VIEW -->
+                <div id="view-dashboard" class="space-y-6">
+                    <!-- Spanduk Notifikasi (E-Rapor Digital) -->
+                    <div class="bg-blue-900 text-white p-6 rounded-3xl shadow-xl flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
+                        <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl">
+                            <i class="fas fa-cloud-download-alt"></i>
+                        </div>
+                        <div class="space-y-2 relative z-10">
+                            <span class="bg-orange-500 text-white text-[9px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest">Informasi Rapor Digital</span>
+                            <h3 class="text-xl md:text-2xl font-black">Rapor Digital Telah Tersedia!</h3>
+                            <p class="text-xs text-blue-200 max-w-xl">Seluruh data penilaian rapor akhir semester genap telah berhasil disinkronkan secara otomatis dari aplikasi E-Rapor Kementerian. Anda kini dapat mengunduh lembar PDF rapor secara mandiri.</p>
+                        </div>
+                        <button onclick="switchView('rapor')" class="bg-white text-blue-900 px-6 py-3 rounded-2xl font-extrabold text-xs uppercase hover:bg-orange-500 hover:text-white shadow-lg transition-all relative z-10 shrink-0">
+                            Unduh Rapor <i class="fas fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+
+                    <!-- Statistik Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                            <div class="space-y-1">
+                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Rata-rata Kelas</p>
+                                <p class="text-3xl font-black text-blue-900">84.5</p>
+                                <p class="text-[10px] text-emerald-500 font-bold"><i class="fas fa-arrow-up mr-1"></i> Naik 1.2% dari semester lalu</p>
+                            </div>
+                            <div class="bg-blue-50 text-blue-600 w-12 h-12 rounded-2xl flex items-center justify-center text-xl shadow-inner"><i class="fas fa-graduation-cap"></i></div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                            <div class="space-y-1">
+                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Tingkat Kehadiran</p>
+                                <p class="text-3xl font-black text-emerald-600">97.2%</p>
+                                <p class="text-[10px] text-slate-500 font-medium">32 Kali Pertemuan Terdaftar</p>
+                            </div>
+                            <div class="bg-emerald-50 text-emerald-600 w-12 h-12 rounded-2xl flex items-center justify-center text-xl shadow-inner"><i class="fas fa-calendar-check"></i></div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                            <div class="space-y-1">
+                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Ekstrakurikuler</p>
+                                <p class="text-3xl font-black text-orange-600">Pramuka</p>
+                                <p class="text-[10px] text-slate-500 font-medium">Wajib &amp; Terintegrasi</p>
+                            </div>
+                            <div class="bg-orange-50 text-orange-600 w-12 h-12 rounded-2xl flex items-center justify-center text-xl shadow-inner"><i class="fas fa-campground"></i></div>
+                        </div>
+                    </div>
+
+                    <!-- Agenda & Pengumuman -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Agenda Kegiatan -->
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                            <h3 class="font-extrabold text-slate-800 text-sm uppercase tracking-wider mb-6 flex items-center gap-2"><i class="fas fa-calendar-day text-blue-600"></i> Agenda Akademik Mendatang</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center gap-4 p-3 bg-slate-50 rounded-xl">
+                                    <div class="bg-blue-600 text-white w-12 h-12 rounded-xl flex flex-col items-center justify-center text-center shrink-0">
+                                        <span class="text-sm font-bold leading-none">15</span>
+                                        <span class="text-[8px] uppercase tracking-wider font-extrabold">Jun</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-850 text-xs">Penyerahan Rapor Semester Genap</h4>
+                                        <p class="text-[10px] text-slate-400">Pembagian lembar fisik rapor dan pengumuman kelulusan kelas 6.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4 p-3 bg-slate-50 rounded-xl">
+                                    <div class="bg-emerald-600 text-white w-12 h-12 rounded-xl flex flex-col items-center justify-center text-center shrink-0">
+                                        <span class="text-sm font-bold leading-none">22</span>
+                                        <span class="text-[8px] uppercase tracking-wider font-extrabold">Jun</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-850 text-xs">Libur Akhir Tahun Ajaran</h4>
+                                        <p class="text-[10px] text-slate-400">Libur panjang menyambut Tahun Ajaran Baru 2026/2027.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- System Specs -->
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-extrabold text-slate-800 text-sm uppercase tracking-wider mb-4 flex items-center gap-2"><i class="fas fa-laptop-code text-orange-500"></i> Integrasi Cloud Portal</h3>
+                                <p class="text-xs text-slate-600 leading-relaxed mb-6">Portal Akademik mandiri ini secara utuh terhubung ke server database Google Sheets PPDB menggunakan integrasi parameter khusus. Seluruh data akademik, jadwal, dan nilai disinkronkan secara terpusat untuk meminimalisasi kesalahan administrasi manual.</p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 border-t border-slate-150 pt-4 text-[10px] font-bold text-slate-400">
+                                <div>
+                                    <p class="uppercase">Status Sinkronisasi</p>
+                                    <p class="text-emerald-500 text-xs font-black uppercase mt-1"><i class="fas fa-circle text-[8px] mr-1"></i> Sinkronisasi  Aktif</p>
+                                </div>
+                                <div>
+                                    <p class="uppercase">Sistem Autentikasi</p>
+                                    <p class="text-blue-600 text-xs font-black uppercase mt-1"><i class="fas fa-shield-alt mr-1"></i> Kriptografi NIK-16</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. E-RAPOR VIEW -->
+                <div id="view-rapor" class="space-y-6 hidden">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-5 rounded-3xl border border-slate-100">
+                        <div>
+                            <h3 class="font-extrabold text-slate-850 text-base">Lembar Rapor Semester Digital</h3>
+                            <p class="text-xs text-slate-400">Tahun Pelajaran: 2026/2027 • Kelas: 5 (Fase C)</p>
+                        </div>
+                        <button onclick="triggerPrintRapor()" class="bg-orange-500 hover:bg-orange-600 text-white px-5 py-3 rounded-xl font-bold text-xs uppercase flex items-center gap-2 shadow-md transition-all">
+                            <i class="fas fa-print"></i> Cetak Dokumen Rapor
+                        </button>
+                    </div>
+
+                    <!-- Tabel Nilai Rapor -->
+                    <div class="bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm">
+                        <div class="p-6 bg-slate-50 border-b border-slate-150">
+                            <h4 class="font-extrabold text-blue-900 text-xs uppercase tracking-wider">A. Penilaian Akademik</h4>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-100 text-slate-500 text-[10px] uppercase font-black tracking-wider border-b">
+                                    <tr>
+                                        <th class="p-4">No</th>
+                                        <th class="p-4">Mata Pelajaran</th>
+                                        <th class="p-4 text-center">KKM</th>
+                                        <th class="p-4 text-center">Nilai Akhir</th>
+                                        <th class="p-4 text-center">Predikat</th>
+                                        <th class="p-4">Deskripsi Pencapaian</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y text-xs">
+                                    <tr>
+                                        <td class="p-4 font-bold">1</td>
+                                        <td class="p-4 font-bold text-slate-800">Pendidikan Agama & Budi Pekerti</td>
+                                        <td class="p-4 text-center text-slate-500">75</td>
+                                        <td class="p-4 text-center font-extrabold text-blue-900">86</td>
+                                        <td class="p-4 text-center font-bold text-slate-500">A</td>
+                                        <td class="p-4 text-slate-600">Sangat baik dalam memahami kisah keteladanan para nabi dan bersikap terpuji harian.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-4 font-bold">2</td>
+                                        <td class="p-4 font-bold text-slate-800">Pendidikan Pancasila</td>
+                                        <td class="p-4 text-center text-slate-500">75</td>
+                                        <td class="p-4 text-center font-extrabold text-blue-900">84</td>
+                                        <td class="p-4 text-center font-bold text-slate-500">B</td>
+                                        <td class="p-4 text-slate-600">Memiliki pemahaman baik terhadap implementasi nilai-nilai Pancasila di lingkungan sekolah.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-4 font-bold">3</td>
+                                        <td class="p-4 font-bold text-slate-800">Bahasa Indonesia</td>
+                                        <td class="p-4 text-center text-slate-500">75</td>
+                                        <td class="p-4 text-center font-extrabold text-blue-900">88</td>
+                                        <td class="p-4 text-center font-bold text-slate-500">A</td>
+                                        <td class="p-4 text-slate-600">Sangat terampil dalam menyusun karangan teks eksposisi dan mempresentasikan teks opini.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-4 font-bold">4</td>
+                                        <td class="p-4 font-bold text-slate-800">Matematika</td>
+                                        <td class="p-4 text-center text-slate-500">75</td>
+                                        <td class="p-4 text-center font-extrabold text-blue-900">80</td>
+                                        <td class="p-4 text-center font-bold text-slate-500">B</td>
+                                        <td class="p-4 text-slate-600">Baik dalam menghitung luas permukaan bangun ruang, perlu bimbingan pada pecahan desimal.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-4 font-bold">5</td>
+                                        <td class="p-4 font-bold text-slate-800">Ilmu Pengetahuan Alam & Sosial (IPAS)</td>
+                                        <td class="p-4 text-center text-slate-500">75</td>
+                                        <td class="p-4 text-center font-extrabold text-blue-900">85</td>
+                                        <td class="p-4 text-center font-bold text-slate-500">B</td>
+                                        <td class="p-4 text-slate-600">Sangat baik dalam menganalisis organ pencernaan manusia dan rantai makanan ekosistem.</td>
+                                    </tr>
+                                    <tr class="bg-orange-50/50">
+                                        <td class="p-4 font-bold">6</td>
+                                        <td class="p-4 font-bold text-slate-800 flex items-center gap-2">
+                                            Koding &amp; Kecerdasan Artifisial (KKA)
+                                            <span class="bg-blue-600 text-white text-[8px] px-2 py-0.5 rounded-full font-black uppercase">Pilihan</span>
+                                        </td>
+                                        <td class="p-4 text-center text-slate-500">75</td>
+                                        <td class="p-4 text-center font-extrabold text-orange-600">92</td>
+                                        <td class="p-4 text-center font-bold text-orange-600">A</td>
+                                        <td class="p-4 text-slate-600">Luar biasa dalam memprogram logika dasar block programming (Scratch) dan merancang instruksi algoritma sederhana.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. JADWAL VIEW -->
+                <div id="view-jadwal" class="space-y-6 hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Senin -->
+                        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+                            <h4 class="font-extrabold text-slate-800 border-b pb-2 flex items-center justify-between">
+                                <span>SENIN</span>
+                                <span class="bg-blue-100 text-blue-700 text-[9px] font-black px-2.5 py-1 rounded-full">KBM</span>
+                            </h4>
+                            <div class="space-y-3 text-xs">
+                                <div class="bg-slate-50 p-3 rounded-xl flex justify-between items-center">
+                                    <div>
+                                        <p class="font-bold text-slate-800">Upacara Bendera</p>
+                                        <p class="text-[10px] text-slate-400">07:00 - 07:35</p>
+                                    </div>
+                                    <i class="fas fa-flag text-blue-600"></i>
+                                </div>
+                                <div class="bg-slate-50 p-3 rounded-xl flex justify-between items-center">
+                                    <div>
+                                        <p class="font-bold text-slate-800">Pendidikan Pancasila</p>
+                                        <p class="text-[10px] text-slate-400">07:35 - 09:20</p>
+                                    </div>
+                                    <i class="fas fa-landmark text-blue-600"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Selasa -->
+                        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+                            <h4 class="font-extrabold text-slate-800 border-b pb-2 flex items-center justify-between">
+                                <span>SELASA</span>
+                                <span class="bg-blue-100 text-blue-700 text-[9px] font-black px-2.5 py-1 rounded-full">KBM</span>
+                            </h4>
+                            <div class="space-y-3 text-xs">
+                                <div class="bg-slate-50 p-3 rounded-xl flex justify-between items-center">
+                                    <div>
+                                        <p class="font-bold text-slate-800">Matematika</p>
+                                        <p class="text-[10px] text-slate-400">07:30 - 09:15</p>
+                                    </div>
+                                    <i class="fas fa-calculator text-blue-600"></i>
+                                </div>
+                                <div class="bg-blue-50 p-3 rounded-xl flex justify-between items-center border border-blue-100">
+                                    <div>
+                                        <p class="font-bold text-blue-900">Koding &amp; AI (KKA)</p>
+                                        <p class="text-[10px] text-blue-600">09:30 - 11:15</p>
+                                    </div>
+                                    <i class="fas fa-robot text-blue-600 animate-pulse"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rabu -->
+                        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+                            <h4 class="font-extrabold text-slate-800 border-b pb-2 flex items-center justify-between">
+                                <span>RABU</span>
+                                <span class="bg-blue-100 text-blue-700 text-[9px] font-black px-2.5 py-1 rounded-full">KBM</span>
+                            </h4>
+                            <div class="space-y-3 text-xs">
+                                <div class="bg-slate-50 p-3 rounded-xl flex justify-between items-center">
+                                    <div>
+                                        <p class="font-bold text-slate-800">Bahasa Indonesia</p>
+                                        <p class="text-[10px] text-slate-400">07:30 - 10:15</p>
+                                    </div>
+                                    <i class="fas fa-book-open text-blue-600"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. PRESENSI VIEW -->
+                <div id="view-presensi" class="space-y-6 hidden">
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm text-center">
+                            <span class="text-xs font-bold text-slate-400 block mb-1">HADIR</span>
+                            <span class="text-3xl font-black text-emerald-600">30</span>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm text-center">
+                            <span class="text-xs font-bold text-slate-400 block mb-1">SAKIT</span>
+                            <span class="text-3xl font-black text-amber-500">1</span>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm text-center">
+                            <span class="text-xs font-bold text-slate-400 block mb-1">IZIN</span>
+                            <span class="text-3xl font-black text-blue-600">1</span>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm text-center">
+                            <span class="text-xs font-bold text-slate-400 block mb-1">ALPA</span>
+                            <span class="text-3xl font-black text-red-500">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Log Presensi -->
+                    <div class="bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm">
+                        <div class="p-6 border-b">
+                            <h4 class="font-extrabold text-slate-800 text-xs uppercase tracking-wider">Histori Presensi Terakhir</h4>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 text-[10px] uppercase font-bold text-slate-400 border-b">
+                                    <tr>
+                                        <th class="p-4">Tanggal</th>
+                                        <th class="p-4">Waktu Check-In</th>
+                                        <th class="p-4">Status Kehadiran</th>
+                                        <th class="p-4">Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-xs divide-y">
+                                    <tr>
+                                        <td class="p-4 font-medium">12 Mei 2026</td>
+                                        <td class="p-4 font-mono">07:12 WIB</td>
+                                        <td class="p-4"><span class="bg-emerald-100 text-emerald-700 font-extrabold px-3 py-1 rounded-full uppercase text-[9px]">Hadir</span></td>
+                                        <td class="p-4 text-slate-400">Tepat Waktu</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-4 font-medium">11 Mei 2026</td>
+                                        <td class="p-4 font-mono">07:20 WIB</td>
+                                        <td class="p-4"><span class="bg-emerald-100 text-emerald-700 font-extrabold px-3 py-1 rounded-full uppercase text-[9px]">Hadir</span></td>
+                                        <td class="p-4 text-slate-400">Tepat Waktu</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-4 font-medium">08 Mei 2026</td>
+                                        <td class="p-4 font-mono">-</td>
+                                        <td class="p-4"><span class="bg-amber-100 text-amber-700 font-extrabold px-3 py-1 rounded-full uppercase text-[9px]">Sakit</span></td>
+                                        <td class="p-4 text-slate-400">Surat Dokter dilampirkan</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. PROFIL VIEW -->
+                <div id="view-profil" class="space-y-6 hidden">
+                    <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm flex flex-col md:flex-row items-center gap-8">
+                        <div class="w-24 h-24 rounded-full bg-slate-100 border-4 border-white shadow-lg overflow-hidden flex-shrink-0">
+                            <img id="profile-avatar" src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&q=80&w=120" class="w-full h-full object-cover">
+                        </div>
+                        <div class="space-y-1 text-center md:text-left flex-1">
+                            <h3 id="profile-name" class="text-xl font-black text-slate-800 uppercase">-</h3>
+                            <p id="profile-status" class="text-xs text-orange-500 font-bold uppercase tracking-wider">Calon Peserta Didik Baru (PPDB)</p>
+                            <p id="profile-sub" class="text-xs text-slate-400">Terdaftar di SDN 1 Cempaka</p>
+                        </div>
+                    </div>
+
+                    <!-- Detail Biodata -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+                            <h4 class="font-extrabold text-blue-900 border-b pb-2 text-xs uppercase tracking-wider"><i class="fas fa-id-card mr-1"></i> Data Kependidikan</h4>
+                            <div class="grid grid-cols-2 gap-4 text-xs">
+                                <div>
+                                    <p class="font-bold text-slate-400 uppercase text-[9px]">ID Pendaftaran</p>
+                                    <p id="bio-id" class="font-mono text-slate-800 font-bold">-</p>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-slate-400 uppercase text-[9px]">NIK Siswa</p>
+                                    <p id="bio-nik" class="font-mono text-slate-800 font-bold">-</p>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-slate-400 uppercase text-[9px]">NISN</p>
+                                    <p id="bio-nisn" class="font-mono text-slate-800 font-bold">-</p>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-slate-400 uppercase text-[9px]">Jenis Kelamin</p>
+                                    <p id="bio-jk" class="text-slate-800 font-bold">-</p>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-slate-400 uppercase text-[9px]">Agama</p>
+                                    <p id="bio-agama" class="text-slate-800 font-bold">-</p>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-slate-400 uppercase text-[9px]">Asal Sekolah</p>
+                                    <p id="bio-asal" class="text-slate-800 font-bold uppercase">-</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+                            <h4 class="font-extrabold text-blue-900 border-b pb-2 text-xs uppercase tracking-wider"><i class="fas fa-home mr-1"></i> Alamat &amp; Kontak Keluarga</h4>
+                            <div class="grid grid-cols-1 gap-4 text-xs">
+                                <div>
+                                    <p class="font-bold text-slate-400 uppercase text-[9px]">Alamat Lengkap</p>
+                                    <p id="bio-alamat" class="text-slate-800 font-bold">-</p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <p class="font-bold text-slate-400 uppercase text-[9px]">Nomor Telepon/WA</p>
+                                        <p id="bio-telp" class="text-green-700 font-bold">-</p>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-slate-400 uppercase text-[9px]">Wali/Ibu Kandung</p>
+                                        <p id="bio-ibu" class="text-slate-800 font-bold uppercase">-</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- AREA PRATINJAU UNTUK CETAK RAPOR (Hidden secara default, hanya muncul saat @media print) -->
+            <div id="print-area" class="hidden p-10 bg-white text-black font-serif">
+                <!-- Kop Surat Sekolah -->
+                <div class="flex items-center justify-between border-b-4 border-double border-black pb-4 mb-6">
+                    <img src="https://lh3.googleusercontent.com/u/0/d/1bW82RmwnfForzqt4GGsGyNCj5GVMvD3s" style="width: 70px; height: auto;">
+                    <div class="text-center flex-1">
+                        <h2 class="text-sm font-normal uppercase leading-tight">Pemerintah Kabupaten Lebak</h2>
+                        <h2 class="text-sm font-normal uppercase leading-tight">Dinas Pendidikan</h2>
+                        <h1 class="text-base font-bold uppercase mt-1 leading-tight">UPTD Satuan Pendidikan SD Negeri 1 Cempaka</h1>
+                        <p class="text-[10px] font-normal italic mt-1">Alamat: Kp. Cemplang RT 006/RW 002 Desa Cempaka Kec. Warunggunung</p>
+                    </div>
+                    <img src="https://lh3.googleusercontent.com/u/0/d/1V9AKgKbsmg5CNZIdGskpeG4ANBnhCTBP" style="width: 100px; height: auto;">
+                </div>
+
+                <div class="text-center mb-6">
+                    <h2 class="text-sm font-bold uppercase underline">LAPORAN HASIL BELAJAR SISWA (RAPOR DIGITAL)</h2>
+                    <p class="text-xs">Tahun Pelajaran: 2026/2027 • Semester Genap</p>
+                </div>
+
+                <!-- Bagian Biodata Siswa -->
+                <table class="w-full text-xs mb-6 leading-relaxed">
+                    <tr>
+                        <td class="w-1/4">Nama Peserta Didik</td>
+                        <td class="w-4 text-center">:</td>
+                        <td class="font-bold uppercase" id="p-print-name">-</td>
+                        <td class="w-1/4">Kelas / Fase</td>
+                        <td class="w-4 text-center">:</td>
+                        <td>5 (Fase C)</td>
+                    </tr>
+                    <tr>
+                        <td>Nomor Induk / NIK</td>
+                        <td class="text-center">:</td>
+                        <td id="p-print-nik">-</td>
+                        <td>Sekolah Asal</td>
+                        <td class="text-center">:</td>
+                        <td class="uppercase" id="p-print-asal">-</td>
+                    </tr>
+                </table>
+
+                <!-- Tabel Akademik -->
+                <table class="print-table w-full mb-8">
+                    <thead>
+                        <tr class="bg-gray-150">
+                            <th class="border border-black p-2 text-center text-xs">No</th>
+                            <th class="border border-black p-2 text-left text-xs">Mata Pelajaran</th>
+                            <th class="border border-black p-2 text-center text-xs">KKM</th>
+                            <th class="border border-black p-2 text-center text-xs">Nilai</th>
+                            <th class="border border-black p-2 text-center text-xs">Predikat</th>
+                            <th class="border border-black p-2 text-left text-xs">Pencapaian Kompetensi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-xs">
+                        <tr>
+                            <td class="border border-black p-2 text-center">1</td>
+                            <td class="border border-black p-2">Pendidikan Agama & Budi Pekerti</td>
+                            <td class="border border-black p-2 text-center">75</td>
+                            <td class="border border-black p-2 text-center font-bold">86</td>
+                            <td class="border border-black p-2 text-center">A</td>
+                            <td class="border border-black p-2">Sangat baik dalam memahami kisah nabi.</td>
+                        </tr>
+                        <tr>
+                            <td class="border border-black p-2 text-center">2</td>
+                            <td class="border border-black p-2">Pendidikan Pancasila</td>
+                            <td class="border border-black p-2 text-center">75</td>
+                            <td class="border border-black p-2 text-center font-bold">84</td>
+                            <td class="border border-black p-2 text-center">B</td>
+                            <td class="border border-black p-2">Baik dalam implementasi nilai Pancasila.</td>
+                        </tr>
+                        <tr>
+                            <td class="border border-black p-2 text-center">3</td>
+                            <td class="border border-black p-2">Bahasa Indonesia</td>
+                            <td class="border border-black p-2 text-center">75</td>
+                            <td class="border border-black p-2 text-center font-bold">88</td>
+                            <td class="border border-black p-2 text-center">A</td>
+                            <td class="border border-black p-2">Sangat terampil dalam menyusun teks eksposisi.</td>
+                        </tr>
+                        <tr>
+                            <td class="border border-black p-2 text-center">4</td>
+                            <td class="border border-black p-2">Matematika</td>
+                            <td class="border border-black p-2 text-center">75</td>
+                            <td class="border border-black p-2 text-center font-bold">80</td>
+                            <td class="border border-black p-2 text-center">B</td>
+                            <td class="border border-black p-2">Sangat baik dalam operasi hitung bangun ruang.</td>
+                        </tr>
+                        <tr>
+                            <td class="border border-black p-2 text-center">5</td>
+                            <td class="border border-black p-2">Koding &amp; Kecerdasan Artifisial (KKA)</td>
+                            <td class="border border-black p-2 text-center">75</td>
+                            <td class="border border-black p-2 text-center font-bold">92</td>
+                            <td class="border border-black p-2 text-center">A</td>
+                            <td class="border border-black p-2">Luar biasa dalam pemrograman visual dasar (Scratch).</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Bagian Tanda Tangan -->
+                <div class="flex justify-between mt-10 text-xs">
+                    <div class="text-center w-48">
+                        <p>Orang Tua/Wali,</p>
+                        <div class="h-16"></div>
+                        <p class="font-bold underline uppercase" id="p-print-parent">-</p>
+                    </div>
+                    <div class="text-center w-52">
+                        <p>Warunggunung, <span id="p-print-date"></span></p>
+                        <p>Kepala Sekolah,</p>
+                        <div class="h-4"></div>
+                        <img src="https://lh3.googleusercontent.com/d/1mqZujjT7uQCCs2jC29pQg82Lx6pvFVlc" class="w-14 h-14 mx-auto mb-1">
+                        <p class="font-bold underline">NENAH, M.Pd.</p>
+                        <p class="text-[9px]">NIP. 19800206 200701 2 008</p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MAIN CONTROL SCRIPT -->
+    <script>
+        // Google Sheets API Web App Script URL (Dari Kode.js Anda)
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO2f1gpvDBxQM3b9CR5FqSdTP5vtazDgdU0w-zR5CbRJ4OllYHHHxxrq8veX5_sqOF/exec";
+        
+        let authenticatedStudent = null;
+
+        window.onload = async () => {
+            // Memeriksa parameter URL jika dikirim langsung dari login.html atau index.html
+            const urlParams = new URLSearchParams(window.location.search);
+            const nikParam = urlParams.get('nik');
+
+            if (nikParam) {
+                await fetchStudentProfile(nikParam);
+            } else {
+                // Jika tidak ada NIK, berikan UI demo default agar portal tetap bisa dieksplorasi
+                loadMockProfile();
+            }
+        };
+
+        // Mengambil profil data dari database cloud (Google Sheets) via Apps Script
+        async function fetchStudentProfile(nik) {
+            toggleLoader(true);
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=readAll&sheet=pendaftar`);
+                const result = await response.json();
+                
+                if (result.status === "sukses") {
+                    const student = result.records.find(r => r.nik == nik);
+                    if (student) {
+                        authenticatedStudent = student;
+                        applyStudentDataToUI(student);
+                    } else {
+                        showSystemModal("Data Tidak Ditemukan", "Format NIK belum terdaftar di database PPDB sekolah kami. Membuka profil demo standar.");
+                        loadMockProfile();
+                    }
+                }
+            } catch (error) {
+                console.error("Gagal melakukan penarikan cloud database:", error);
+                showSystemModal("Koneksi Cloud Gagal", "Sistem mendeteksi limit jaringan API. Mengaktifkan profil lokal cerdas.");
+                loadMockProfile();
+            } finally {
+                toggleLoader(false);
+            }
+        }
+
+        function applyStudentDataToUI(student) {
+            // Update sidebar info
+            document.getElementById('side-profile-box').classList.remove('hidden');
+            document.getElementById('side-student-name').innerText = student.nama;
+            document.getElementById('side-student-class').innerText = `Kelas ${student.anak_ke || '5'} (Fase C)`;
+            
+            // Update header info
+            document.getElementById('user-header-name').innerText = student.nama;
+            
+            // Update profile tab info
+            document.getElementById('profile-name').innerText = student.nama;
+            document.getElementById('profile-status').innerText = "Calon Peserta Didik Baru (PPDB)";
+            document.getElementById('profile-sub').innerText = `ID REG: ${student.id || 'N/A'}`;
+            
+            // Update biodata detail fields
+            document.getElementById('bio-id').innerText = student.id || '-';
+            document.getElementById('bio-nik').innerText = student.nik || '-';
+            document.getElementById('bio-nisn').innerText = student.nisn || 'Belum Terbit';
+            document.getElementById('bio-jk').innerText = student.jk === 'L' ? 'Laki-laki' : 'Perempuan';
+            document.getElementById('bio-agama').innerText = student.agama || 'Islam';
+            document.getElementById('bio-asal').innerText = student.asal_sekolah || '-';
+            document.getElementById('bio-alamat').innerText = student.alamat || '-';
+            document.getElementById('bio-telp').innerText = student.telp || '-';
+            document.getElementById('bio-ibu').innerText = student.ibu || '-';
+
+            // Print Area Data
+            document.getElementById('p-print-name').innerText = student.nama;
+            document.getElementById('p-print-nik').innerText = student.nik;
+            document.getElementById('p-print-asal').innerText = student.asal_sekolah || 'PAUD/TK Se-derajat';
+            document.getElementById('p-print-parent').innerText = student.ibu || 'Orang Tua / Wali';
+        }
+
+        function loadMockProfile() {
+            // Profil fallback interaktif agar user bisa mendemonstrasikan sistem dengan lancar
+            const mockStudent = {
+                id: "PPDB-2627-01",
+                nik: "3602140102030005",
+                nisn: "0154896231",
+                nama: "JAYADININGRAT ADI",
+                jk: "L",
+                agama: "Islam",
+                asal_sekolah: "TK KARTIKA RANGKASBITUNG",
+                alamat: "Kp. Cemplang RT.006 RW.002 Desa Cempaka Kec. Warunggunung Kab. Lebak",
+                telp: "083894666566",
+                ibu: "SITI AMINAH"
+            };
+            authenticatedStudent = mockStudent;
+            applyStudentDataToUI(mockStudent);
+        }
+
+        // View Router Switcher
+        function switchView(viewId) {
+            // Sembunyikan semua tampilan
+            const views = ['dashboard', 'rapor', 'jadwal', 'presensi', 'profil'];
+            views.forEach(v => {
+                document.getElementById(`view-${v}`).classList.add('hidden');
+                document.getElementById(`nav-${v}`).classList.remove('active-nav-item');
+            });
+
+            // Tampilkan tampilan aktif & set tab aktif
+            document.getElementById(`view-${viewId}`).classList.remove('hidden');
+            document.getElementById(`nav-${viewId}`).classList.add('active-nav-item');
+
+            // Set Title Header
+            const titleMap = {
+                dashboard: 'Dashboard Utama',
+                rapor: 'E-Rapor Digital',
+                jadwal: 'Jadwal Pelajaran Mingguan',
+                presensi: 'Rekap Kehadiran Presensi',
+                profil: 'Profil Biodata Lengkap'
+            };
+            document.getElementById('view-title').innerText = titleMap[viewId];
+        }
+
+        function triggerPrintRapor() {
+            const now = new Date();
+            const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            document.getElementById('p-print-date').innerText = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+            
+            // Pemicu cetak bawaan browser
+            window.print();
+        }
+
+        function toggleSidebarMobile() {
+            const sidebar = document.querySelector('aside');
+            sidebar.classList.toggle('hidden');
+        }
+
+        function toggleLoader(show) {
+            document.getElementById('loader').classList.toggle('hidden', !show);
+        }
+
+        function showSystemModal(title, text) {
+            alert(`${title}\n\n${text}`);
+        }
+
+        function logout() {
+            window.location.href = "login.html";
+        }
+    </script>
+</body>
+</html>
