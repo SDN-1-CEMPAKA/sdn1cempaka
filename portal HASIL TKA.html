@@ -168,7 +168,7 @@
                             <p id="user-validation-status" class="text-xs text-amber-600 font-medium italic mt-1">Belum divalidasi</p>
                         </div>
                     </div>
-                    <button onclick="openValidationModalFromStudent()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md transition">Validasi Sekarang</button>
+                    <button id="user-validation-btn" onclick="openValidationModalFromStudent()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md transition">Validasi Sekarang</button>
                 </div>
             </div>
         </div>
@@ -894,14 +894,19 @@
 
         // Validation Modal Logic
         function openValidationModalFromStudent() {
-            if (loggedInStudent) openValidationModal(loggedInStudent.id);
+            if (loggedInStudent) {
+                const valStatus = biodataExtra[loggedInStudent.nisn].status;
+                if (valStatus === "Sudah Validasi") return; // Data sudah terkunci
+                openValidationModal(loggedInStudent.id);
+            }
         }
 
         function openValidationModal(id) {
             const student = tkaData.find(s => s.id === id);
             const extra = biodataExtra[student.nisn];
             const content = document.getElementById('validationContent');
-            
+            content.dataset.id = id; // Store ID for reference
+
             const fields = [
                 { label: "Nama Lengkap", val: student.nama },
                 { label: "NISN", val: student.nisn },
@@ -962,10 +967,15 @@
                 biodataExtra[student.nisn].status = "Sudah Validasi";
                 localStorage.setItem(`val_${student.nisn}`, "Sudah Validasi");
                 
-                showToast("Biodata Anda Berhasil Dikonfirmasi!");
+                showToast("Biodata Berhasil Dikonfirmasi & Data Dikunci!");
                 closeValidationModal();
                 
                 if (loggedInStudent) {
+                    const valBtn = document.getElementById('user-validation-btn');
+                    valBtn.innerText = "Data Terkunci";
+                    valBtn.disabled = true;
+                    valBtn.className = "bg-slate-300 text-slate-500 px-6 py-2.5 rounded-xl font-bold text-sm cursor-not-allowed";
+
                     document.getElementById('user-validation-status').innerText = "Sudah divalidasi";
                     document.getElementById('user-validation-status').className = "text-xs text-emerald-600 font-bold mt-1";
                 }
@@ -1054,10 +1064,18 @@
                 document.getElementById('user-ind-ket').innerText = student.indKet;
                 
                 const valStatus = biodataExtra[student.nisn].status;
+                const valBtn = document.getElementById('user-validation-btn');
+
                 document.getElementById('user-validation-status').innerText = valStatus === "Sudah Validasi" ? "Terverifikasi Mandiri" : "Belum divalidasi";
                 document.getElementById('user-validation-status').className = valStatus === "Sudah Validasi" 
                     ? "text-xs text-emerald-600 font-bold mt-1" 
                     : "text-xs text-amber-600 font-medium italic mt-1";
+
+                if (valStatus === "Sudah Validasi") {
+                    valBtn.innerText = "Data Terkunci";
+                    valBtn.disabled = true;
+                    valBtn.className = "bg-slate-300 text-slate-500 px-6 py-2.5 rounded-xl font-bold text-sm cursor-not-allowed";
+                }
 
 
                 // Tampilkan hanya baris data siswa tersebut
@@ -1151,6 +1169,12 @@
             document.getElementById('admin_pass').value = '';
             document.getElementById('exportBtn').classList.add('hidden');
             
+            // Reset validation button UI
+            const valBtn = document.getElementById('user-validation-btn');
+            valBtn.innerText = "Validasi Sekarang";
+            valBtn.disabled = false;
+            valBtn.className = "bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md transition";
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
