@@ -876,15 +876,19 @@
             "0142888970": { ortu: "Heri", ni: "20212008", jk: "L", status: "Belum Cek" }
         };
 
-        // Initialize extra data for all students
-        tkaData.forEach(s => {
-            if (!biodataExtra[s.nisn]) {
-                biodataExtra[s.nisn] = { ortu: "Data Belum Ada", ni: "-", jk: "-", status: "Belum Cek" };
-            }
-            // Sync initial status from local storage if exists
-            const savedStatus = localStorage.getItem(`val_${s.nisn}`);
-            if (savedStatus) biodataExtra[s.nisn].status = savedStatus;
-        });
+        // Fungsi untuk sinkronisasi status validasi terbaru dari Local Storage
+        function syncValidationFromStorage() {
+            tkaData.forEach(s => {
+                if (!biodataExtra[s.nisn]) {
+                    biodataExtra[s.nisn] = { ortu: "Data Belum Ada", ni: "-", jk: "-", status: "Belum Cek" };
+                }
+                // Ambil status terbaru dari localStorage
+                const savedStatus = localStorage.getItem(`val_${s.nisn}`);
+                if (savedStatus) {
+                    biodataExtra[s.nisn].status = savedStatus;
+                }
+            });
+        }
 
         // Global State variables for search, sorting, filtering
         let displayData = [...tkaData];
@@ -1046,6 +1050,9 @@
             const dob = document.getElementById('student_dob').value;
             const error = document.getElementById('student-error');
 
+            // Pastikan data tersinkronisasi sebelum login cek
+            syncValidationFromStorage();
+
             const student = tkaData.find(s => s.nisn === nisn && parseTTL(s.ttl) === dob);
 
             if (student) {
@@ -1096,6 +1103,9 @@
             const dob = document.getElementById('ptk_dob').value;
             const error = document.getElementById('ptk-error');
 
+            // Sinkronisasi data sebelum membuka direktori
+            syncValidationFromStorage();
+
             const staff = guruData.find(g => g.nip.replace(/\s/g, '') === nip && g.dob === dob);
 
             if (staff) {
@@ -1136,6 +1146,9 @@
 
             // Kredensial default admin: admin / admin123
             if (user === "20602495" && pass === "Cempaka@20602495") {
+                // Sinkronisasi data sebelum membuka direktori admin
+                syncValidationFromStorage();
+
                 loggedInStudent = null;
                 error.classList.add('hidden');
                 document.getElementById('login-portal').classList.add('hidden');
@@ -1300,6 +1313,9 @@
             const tableBody = document.getElementById("studentTableBody");
             const emptyState = document.getElementById("emptyState");
             tableBody.innerHTML = "";
+
+            // Selalu sinkronkan data sebelum render tabel agar status 'VALID' muncul
+            syncValidationFromStorage();
 
             if (displayData.length === 0) {
                 emptyState.classList.remove("hidden");
@@ -1471,6 +1487,7 @@
 
         // Run setup once DOM is fully available
         window.onload = function() {
+            syncValidationFromStorage();
             calculateStatistics();
             renderTable();
         }
