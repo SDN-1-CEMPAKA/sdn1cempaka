@@ -810,7 +810,7 @@
             { id: 14, noPeserta: "T1-26-30-07-0596-0014-3", nisn: "0134057942", nama: "SOPIA", ttl: "Lebak, 10 Juli 2013", mtk: 30.00, mtkKet: "Kurang", ind: 46.67, indKet: "Kurang" },
             { id: 15, noPeserta: "T1-26-30-07-0596-0015-2", nisn: "0146649109", nama: "RHESTIANI PUTRI", ttl: "Lebak, 28 September 2014", mtk: 26.67, mtkKet: "Kurang", ind: 63.33, indKet: "Memadai" },
             { id: 16, noPeserta: "T1-26-30-07-0596-0016-9", nisn: "0145428637", nama: "MUHAMMAD SYAHRONY", ttl: "Jakarta, 15 Februari 2014", mtk: 30.00, mtkKet: "Kurang", ind: 36.67, indKet: "Kurang" },
-            { id: 17, noPeserta: "T1-26-30-07-0596-0017-8", nisn: "3131473948", nama: "SEKAR AYUNDA NINGSIH", ttl: "Lebak, 16 Mei 2013", mtk: 23.33, mtkKet: "Kurang", ind: 36.67, font: "Kurang" , indKet: "Kurang" },
+            { id: 17, noPeserta: "T1-26-30-07-0596-0017-8", nisn: "3131473948", nama: "SEKAR AYUNDA NINGSIH", ttl: "Lebak, 16 Mei 2013", mtk: 23.33, mtkKet: "Kurang", ind: 36.67, indKet: "Kurang" },
             { id: 18, noPeserta: "T1-26-30-07-0596-0018-7", nisn: "0133788378", nama: "IHSAN NABIL YUNANDI", ttl: "Lebak, 3 Mei 2013", mtk: 33.33, mtkKet: "Memadai", ind: 63.33, indKet: "Memadai" },
             { id: 19, noPeserta: "T1-26-30-07-0596-0019-6", nisn: "0133208418", nama: "REHAN NARDIYANSAH", ttl: "Lebak, 31 Oktober 2013", mtk: 30.00, mtkKet: "Kurang", ind: 53.33, indKet: "Memadai" },
             { id: 20, noPeserta: "T1-26-30-07-0596-0020-5", nisn: "0146045012", nama: "RIZKY SULISTIA", ttl: "Tangerang, 27 April 2014", mtk: 30.00, mtkKet: "Kurang", ind: 76.67, indKet: "Baik" },
@@ -891,6 +891,9 @@
             "3146121145": { ortu: "Sumarna", ni: "20211992", jk: "P", status: "Belum Cek" },
             "0142888970": { ortu: "Heri", ni: "20212008", jk: "L", status: "Belum Cek" }
         };
+
+        // Inisialisasi awal status validasi dari storage saat aplikasi pertama kali dimuat
+        syncValidationFromStorage();
 
         // Fungsi sinkronisasi status validasi terbaru dari storage/RAM fallback
         function syncValidationFromStorage() {
@@ -999,7 +1002,7 @@
                     valBtn.disabled = true;
                     valBtn.className = "bg-slate-300 text-slate-500 px-6 py-2.5 rounded-xl font-bold text-sm cursor-not-allowed";
 
-                    document.getElementById('user-validation-status').innerText = "Sudah divalidasi";
+                    document.getElementById('user-validation-status').innerText = "Terverifikasi Mandiri";
                     document.getElementById('user-validation-status').className = "text-xs text-emerald-600 font-bold mt-1";
                 }
                 
