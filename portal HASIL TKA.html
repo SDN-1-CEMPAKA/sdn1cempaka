@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Analisis Hasil TKA 2026 - SDN 1 Cempaka</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for better styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* Print styling optimized for school records and report cards */
+        @media print {
+            @page {
+                size: A4;
+                margin: 10mm;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            #reportCardModal {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                height: auto !important;
+                overflow: visible !important;
+                display: block !important;
+                background: white !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            #reportCardModal > div, .print-card {
+                border: none !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                max-width: 100% !important;
+            }
+            .print-break {
+                page-break-before: always;
+            }
+            /* Optimasi ruang agar muat 1 halaman A4 */
+            #printReportArea {
+                padding: 5mm !important;
+            }
+            .kop-surat { margin-bottom: 10px !important; padding-bottom: 10px !important; }
+            .info-siswa { margin-bottom: 15px !important; padding: 10px !important; }
+            .ulasan-pedagogik { margin-bottom: 15px !important; padding: 10px !important; }
+        }
+
+    /* Login styles */
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+    }
+    #login-view {
+        min-height: calc(100vh - 80px);
+    }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Navigation Bar -->
+    <header id="main-nav" class="bg-indigo-900 text-white shadow-md sticky top-0 z-40 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="index.html" class="flex items-center space-x-4 hover:opacity-90 transition">
+                <div class="bg-white p-1 rounded-full w-12 h-12 flex items-center justify-center shadow-inner overflow-hidden">
+                    <img src="https://lh3.googleusercontent.com/d/1V9AKgKbsmg5CNZIdGskpeG4ANBnhCTBP" alt="Logo SDN 1 Cempaka" class="w-10 h-10 object-contain">
+                </div>
+                <div>
+                    <span class="text-xs font-semibold tracking-wider text-indigo-200 block uppercase">Portal DKHTKA 2026</span>
+                    <h1 class="text-lg sm:text-xl font-bold tracking-tight text-white">SDN 1 CEMPAKA</h1>
+                </div>
+            </a>
+            
+            <div class="flex items-center space-x-3">
+                <div class="hidden md:block text-right">
+                    <p class="text-xs text-indigo-200">Kabupaten Lebak, Banten</p>
+                    <p class="text-xs font-mono text-indigo-300">NPSN: 20602495</p>
+                </div>
+                <button id="logoutBtn" onclick="logout()" class="hidden bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center space-x-2 transition duration-200 border border-red-500">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                    <span>Keluar Portal</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace Container -->
+    <main id="dashboard-view" class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Personal Result Summary (Visible after login) -->
+        <div id="personal-summary" class="hidden bg-indigo-50 border border-indigo-100 rounded-3xl p-6 mb-8 shadow-sm no-print">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="bg-indigo-600 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-md">
+                        <i data-lucide="user"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-indigo-900" id="user-display-name">Hasil Analisis Anda</h3>
+                </div>
+                <span class="bg-indigo-600 text-white text-[10px] px-3 py-1 rounded-full font-bold uppercase">Ringkasan Nilai</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-indigo-100 flex items-center justify-between group hover:border-indigo-300 transition-colors">
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Matematika</p>
+                        <p id="user-mtk-score" class="text-3xl font-black text-slate-900">0.00</p>
+                        <p id="user-mtk-ket" class="text-xs font-bold text-amber-600 mt-1">Memadai</p>
+                    </div>
+                    <div class="bg-amber-50 p-4 rounded-xl text-amber-600 group-hover:bg-amber-100 transition-colors">
+                        <i data-lucide="binary" class="w-8 h-8"></i>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-indigo-100 flex items-center justify-between group hover:border-indigo-300 transition-colors">
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Bahasa Indonesia</p>
+                        <p id="user-ind-score" class="text-3xl font-black text-slate-900">0.00</p>
+                        <p id="user-ind-ket" class="text-xs font-bold text-indigo-600 mt-1">Baik</p>
+                    </div>
+                    <div class="bg-indigo-50 p-4 rounded-xl text-indigo-600 group-hover:bg-indigo-100 transition-colors">
+                        <i data-lucide="book-open" class="w-8 h-8"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- School Context & Meta Information Card -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm mb-8 relative overflow-hidden print-card">
+            <div class="absolute right-0 top-0 w-24 h-24 bg-indigo-50 rounded-bl-full flex items-center justify-center -mr-2 -mt-2 no-print">
+                <i data-lucide="school" class="w-10 h-10 text-indigo-200 mr-2 mt-2"></i>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+                <div class="lg:col-span-2">
+                    <div class="flex items-center space-x-2 text-indigo-600 text-sm font-bold tracking-wider uppercase mb-1">
+                        <i data-lucide="info" class="w-4 h-4"></i>
+                        <span>Daftar Kolektif Hasil Tes Kemampuan Akademik (DKHTKA)</span>
+                    </div>
+                    <h2 class="text-2xl font-black text-slate-900 tracking-tight">Evaluasi Performa Pembelajaran Siswa</h2>
+                    <p class="text-slate-500 text-sm mt-1 leading-relaxed">
+                        Analisis data komprehensif berdasarkan hasil TKA tingkat SD/MI Tahun Pelajaran 2026 untuk mengukur capaian kognitif dasar pada mata pelajaran <strong>Matematika</strong> dan <strong>Bahasa Indonesia</strong>.
+                    </p>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 text-xs space-y-2 font-mono">
+                    <div class="flex justify-between border-b border-slate-200 pb-1">
+                        <span class="text-slate-400">Provinsi:</span>
+                        <span class="font-bold text-slate-800">30 - BANTEN</span>
+                    </div>
+                    <div class="flex justify-between border-b border-slate-200 pb-1">
+                        <span class="text-slate-400">Kota/Kabupaten:</span>
+                        <span class="font-bold text-slate-800">07 - KAB. LEBAK</span>
+                    </div>
+                    <div class="flex justify-between border-b border-slate-200 pb-1">
+                        <span class="text-slate-400">Satuan Pendidikan:</span>
+                        <span class="font-bold text-slate-800">0596 - SDN 1 CEMPAKA</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">Kepala Satdik:</span>
+                        <span class="font-bold text-slate-800">NENAH, M.Pd.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- -->
+        <!-- Key Performance Indicators (KPIs) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 no-print">
+            
+            <!-- KPI 1: Total Students -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition duration-200 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Jumlah Peserta</p>
+                    <p class="text-3xl font-black text-slate-900" id="statTotalStudents">46</p>
+                    <span class="text-[10px] text-emerald-600 font-semibold mt-1 inline-flex items-center">
+                        <i data-lucide="check" class="w-3 h-3 mr-0.5"></i> 100% Mengikuti Tes
+                    </span>
+                </div>
+                <div class="bg-indigo-50 p-3.5 rounded-xl text-indigo-600">
+                    <i data-lucide="users" class="w-6 h-6"></i>
+                </div>
+            </div>
+
+            <!-- KPI 2: Matematika Average -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition duration-200 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Rata-rata Matematika</p>
+                    <p class="text-3xl font-black text-amber-600" id="statMtkAverage">0.00</p>
+                    <span class="text-[10px] text-amber-600 font-semibold mt-1 inline-flex items-center" id="statMtkPassRate">
+                        <i data-lucide="alert-circle" class="w-3 h-3 mr-0.5"></i> 0% Memadai/Baik
+                    </span>
+                </div>
+                <div class="bg-amber-50 p-3.5 rounded-xl text-amber-600">
+                    <i data-lucide="binary" class="w-6 h-6"></i>
+                </div>
+            </div>
+
+            <!-- KPI 3: Bahasa Indonesia Average -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition duration-200 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Rata-rata Bhs. Indonesia</p>
+                    <p class="text-3xl font-black text-indigo-600" id="statIndAverage">0.00</p>
+                    <span class="text-[10px] text-emerald-600 font-semibold mt-1 inline-flex items-center" id="statIndPassRate">
+                        <i data-lucide="trending-up" class="w-3 h-3 mr-0.5"></i> 0% Memadai/Baik
+                    </span>
+                </div>
+                <div class="bg-indigo-50 p-3.5 rounded-xl text-indigo-600">
+                    <i data-lucide="book-open" class="w-6 h-6"></i>
+                </div>
+            </div>
+
+            <!-- KPI 4: Top Performer Student -->
+            <div class="bg-gradient-to-br from-indigo-900 to-indigo-800 border border-indigo-950 rounded-2xl p-5 shadow-sm text-white flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold text-indigo-200 uppercase tracking-wider mb-1">Peringkat 1 Sekolah</p>
+                    <p class="text-lg font-bold leading-tight line-clamp-1" id="statTopPerformerName">-</p>
+                    <p class="text-xs text-indigo-200 mt-1" id="statTopPerformerScores">Nilai Rata-rata: -</p>
+                </div>
+                <div class="bg-white/20 p-3.5 rounded-xl text-yellow-300">
+                    <i data-lucide="trophy" class="w-6 h-6"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Portal Section -->
+        <div id="login-portal" class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 no-print">
+            <!-- Student Login Card -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm hover:border-indigo-300 transition-colors">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="bg-indigo-100 text-indigo-600 p-3.5 rounded-2xl">
+                        <i data-lucide="user-check" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 leading-tight">Portal Siswa</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Lihat hasil analisis individu Anda</p>
+                    </div>
+                </div>
+                <form onsubmit="handleStudentLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">NISN Siswa</label>
+                        <input type="text" id="student_nisn" placeholder="Contoh: 0141908423" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Tanggal Lahir</label>
+                        <input type="date" id="student_dob" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition font-semibold">
+                    </div>
+                    <div id="student-error" class="hidden text-[11px] font-bold text-red-500 bg-red-50 p-3 rounded-xl border border-red-100 text-center">
+                        Data siswa tidak ditemukan. Periksa NISN & Tanggal Lahir.
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl transition shadow-lg flex justify-center items-center gap-2">
+                        Masuk Portal Siswa <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- PTK Login Card -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm hover:border-slate-400 transition-colors">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="bg-slate-900 text-white p-3.5 rounded-2xl">
+                        <i data-lucide="shield-check" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 leading-tight">Portal PTK</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Akses data kolektif untuk Guru & Staff</p>
+                    </div>
+                </div>
+                <form onsubmit="handlePtkLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">NIP / Identitas</label>
+                        <input type="text" id="ptk_nip" placeholder="Masukkan NIP" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-slate-800 outline-none transition font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Tanggal Lahir</label>
+                        <input type="date" id="ptk_dob" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-slate-800 outline-none transition font-semibold">
+                    </div>
+                    <div id="ptk-error" class="hidden text-[11px] font-bold text-red-500 bg-red-50 p-3 rounded-xl border border-red-100 text-center">
+                        Akses ditolak. NIP atau Tanggal Lahir salah.
+                    </div>
+                    <button type="submit" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 rounded-xl transition shadow-lg flex justify-center items-center gap-2">
+                        Masuk Portal PTK <i data-lucide="lock" class="w-4 h-4"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Visualizations and Diagnostic Insights -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8 no-print">
+            
+            <!-- Left Panel: Chart & Distribution Summary -->
+            <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                        <i data-lucide="pie-chart" class="text-indigo-600"></i>
+                        <span>Peta Distribusi Kategori Nilai</span>
+                    </h3>
+                    <span class="text-xs text-slate-400 font-medium">Berdasarkan Standar Kemendikbud</span>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Matematika Distribution -->
+                    <div class="flex flex-col items-center p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <h4 class="font-bold text-slate-700 text-sm mb-4 flex items-center space-x-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                            <span>Distribusi Kategori Matematika</span>
+                        </h4>
+                        <div class="relative w-44 h-44">
+                            <canvas id="mtkChart"></canvas>
+                        </div>
+                        <div class="mt-4 text-xs w-full grid grid-cols-3 gap-1 text-center font-semibold">
+                            <div class="text-emerald-600 bg-emerald-50 p-1.5 rounded">Baik <span id="mtkBaikCount">0</span></div>
+                            <div class="text-indigo-600 bg-indigo-50 p-1.5 rounded">Memadai <span id="mtkMemadaiCount">0</span></div>
+                            <div class="text-rose-600 bg-rose-50 p-1.5 rounded">Kurang <span id="mtkKurangCount">0</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Bahasa Indonesia Distribution -->
+                    <div class="flex flex-col items-center p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <h4 class="font-bold text-slate-700 text-sm mb-4 flex items-center space-x-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+                            <span>Distribusi Kategori Bahasa Indonesia</span>
+                        </h4>
+                        <div class="relative w-44 h-44">
+                            <canvas id="indChart"></canvas>
+                        </div>
+                        <div class="mt-4 text-xs w-full grid grid-cols-3 gap-1 text-center font-semibold">
+                            <div class="text-emerald-600 bg-emerald-50 p-1.5 rounded">Baik <span id="indBaikCount">0</span></div>
+                            <div class="text-indigo-600 bg-indigo-50 p-1.5 rounded">Memadai <span id="indMemadaiCount">0</span></div>
+                            <div class="text-rose-600 bg-rose-50 p-1.5 rounded">Kurang <span id="indKurangCount">0</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Diagnostic Summary & Curriculum Action Recommendation -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center space-x-2">
+                        <i data-lucide="sparkles" class="text-indigo-600"></i>
+                        <span>Analisis Diagnostik & Solusi</span>
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div class="p-3 bg-amber-50 rounded-xl border border-amber-100">
+                            <h4 class="font-bold text-amber-900 text-xs flex items-center space-x-1.5">
+                                <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i>
+                                <span>Kesenjangan Keterampilan Numerasi</span>
+                            </h4>
+                            <p class="text-[11px] text-amber-800 leading-relaxed mt-1">
+                                Mayoritas siswa berada pada kategori <strong>Kurang</strong> pada materi Matematika (Aritmatika, Logika Angka). Diperlukan pendampingan remedial intensif (*Remedial Teaching*) berbasis media manipulatif konkrit.
+                            </p>
+                        </div>
+
+                        <div class="p-3 bg-indigo-50 rounded-xl border border-indigo-100">
+                            <h4 class="font-bold text-indigo-900 text-xs flex items-center space-x-1.5">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-indigo-600"></i>
+                                <span>Potensi Literasi Lebih Kuat</span>
+                            </h4>
+                            <p class="text-[11px] text-indigo-800 leading-relaxed mt-1">
+                                Kemampuan Bahasa Indonesia siswa relatif lebih baik dengan porsi kategori <strong>Baik & Memadai</strong> mencapai di atas 60%. Hal ini mengindikasikan penalaran kontekstual verbal siswa dapat diandalkan.
+                            </p>
+                        </div>
+
+                        <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <h4 class="font-bold text-emerald-950 text-xs flex items-center space-x-1.5">
+                                <i data-lucide="compass" class="w-4 h-4 text-emerald-600"></i>
+                                <span>Rekomendasi Kebijakan Kurikulum</span>
+                            </h4>
+                            <p class="text-[11px] text-emerald-800 leading-relaxed mt-1">
+                                Integrasikan materi numerasi kontekstual (soal cerita berbasis bahasa) ke dalam pembelajaran Bahasa Indonesia untuk melatih keterampilan matematika logis secara implisit.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="pt-4 border-t border-slate-100 text-center">
+                    <span class="text-[10px] text-slate-400 block">Status Akreditasi Satdik: Terdaftar Puspendik</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Student Directory and Search Section -->
+        <div id="directory-view" class="hidden bg-white rounded-2xl border border-slate-200 p-6 shadow-sm mb-8 print-card">
+            
+            <!-- Filters Header & Search controls -->
+            <div id="directory-header" class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 no-print">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900">Direktori & Hasil Belajar Siswa</h3>
+                    <p class="text-xs text-slate-500">Gunakan kolom di bawah ini untuk mencari data siswa atau menyaring berdasarkan kategori.</p>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <!-- Search Input -->
+                    <div class="relative">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 transform -translate-y-1/2"></i>
+                        <input id="searchInput" type="text" placeholder="Cari nama atau NISN..." class="pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-64 transition duration-150">
+                    </div>
+                    
+                    <!-- Subject Filter 1 (Matematika) -->
+                    <select id="filterMtk" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-150">
+                        <option value="">Matematika: Semua Kategori</option>
+                        <option value="Baik">Matematika: Baik</option>
+                        <option value="Memadai">Matematika: Memadai</option>
+                        <option value="Kurang">Matematika: Kurang</option>
+                    </select>
+
+                    <!-- Subject Filter 2 (Bahasa Indonesia) -->
+                    <select id="filterInd" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-150">
+                        <option value="">Bhs. Indonesia: Semua Kategori</option>
+                        <option value="Baik">Bhs. Indonesia: Baik</option>
+                        <option value="Memadai">Bhs. Indonesia: Memadai</option>
+                        <option value="Kurang">Bhs. Indonesia: Kurang</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- -->
+            <!-- Interactive Data Table -->
+            <div class="overflow-x-auto rounded-xl border border-slate-100 shadow-inner">
+                <table class="min-w-full divide-y divide-slate-200 text-sm">
+                    <thead class="bg-slate-50">
+                        <tr class="font-semibold text-slate-500 uppercase tracking-wider text-[11px]">
+                            <th scope="col" class="px-6 py-4 text-left w-12 cursor-pointer no-print hover:bg-slate-100 select-none" onclick="sortTable('id')">
+                                <div class="flex items-center space-x-1">
+                                    <span>No</span>
+                                    <i data-lucide="chevrons-up-down" class="w-3.5 h-3.5"></i>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-4 text-left w-48 font-medium">Nomor Peserta</th>
+                            <th scope="col" class="px-6 py-4 text-left w-32 font-medium">NISN</th>
+                            <th scope="col" class="px-6 py-4 text-left cursor-pointer hover:bg-slate-100 select-none" onclick="sortTable('nama')">
+                                <div class="flex items-center space-x-1">
+                                    <span>Nama Lengkap Siswa</span>
+                                    <i data-lucide="chevrons-up-down" class="w-3.5 h-3.5"></i>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-4 text-center cursor-pointer hover:bg-slate-100 select-none" onclick="sortTable('mtk')">
+                                <div class="flex items-center justify-center space-x-1">
+                                    <span>Matematika</span>
+                                    <i data-lucide="chevrons-up-down" class="w-3.5 h-3.5"></i>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-4 text-center cursor-pointer hover:bg-slate-100 select-none" onclick="sortTable('ind')">
+                                <div class="flex items-center justify-center space-x-1">
+                                    <span>Bahasa Indonesia</span>
+                                    <i data-lucide="chevrons-up-down" class="w-3.5 h-3.5"></i>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-4 text-center w-28 font-medium no-print">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTableBody" class="bg-white divide-y divide-slate-100">
+                        <!-- Content generated dynamically via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden flex-col items-center justify-center py-12 px-4 text-center">
+                <div class="bg-indigo-50 p-4 rounded-full text-indigo-500 mb-3">
+                    <i data-lucide="search" class="w-8 h-8"></i>
+                </div>
+                <h4 class="font-bold text-slate-800 mb-1">Siswa Tidak Ditemukan</h4>
+                <p class="text-xs text-slate-400 max-w-xs">Pastikan ejaan nama atau nomor NISN sudah sesuai dengan data yang Anda cari.</p>
+            </div>
+
+            <!-- Table Footer Metadata (Total results) -->
+            <div class="mt-4 flex items-center justify-between text-xs text-slate-400 px-2 no-print">
+                <span id="statRecordCount">Menampilkan 46 dari 46 siswa</span>
+                <span>Sumber Data: Portal TKA Kemendikdasmen 2026</span>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- -->
+    <!-- Individual Report Card Modal overlay (Pop-up/View Detail) -->
+    <div id="reportCardModal" class="fixed inset-0 z-50 overflow-y-auto hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-3xl w-full shadow-2xl relative border border-slate-100 animate-in fade-in zoom-in duration-200">
+            
+            <!-- Close Button (Interactive UI) -->
+            <button onclick="closeReportCard()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1.5 hover:bg-slate-100 rounded-full transition no-print">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <!-- Scrollable Report Area -->
+            <div class="p-8 sm:p-10 print-card" id="printReportArea">
+                <!-- PRINT HEADERS (KOP SURAT) -->
+                <div class="kop-surat flex items-center justify-between border-b-4 border-double border-slate-800 pb-5 mb-6">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-16 h-16 rounded-full flex items-center justify-center bg-white border border-slate-200 flex-shrink-0 overflow-hidden">
+                            <img src="https://lh3.googleusercontent.com/d/1AK8JozYqbGTFt68u_CIJeJzm5-0Ml89k" alt="Logo Tut Wuri Handayani" class="w-12 h-12 object-contain">
+                        </div>
+                        <div>
+                            <span class="text-[10px] tracking-wider font-extrabold text-slate-500 uppercase block leading-none">Republik Indonesia</span>
+                            <h2 class="text-sm font-extrabold text-slate-800 uppercase leading-normal">Kementerian Pendidikan Dasar Dan Menengah</h2>
+                            <h3 class="text-base font-black text-indigo-950 uppercase leading-none">Dinas Pendidikan Kabupaten Lebak</h3>
+                            <span class="text-[10px] font-medium text-slate-500 mt-1 block">SDN 1 CEMPAKA - NPSN: 20602495 | Alamat: Kec. Cempaka, Lebak, Banten</span>
+                        </div>
+                    </div>
+                    <div class="text-right border-l-2 border-slate-300 pl-4 hidden sm:block">
+                        <span class="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider block mb-1">Rapor Resmi</span>
+                        <span class="text-xs font-mono font-bold text-indigo-600 block">TKA-2026</span>
+                    </div>
+                </div>
+
+                <!-- Title -->
+                <div class="text-center mb-6">
+                    <h4 class="text-base font-black text-slate-900 tracking-wide uppercase">Hasil Penilaian Tes Kemampuan Akademik</h4>
+                    <p class="text-xs text-slate-400">Tingkat Sekolah Dasar Negeri 1 Cempaka - Tahun Pelajaran 2026/2027</p>
+                </div>
+
+                <!-- Student Information Grid -->
+                <div class="info-siswa bg-slate-50 rounded-2xl p-5 border border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center border-b border-dashed border-slate-200 pb-1.5">
+                            <span class="w-32 text-slate-400 font-medium">Nama Lengkap</span>
+                            <span class="w-4 text-slate-400">:</span>
+                            <span class="font-extrabold text-slate-800 flex-1" id="cardName">-</span>
+                        </div>
+                        <div class="flex items-center border-b border-dashed border-slate-200 pb-1.5">
+                            <span class="w-32 text-slate-400 font-medium">Nomor Peserta</span>
+                            <span class="w-4 text-slate-400">:</span>
+                            <span class="font-mono text-slate-800 flex-1" id="cardNoPeserta">-</span>
+                        </div>
+                        <div class="flex items-center border-b border-dashed border-slate-200 pb-1.5">
+                            <span class="w-32 text-slate-400 font-medium">NISN</span>
+                            <span class="w-4 text-slate-400">:</span>
+                            <span class="font-mono font-bold text-indigo-600 flex-1" id="cardNisn">-</span>
+                        </div>
+                    </div>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center border-b border-dashed border-slate-200 pb-1.5">
+                            <span class="w-32 text-slate-400 font-medium">Tempat, Tgl Lahir</span>
+                            <span class="w-4 text-slate-400">:</span>
+                            <span class="font-bold text-slate-800 flex-1" id="cardTtl">-</span>
+                        </div>
+                        <div class="flex items-center border-b border-dashed border-slate-200 pb-1.5">
+                            <span class="w-32 text-slate-400 font-medium">Satuan Pendidikan</span>
+                            <span class="w-4 text-slate-400">:</span>
+                            <span class="font-bold text-slate-800 flex-1">SDN 1 CEMPAKA</span>
+                        </div>
+                        <div class="flex items-center border-b border-dashed border-slate-200 pb-1.5">
+                            <span class="w-32 text-slate-400 font-medium">Status Penilaian</span>
+                            <span class="w-4 text-slate-400">:</span>
+                            <div class="flex-1 flex items-center text-emerald-600 font-black">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 mr-1.5"></span>
+                                <span>Terverifikasi Digital</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scores Breakdown Table -->
+                <div class="mb-6">
+                    <table class="min-w-full border-collapse border border-slate-300 text-xs">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-800 uppercase font-black tracking-wide border-b border-slate-300 text-left">
+                                <th class="px-4 py-3 border-r border-slate-300 w-12 text-center">No</th>
+                                <th class="px-4 py-3 border-r border-slate-300">Aspek/Mata Pelajaran Uji</th>
+                                <th class="px-4 py-3 border-r border-slate-300 w-24 text-center">Nilai Ujian</th>
+                                <th class="px-4 py-3 w-32 text-center">Klasifikasi Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-300">
+                            <tr>
+                                <td class="px-4 py-3 border-r border-slate-300 text-center font-bold">1</td>
+                                <td class="px-4 py-3 border-r border-slate-300">
+                                    <span class="font-bold text-slate-800 block">Matematika</span>
+                                    <span class="text-[10px] text-slate-400 block">Pengukuran penalaran logika numerasi, operasi hitung pecahan, dan penyelesaian masalah analitis.</span>
+                                </td>
+                                <td class="px-4 py-3 border-r border-slate-300 text-center font-mono font-extrabold text-base text-slate-800" id="cardMtkScore">-</td>
+                                <td class="px-4 py-3 text-center" id="cardMtkBadge">-</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 border-r border-slate-300 text-center font-bold">2</td>
+                                <td class="px-4 py-3 border-r border-slate-300">
+                                    <span class="font-bold text-slate-800 block">Bahasa Indonesia</span>
+                                    <span class="text-[10px] text-slate-400 block">Pemahaman teks, ide pokok wacana, struktur sintaksis kalimat, dan penalaran inferensi verbal.</span>
+                                </td>
+                                <td class="px-4 py-3 border-r border-slate-300 text-center font-mono font-extrabold text-base text-slate-800" id="cardIndScore">-</td>
+                                <td class="px-4 py-3 text-center" id="cardIndBadge">-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Custom Pedagogic Feedback -->
+                <div class="ulasan-pedagogik border border-slate-200 rounded-2xl p-5 mb-8 bg-slate-50">
+                    <h5 class="text-xs font-extrabold text-indigo-950 uppercase tracking-wider mb-2 flex items-center">
+                        <i data-lucide="award" class="w-4 h-4 mr-1.5 text-indigo-600"></i>
+                        <span>Ulasan Rekomendasi Akademik</span>
+                    </h5>
+                    <p class="text-xs text-slate-600 leading-relaxed" id="cardRecommendationText">
+                        -
+                    </p>
+                </div>
+
+                <!-- Signatures Panel (Official Report Layout) -->
+                <div class="grid grid-cols-2 gap-4 mt-8 pt-6 border-t border-slate-200 text-xs">
+                    <div>
+                        <p class="text-slate-400">Mengetahui,</p>
+                        <p class="font-bold text-slate-800 uppercase mt-1">Kepala SDN 1 CEMPAKA</p>
+                        <div class="h-16 flex items-end">
+                            <span class="text-[10px] text-slate-300 italic">E-signature Terverifikasi</span>
+                        </div>
+                        <p class="font-bold text-slate-800 underline uppercase mt-2">NENAH, M.Pd.</p>
+                        <p class="text-slate-400 font-mono text-[10px]">NIP. 198002062007012008</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-slate-400">Diterbitkan di Lebak,</p>
+                        <p class="font-bold text-slate-800 mt-1">Kamis, 28 Mei 2026</p>
+                        <div class="h-16 flex items-end justify-end">
+                            <!-- Digital stamp visual -->
+                            <div class="border-2 border-indigo-200 border-dashed rounded px-2 py-1 text-[8px] font-mono text-indigo-400 tracking-wider">
+                                GENERATED BY KEMENDIKDASMEN
+                            </div>
+                        </div>
+                        <p class="font-bold text-slate-400 text-[10px] mt-2">Oleh Panitia Pusat TKA-ONLINE</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Modal Action Buttons (No-Print) -->
+            <div class="p-6 bg-slate-50 rounded-b-3xl border-t border-slate-100 flex justify-end space-x-3 no-print">
+                <button onclick="closeReportCard()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-sm font-semibold transition">
+                    Tutup
+                </button>
+                <button onclick="window.print()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold flex items-center space-x-2 transition shadow-md shadow-indigo-100">
+                    <i data-lucide="printer" class="w-4 h-4"></i>
+                    <span>Cetak Rapor Siswa</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- -->
+    <!-- Footer -->
+    <footer id="main-footer" class="hidden bg-white border-t border-slate-200 py-8 text-center text-xs text-slate-400 no-print mt-auto">
+        <div class="max-w-7xl mx-auto px-4">
+            <p class="font-medium text-slate-500 mb-1">Daftar Kolektif Hasil Tes Kemampuan Akademik (DKHTKA)</p>
+            <p class="mb-4">Dinas Pendidikan Kabupaten Lebak - Provinsi Banten © 2026</p>
+            <div class="flex items-center justify-center space-x-4">
+                <span class="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full font-mono text-[10px] border border-indigo-100">HASH: TKA-DKH-CEMPAKA-2026</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- -->
+    <!-- Application Logic & Scripts -->
+    <script>
+        // Core dataset parsed perfectly from provided raw data
+        const tkaData = [
+            { id: 1, noPeserta: "T1-26-30-07-0596-0001-8", nisn: "0141908423", nama: "ADELIA WULANDARI", ttl: "Lebak, 10 Juni 2014", mtk: 33.33, mtkKet: "Memadai", ind: 76.67, indKet: "Baik" },
+            { id: 2, noPeserta: "T1-26-30-07-0596-0002-7", nisn: "3141113915", nama: "NURIYANAH", ttl: "Lebak, 26 Februari 2014", mtk: 36.67, mtkKet: "Memadai", ind: 60.00, indKet: "Memadai" },
+            { id: 3, noPeserta: "T1-26-30-07-0596-0003-6", nisn: "3140174788", nama: "RASYA PUTRI RAMADANI", ttl: "Lebak, 14 Juli 2014", mtk: 23.33, mtkKet: "Kurang", ind: 66.67, indKet: "Memadai" },
+            { id: 4, noPeserta: "T1-26-30-07-0596-0004-5", nisn: "3139394544", nama: "MAULANA SAJIDIN", ttl: "Lebak, 5 Oktober 2013", mtk: 43.33, mtkKet: "Memadai", ind: 53.33, indKet: "Memadai" },
+            { id: 5, noPeserta: "T1-26-30-07-0596-0005-4", nisn: "0145397199", nama: "JUJUN ALBANI", ttl: "Lebak, 24 Mei 2014", mtk: 20.00, mtkKet: "Kurang", ind: 36.67, indKet: "Kurang" },
+            { id: 6, noPeserta: "T1-26-30-07-0596-0006-3", nisn: "3137474397", nama: "ANGGA PUTRA", ttl: "Lebak, 23 April 2013", mtk: 30.00, mtkKet: "Kurang", ind: 36.67, indKet: "Kurang" },
+            { id: 7, noPeserta: "T1-26-30-07-0596-0007-2", nisn: "0143013326", nama: "DEA JUNITA", ttl: "Lebak, 24 Juni 2014", mtk: 36.67, mtkKet: "Memadai", ind: 43.33, indKet: "Kurang" },
+            { id: 8, noPeserta: "T1-26-30-07-0596-0008-9", nisn: "3148532496", nama: "RAHMAN ERLANGGA", ttl: "Lebak, 2 Mei 2014", mtk: 36.67, mtkKet: "Memadai", ind: 46.67, indKet: "Kurang" },
+            { id: 9, noPeserta: "T1-26-30-07-0596-0009-8", nisn: "0145571288", nama: "SUMARSAH", ttl: "Lebak, 19 Februari 2014", mtk: 36.67, mtkKet: "Memadai", ind: 36.67, indKet: "Kurang" },
+            { id: 10, noPeserta: "T1-26-30-07-0596-0010-7", nisn: "3148721931", nama: "HOLIPAH", ttl: "Lebak, 17 April 2014", mtk: 33.33, mtkKet: "Memadai", ind: 40.00, indKet: "Kurang" },
+            { id: 11, noPeserta: "T1-26-30-07-0596-0011-6", nisn: "3139049906", nama: "SENDI RAGIL SAPUTRA", ttl: "Lebak, 3 September 2013", mtk: 30.00, mtkKet: "Kurang", ind: 43.33, indKet: "Kurang" },
+            { id: 12, noPeserta: "T1-26-30-07-0596-0012-5", nisn: "0137502610", nama: "SILVIA SARI", ttl: "Lebak, 12 Oktober 2013", mtk: 23.33, mtkKet: "Kurang", ind: 66.67, indKet: "Memadai" },
+            { id: 13, noPeserta: "T1-26-30-07-0596-0013-4", nisn: "3137476534", nama: "ALHAQ ATHAYA RIZKI", ttl: "Jakarta, 22 Desember 2013", mtk: 23.33, mtkKet: "Kurang", ind: 50.00, indKet: "Memadai" },
+            { id: 14, noPeserta: "T1-26-30-07-0596-0014-3", nisn: "0134057942", nama: "SOPIA", ttl: "Lebak, 10 Juli 2013", mtk: 30.00, mtkKet: "Kurang", ind: 46.67, indKet: "Kurang" },
+            { id: 15, noPeserta: "T1-26-30-07-0596-0015-2", nisn: "0146649109", nama: "RHESTIANI PUTRI", ttl: "Lebak, 28 September 2014", mtk: 26.67, mtkKet: "Kurang", ind: 63.33, indKet: "Memadai" },
+            { id: 16, noPeserta: "T1-26-30-07-0596-0016-9", nisn: "0145428637", nama: "MUHAMMAD SYAHRONY", ttl: "Jakarta, 15 Februari 2014", mtk: 30.00, mtkKet: "Kurang", ind: 36.67, indKet: "Kurang" },
+            { id: 17, noPeserta: "T1-26-30-07-0596-0017-8", nisn: "3131473948", nama: "SEKAR AYUNDA NINGSIH", ttl: "Lebak, 16 Mei 2013", mtk: 23.33, mtkKet: "Kurang", ind: 36.67, indKet: "Kurang" },
+            { id: 18, noPeserta: "T1-26-30-07-0596-0018-7", nisn: "0133788378", nama: "IHSAN NABIL YUNANDI", ttl: "Lebak, 3 Mei 2013", mtk: 33.33, mtkKet: "Memadai", ind: 63.33, indKet: "Memadai" },
+            { id: 19, noPeserta: "T1-26-30-07-0596-0019-6", nisn: "0133208418", nama: "REHAN NARDIYANSAH", ttl: "Lebak, 31 Oktober 2013", mtk: 30.00, mtkKet: "Kurang", ind: 53.33, indKet: "Memadai" },
+            { id: 20, noPeserta: "T1-26-30-07-0596-0020-5", nisn: "0146045012", nama: "RIZKY SULISTIA", ttl: "Tangerang, 27 April 2014", mtk: 30.00, mtkKet: "Kurang", ind: 76.67, indKet: "Baik" },
+            { id: 21, noPeserta: "T1-26-30-07-0596-0021-4", nisn: "0133831426", nama: "NAZWA KHOIRUN NISSA", ttl: "Lebak, 12 Oktober 2013", mtk: 53.33, mtkKet: "Memadai", ind: 63.33, indKet: "Memadai" },
+            { id: 22, noPeserta: "T1-26-30-07-0596-0022-3", nisn: "3136177089", nama: "AFIFA FITIYA SUHERLAN", ttl: "Lebak, 21 November 2013", mtk: 36.67, mtkKet: "Memadai", ind: 63.33, indKet: "Memadai" },
+            { id: 23, noPeserta: "T1-26-30-07-0596-0023-2", nisn: "3144739752", nama: "MARDIN", ttl: "Lebak, 6 Juni 2014", mtk: 26.67, mtkKet: "Kurang", ind: 30.00, indKet: "Kurang" },
+            { id: 24, noPeserta: "T1-26-30-07-0596-0024-9", nisn: "0138358641", nama: "GALIH ANANDA PUTRA", ttl: "Lebak, 20 Mei 2013", mtk: 43.33, mtkKet: "Memadai", ind: 56.67, indKet: "Memadai" },
+            { id: 25, noPeserta: "T1-26-30-07-0596-0025-8", nisn: "3132250845", nama: "MUHAMMAD FARHAN NUR ALAM", ttl: "Lebak, 10 Oktober 2013", mtk: 33.33, mtkKet: "Memadai", ind: 53.33, indKet: "Memadai" },
+            { id: 26, noPeserta: "T1-26-30-07-0596-0026-7", nisn: "0143650705", nama: "FAHRUL MUAZIZ AL MUTAQIN", ttl: "Lebak, 19 April 2014", mtk: 20.00, mtkKet: "Kurang", ind: 36.67, indKet: "Kurang" },
+            { id: 27, noPeserta: "T1-26-30-07-0596-0027-6", nisn: "3142997490", nama: "HASTA PRATAMA", ttl: "Lebak, 29 Januari 2014", mtk: 23.33, mtkKet: "Kurang", ind: 30.00, indKet: "Kurang" },
+            { id: 28, noPeserta: "T1-26-30-07-0596-0028-5", nisn: "0145017304", nama: "JUWITA", ttl: "Lebak, 21 Februari 2014", mtk: 36.67, mtkKet: "Memadai", ind: 60.00, indKet: "Memadai" },
+            { id: 29, noPeserta: "T1-26-30-07-0596-0029-4", nisn: "0142145111", nama: "DEWI MARTIANI", ttl: "Lebak, 27 Maret 2014", mtk: 36.67, mtkKet: "Memadai", ind: 53.33, indKet: "Memadai" },
+            { id: 30, noPeserta: "T1-26-30-07-0596-0030-3", nisn: "3131213036", nama: "KAHFI FADILAH", ttl: "Lebak, 9 September 2013", mtk: 36.67, mtkKet: "Memadai", ind: 46.67, indKet: "Kurang" },
+            { id: 31, noPeserta: "T1-26-30-07-0596-0031-2", nisn: "0148487543", nama: "PIKRI RADIYANSAH", ttl: "Lebak, 15 Mei 2014", mtk: 40.00, mtkKet: "Memadai", ind: 40.00, indKet: "Kurang" },
+            { id: 32, noPeserta: "T1-26-30-07-0596-0032-9", nisn: "0143479403", nama: "NADYA AZAHRA PUTRIE", ttl: "Serang, 9 Juni 2014", mtk: 43.33, mtkKet: "Memadai", ind: 80.00, indKet: "Baik" },
+            { id: 33, noPeserta: "T1-26-30-07-0596-0033-8", nisn: "3129446843", nama: "SELDIANSYAH", ttl: "Lebak, 7 Oktober 2013", mtk: 30.00, mtkKet: "Kurang", ind: 26.67, indKet: "Kurang" },
+            { id: 34, noPeserta: "T1-26-30-07-0596-0034-7", nisn: "0142810368", nama: "ATASYA RIZQYA PUTRI", ttl: "Lebak, 21 Februari 2014", mtk: 53.33, mtkKet: "Memadai", ind: 60.00, indKet: "Memadai" },
+            { id: 35, noPeserta: "T1-26-30-07-0596-0035-6", nisn: "3137859873", nama: "MUHAMAD RIZKI SAPUTRA", ttl: "Lebak, 9 September 2013", mtk: 26.67, mtkKet: "Kurang", ind: 33.33, indKet: "Kurang" },
+            { id: 36, noPeserta: "T1-26-30-07-0596-0036-5", nisn: "0132578286", nama: "RAISYA AZZAHRA", ttl: "Lebak, 16 Oktober 2013", mtk: 40.00, mtkKet: "Memadai", ind: 73.33, indKet: "Memadai" },
+            { id: 37, noPeserta: "T1-26-30-07-0596-0037-4", nisn: "3137160595", nama: "ANGGUN ANGGRAENI", ttl: "Lebak, 21 Januari 2013", mtk: 36.67, mtkKet: "Memadai", ind: 53.33, indKet: "Memadai" },
+            { id: 38, noPeserta: "T1-26-30-07-0596-0038-3", nisn: "0141772596", nama: "CIELLA AGUSTIN", ttl: "Tangerang, 13 Agustus 2014", mtk: 36.67, mtkKet: "Memadai", ind: 56.67, indKet: "Memadai" },
+            { id: 39, noPeserta: "T1-26-30-07-0596-0039-2", nisn: "0138674277", nama: "DELIZA DWI ARIANTI", ttl: "Lebak, 20 September 2013", mtk: 23.33, mtkKet: "Kurang", ind: 66.67, indKet: "Memadai" },
+            { id: 40, noPeserta: "T1-26-30-07-0596-0040-9", nisn: "0149175992", nama: "IRSYAD NANO ROMANSYAH", ttl: "Lebak, 16 Januari 2014", mtk: 26.67, mtkKet: "Kurang", ind: 56.67, indKet: "Memadai" },
+            { id: 41, noPeserta: "T1-26-30-07-0596-0041-8", nisn: "3134535127", nama: "RINI SETIA BUDI", ttl: "Lebak, 8 Desember 2013", mtk: 26.67, mtkKet: "Kurang", ind: 40.00, indKet: "Kurang" },
+            { id: 42, noPeserta: "T1-26-30-07-0596-0042-7", nisn: "0137724754", nama: "ANISA KAMILAH", ttl: "Lebak, 5 September 2013", mtk: 40.00, mtkKet: "Memadai", ind: 66.67, indKet: "Memadai" },
+            { id: 43, noPeserta: "T1-26-30-07-0596-0043-6", nisn: "0143749477", nama: "SULISTIA", ttl: "Lebak, 10 Juni 2014", mtk: 30.00, mtkKet: "Kurang", ind: 60.00, indKet: "Memadai" },
+            { id: 44, noPeserta: "T1-26-30-07-0596-0044-5", nisn: "3139007602", nama: "NISMA FAUZAH", ttl: "KP CEMPLANG, 19 November 2013", mtk: 26.67, mtkKet: "Kurang", ind: 80.00, indKet: "Baik" },
+            { id: 45, noPeserta: "T1-26-30-07-0596-0045-4", nisn: "3146121145", nama: "AQIFA NAILLA", ttl: "Lebak, 26 Februari 2014", mtk: 36.67, mtkKet: "Memadai", ind: 80.00, indKet: "Baik" },
+            { id: 46, noPeserta: "T1-26-30-07-0596-0046-3", nisn: "0142888970", nama: "MUHAMAD ALI SODIKIN", ttl: "Lebak, 27 Maret 2014", mtk: 20.00, mtkKet: "Kurang", ind: 40.00, indKet: "Kurang" }
+        ];
+
+        // Global State variables for search, sorting, filtering
+        let displayData = [...tkaData];
+        let currentSortColumn = "id";
+        let isAscending = true;
+
+        // Staff Data for PTK Login Verification
+        const guruData = [
+            { nip: "19870613 202221 2 005", dob: "1987-06-13", name: "Endrik Mukhtarudin, S.Pd." },
+            { nip: "19920401 201903 2 005", dob: "1992-04-01", name: "Ira Siti Humairoh, S.Pd." },
+            { nip: "19891005 202012 2 006", dob: "1989-10-05", name: "Kusmayanti, S.Pd." },
+            { nip: "19750816 2014406 1 001", dob: "1975-08-16", name: "Endi Supardi, S.Pd." },
+            { nip: "19830502 200801 2 008", dob: "1983-05-02", name: "Fineu Pendinastin, S.Pd." },
+            { nip: "19820721 202521 2 0057", dob: "1982-07-21", name: "Ucih Sukaesih, S.Pd." },
+            { nip: "19840406 202321 2 029", dob: "1984-04-06", name: "Badriah, S.Pd.I." },
+            { nip: "19761206 200802 2 004", dob: "1976-12-06", name: "Enok Iis Isnaeniah" },
+            { nip: "19760315 200801 2 005", dob: "1976-03-15", name: "Siti Huraeroh, S.Pd.I." },
+            { nip: "19950529 202221 1 004", dob: "1995-05-29", name: "Firman Hadi Saputra, S.Pd." },
+            { nip: "19800206 200701 2 008", dob: "1980-02-06", name: "NENAH, M.Pd." },
+            { nip: "19890906 202521 1 004", dob: "1989-09-06", name: "Kurniawan Saputra" },
+            { nip: "19970401 202521 1 108", dob: "1997-04-01", name: "Ismail" }
+        ];
+
+        function parseTTL(ttl) {
+            const months = {
+                "Januari": "01", "Februari": "02", "Maret": "03", "April": "04", "Mei": "05", "Juni": "06",
+                "Juli": "07", "Agustus": "08", "September": "09", "Oktober": "10", "November": "11", "Desember": "12"
+            };
+            try {
+                const parts = ttl.split(", ")[1].split(" ");
+                const day = parts[0].padStart(2, '0');
+                const month = months[parts[1]];
+                const year = parts[2];
+                return `${year}-${month}-${day}`;
+            } catch (e) { return null; }
+        }
+
+        function handleStudentLogin(e) {
+            e.preventDefault();
+            const nisn = document.getElementById('student_nisn').value;
+            const dob = document.getElementById('student_dob').value;
+            const error = document.getElementById('student-error');
+
+            const student = tkaData.find(s => s.nisn === nisn && parseTTL(s.ttl) === dob);
+
+            if (student) {
+                error.classList.add('hidden');
+                document.getElementById('login-portal').classList.add('hidden');
+                document.getElementById('directory-view').classList.remove('hidden');
+                document.getElementById('personal-summary').classList.remove('hidden');
+                document.getElementById('logoutBtn').classList.remove('hidden');
+                
+                // Set Data Personal di Dashboard
+                document.getElementById('user-display-name').innerText = `Halo, ${student.nama}`;
+                document.getElementById('user-mtk-score').innerText = student.mtk.toFixed(2);
+                document.getElementById('user-mtk-ket').innerText = student.mtkKet;
+                document.getElementById('user-ind-score').innerText = student.ind.toFixed(2);
+                document.getElementById('user-ind-ket').innerText = student.indKet;
+
+                // Tampilkan hanya baris data siswa tersebut
+                displayData = [student];
+                document.getElementById('directory-header').classList.add('hidden'); 
+                renderTable();
+                
+                // Otomatis buka rapor detail
+                setTimeout(() => openReportCard(student.id), 500);
+            } else {
+                error.classList.remove('hidden');
+            }
+        }
+
+        function handlePtkLogin(e) {
+            e.preventDefault();
+            const nip = document.getElementById('ptk_nip').value.replace(/\s/g, '');
+            const dob = document.getElementById('ptk_dob').value;
+            const error = document.getElementById('ptk-error');
+
+            const staff = guruData.find(g => g.nip.replace(/\s/g, '') === nip && g.dob === dob);
+
+            if (staff) {
+                error.classList.add('hidden');
+                document.getElementById('login-portal').classList.add('hidden');
+                document.getElementById('directory-view').classList.remove('hidden');
+                document.getElementById('logoutBtn').classList.remove('hidden');
+                
+                // Tampilkan seluruh data siswa
+                displayData = [...tkaData];
+                document.getElementById('directory-header').classList.remove('hidden');
+                renderTable();
+            } else {
+                error.classList.remove('hidden');
+            }
+        }
+
+        function logout() {
+            // Tampilkan kembali form login
+            document.getElementById('login-portal').classList.remove('hidden');
+            
+            // Sembunyikan konten portal dan tombol logout itu sendiri
+            document.getElementById('directory-view').classList.add('hidden');
+            document.getElementById('personal-summary').classList.add('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
+            
+            // Reset input form login agar bersih
+            document.getElementById('student_nisn').value = '';
+            document.getElementById('student_dob').value = '';
+            document.getElementById('ptk_nip').value = '';
+            document.getElementById('ptk_dob').value = '';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        //        // Initialize dynamic dashboard values
+        function calculateStatistics() {
+            const total = tkaData.length;
+            
+            // Calculate averages
+            const sumMtk = tkaData.reduce((acc, current) => acc + current.mtk, 0);
+            const sumInd = tkaData.reduce((acc, current) => acc + current.ind, 0);
+            const avgMtk = (sumMtk / total).toFixed(2);
+            const avgInd = (sumInd / total).toFixed(2);
+            
+            // Calculate pass rate metrics (Memadai or Baik)
+            const passedMtk = tkaData.filter(s => s.mtkKet === "Memadai" || s.mtkKet === "Baik").length;
+            const passedInd = tkaData.filter(s => s.indKet === "Memadai" || s.indKet === "Baik").length;
+            const pctMtk = ((passedMtk / total) * 100).toFixed(0);
+            const pctInd = ((passedInd / total) * 100).toFixed(0);
+
+            // Find top performer (using sum of both scores)
+            let topStudent = tkaData[0];
+            let topCombinedScore = topStudent.mtk + topStudent.ind;
+            for(let i = 1; i < tkaData.length; i++) {
+                const combined = tkaData[i].mtk + tkaData[i].ind;
+                if(combined > topCombinedScore) {
+                    topCombinedScore = combined;
+                    topStudent = tkaData[i];
+                }
+            }
+
+            // Populate DOM Elements
+            document.getElementById("statTotalStudents").innerText = total;
+            document.getElementById("statMtkAverage").innerText = avgMtk;
+            document.getElementById("statIndAverage").innerText = avgInd;
+            
+            document.getElementById("statMtkPassRate").innerHTML = `<i data-lucide="${pctMtk > 50 ? 'trending-up' : 'alert-circle'}" class="w-3 h-3 mr-0.5"></i> ${pctMtk}% Memadai/Baik`;
+            document.getElementById("statIndPassRate").innerHTML = `<i data-lucide="${pctInd > 50 ? 'trending-up' : 'alert-circle'}" class="w-3 h-3 mr-0.5"></i> ${pctInd}% Memadai/Baik`;
+            
+            document.getElementById("statTopPerformerName").innerText = topStudent.nama;
+            document.getElementById("statTopPerformerScores").innerText = `Rata-rata: ${((topStudent.mtk + topStudent.ind)/2).toFixed(2)}`;
+
+            lucide.createIcons();
+            
+            // Build visual graphs
+            buildCharts();
+        }
+
+        //        // Chart configuration engine (Chart.js)
+        let mtkChartInstance = null;
+        let indChartInstance = null;
+
+        function buildCharts() {
+            // Count distribution variables
+            const mtkCounts = { Baik: 0, Memadai: 0, Kurang: 0 };
+            const indCounts = { Baik: 0, Memadai: 0, Kurang: 0 };
+
+            tkaData.forEach(student => {
+                mtkCounts[student.mtkKet]++;
+                indCounts[student.indKet]++;
+            });
+
+            // Set counters in HTML text for accessibility
+            document.getElementById("mtkBaikCount").innerText = mtkCounts.Baik;
+            document.getElementById("mtkMemadaiCount").innerText = mtkCounts.Memadai;
+            document.getElementById("mtkKurangCount").innerText = mtkCounts.Kurang;
+
+            document.getElementById("indBaikCount").innerText = indCounts.Baik;
+            document.getElementById("indMemadaiCount").innerText = indCounts.Memadai;
+            document.getElementById("indKurangCount").innerText = indCounts.Kurang;
+
+            // Chart Configuration variables
+            const colors = {
+                Baik: "#10b981",    // Emerald
+                Memadai: "#4f46e5", // Indigo
+                Kurang: "#f43f5e"   // Rose
+            };
+
+            // Matematika Chart
+            const mtkCtx = document.getElementById('mtkChart').getContext('2d');
+            if (mtkChartInstance) mtkChartInstance.destroy();
+            mtkChartInstance = new Chart(mtkCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Baik', 'Memadai', 'Kurang'],
+                    datasets: [{
+                        data: [mtkCounts.Baik, mtkCounts.Memadai, mtkCounts.Kurang],
+                        backgroundColor: [colors.Baik, colors.Memadai, colors.Kurang],
+                        borderWidth: 2,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // Bahasa Indonesia Chart
+            const indCtx = document.getElementById('indChart').getContext('2d');
+            if (indChartInstance) indChartInstance.destroy();
+            indChartInstance = new Chart(indCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Baik', 'Memadai', 'Kurang'],
+                    datasets: [{
+                        data: [indCounts.Baik, indCounts.Memadai, indCounts.Kurang],
+                        backgroundColor: [colors.Baik, colors.Memadai, colors.Kurang],
+                        borderWidth: 2,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        //        // Render rows dynamically based on displayData array
+        function renderTable() {
+            const tableBody = document.getElementById("studentTableBody");
+            const emptyState = document.getElementById("emptyState");
+            tableBody.innerHTML = "";
+
+            if (displayData.length === 0) {
+                emptyState.classList.remove("hidden");
+                emptyState.classList.add("flex");
+                return;
+            } else {
+                emptyState.classList.add("hidden");
+                emptyState.classList.remove("flex");
+            }
+
+            displayData.forEach((student, index) => {
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-slate-50/50 transition duration-150";
+
+                // Badges generator logic
+                const mtkBadgeColor = student.mtkKet === "Baik" ? "bg-emerald-50 text-emerald-700 border-emerald-100" :
+                                      student.mtkKet === "Memadai" ? "bg-indigo-50 text-indigo-700 border-indigo-100" : 
+                                      "bg-rose-50 text-rose-700 border-rose-100";
+                                      
+                const indBadgeColor = student.indKet === "Baik" ? "bg-emerald-50 text-emerald-700 border-emerald-100" :
+                                      student.indKet === "Memadai" ? "bg-indigo-50 text-indigo-700 border-indigo-100" : 
+                                      "bg-rose-50 text-rose-700 border-rose-100";
+
+                tr.innerHTML = `
+                    <td class="px-6 py-4 font-semibold text-slate-400 no-print">${student.id}</td>
+                    <td class="px-6 py-4 font-mono text-slate-500 font-medium text-[12px] whitespace-nowrap">${student.noPeserta}</td>
+                    <td class="px-6 py-4 font-mono text-slate-800 font-bold text-[12px] whitespace-nowrap">${student.nisn}</td>
+                    <td class="px-6 py-4 font-bold text-slate-900 whitespace-nowrap">${student.nama}</td>
+                    <td class="px-6 py-4 text-center whitespace-nowrap">
+                        <div class="inline-flex flex-col items-center">
+                            <span class="font-mono font-bold text-slate-800">${student.mtk.toFixed(2)}</span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border ${mtkBadgeColor} mt-1">${student.mtkKet}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-center whitespace-nowrap">
+                        <div class="inline-flex flex-col items-center">
+                            <span class="font-mono font-bold text-slate-800">${student.ind.toFixed(2)}</span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border ${indBadgeColor} mt-1">${student.indKet}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-center whitespace-nowrap no-print">
+                        <button onclick="openReportCard(${student.id})" class="text-indigo-600 hover:text-white border border-indigo-200 hover:bg-indigo-600 px-3 py-1.5 rounded-xl text-xs font-bold transition duration-150 inline-flex items-center space-x-1 shadow-sm">
+                            <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                            <span>Detail Rapor</span>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            // Update record count text
+            document.getElementById("statRecordCount").innerText = `Menampilkan ${displayData.length} dari ${tkaData.length} siswa`;
+            lucide.createIcons();
+        }
+
+        //        // Search & Sieve controller
+        function filterAndSearch() {
+            const searchVal = document.getElementById("searchInput").value.toLowerCase();
+            const filterMtkVal = document.getElementById("filterMtk").value;
+            const filterIndVal = document.getElementById("filterInd").value;
+
+            displayData = tkaData.filter(student => {
+                const matchesSearch = student.nama.toLowerCase().includes(searchVal) || student.nisn.includes(searchVal);
+                const matchesMtk = filterMtkVal === "" || student.mtkKet === filterMtkVal;
+                const matchesInd = filterIndVal === "" || student.indKet === filterIndVal;
+                return matchesSearch && matchesMtk && matchesInd;
+            });
+
+            renderTable();
+        }
+
+        // Attach event listeners for inputs
+        document.getElementById("searchInput").addEventListener("keyup", filterAndSearch);
+        document.getElementById("filterMtk").addEventListener("change", filterAndSearch);
+        document.getElementById("filterInd").addEventListener("change", filterAndSearch);
+
+        //        // Interactive table header sorting
+        function sortTable(column) {
+            if (currentSortColumn === column) {
+                isAscending = !isAscending;
+            } else {
+                currentSortColumn = column;
+                isAscending = true;
+            }
+
+            displayData.sort((a, b) => {
+                let valA = a[column];
+                let valB = b[column];
+
+                if (column === "mtk" || column === "ind" || column === "id") {
+                    return isAscending ? valA - valB : valB - valA;
+                }
+
+                if (typeof valA === "string") {
+                    return isAscending ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                }
+                return 0;
+            });
+
+            renderTable();
+        }
+
+        //        // Generate personalized ulasan/pedagogic recommendations based on student score profile
+        function getRecommendation(student) {
+            const mtk = student.mtk;
+            const ind = student.ind;
+
+            if (student.mtkKet === "Baik" && student.indKet === "Baik") {
+                return `Siswa atas nama <strong>${student.nama}</strong> menunjukkan pencapaian kemampuan akademik yang sangat luar biasa pada kedua aspek uji. Kemampuan berpikir analitis logis numerasi dan kebahasaan berimbang tinggi. Pertahankan prestasi dan arahkan siswa pada program bimbingan pengayaan kompetensi sains/bahasa lanjutan.`;
+            } else if (student.mtkKet === "Kurang" && student.indKet === "Kurang") {
+                return `Siswa memerlukan pendampingan pembelajaran yang intensif dan tersetruktur pada kompetensi numerasi dasar dan pemahaman bacaan. Direkomendasikan untuk diikutsertakan dalam bimbingan remedial khusus, latihan pengenalan konsep operasi angka dasar, serta peningkatan kebiasaan membaca wacana pendek secara terbimbing harian.`;
+            } else if (student.mtkKet === "Kurang" && (student.indKet === "Memadai" || student.indKet === "Baik")) {
+                return `Kemampuan literasi kebahasaan siswa sudah tergolong memadai untuk mengonstruksi pemikiran verbal. Namun, terdapat kesenjangan yang cukup besar pada aspek kompetensi Matematika logis (Numerasi). Guru dianjurkan melatih anak memvisualisasikan soal matematika ke dalam bentuk gambar konkret/deskripsi kontekstual untuk menjembatani nalar kognitifnya.`;
+            } else if ((student.mtkKet === "Memadai" || student.mtkKet === "Baik") && student.indKet === "Kurang") {
+                return `Anak menunjukkan daya nalar logika-matematika yang cukup baik dalam memecahkan soal berbasis angka. Hambatan terbesar tampaknya terletak pada pemahaman konseptual literasi teks Bahasa Indonesia. Disarankan latihan pemahaman instruksi soal secara seksama dan perbanyak porsi membaca cerita analitis terstruktur.`;
+            } else {
+                // Default Memadai / Memadai
+                return `Siswa memiliki kompetensi kognitif yang memadai pada level aman rata-rata nasional. Untuk mengoptimalkan kapasitas akademik anak, berikan pengenalan latihan soal variatif tingkat menengah secara mandiri untuk memicu adaptabilitas kognitif yang lebih fleksibel.`;
+            }
+        }
+
+        //        // Modal Handlers (Open, Print, Close)
+        function openReportCard(id) {
+            const student = tkaData.find(s => s.id === id);
+            if (!student) return;
+
+            // Populate student basic metadata
+            document.getElementById("cardName").innerText = student.nama;
+            document.getElementById("cardNoPeserta").innerText = student.noPeserta;
+            document.getElementById("cardNisn").innerText = student.nisn;
+            document.getElementById("cardTtl").innerText = student.ttl;
+
+            // Populate scores
+            document.getElementById("cardMtkScore").innerText = student.mtk.toFixed(2);
+            document.getElementById("cardIndScore").innerText = student.ind.toFixed(2);
+
+            // Badges format for Rapor table
+            const mtkBadgeStyle = student.mtkKet === "Baik" ? "bg-emerald-100 text-emerald-800 font-extrabold border border-emerald-300" :
+                                 student.mtkKet === "Memadai" ? "bg-indigo-100 text-indigo-800 font-extrabold border border-indigo-300" : 
+                                 "bg-rose-100 text-rose-800 font-extrabold border border-rose-300";
+                                 
+            const indBadgeStyle = student.indKet === "Baik" ? "bg-emerald-100 text-emerald-800 font-extrabold border border-emerald-300" :
+                                 student.indKet === "Memadai" ? "bg-indigo-100 text-indigo-800 font-extrabold border border-indigo-300" : 
+                                 "bg-rose-100 text-rose-800 font-extrabold border border-rose-300";
+
+            document.getElementById("cardMtkBadge").innerHTML = `<span class="px-3 py-1 rounded-full text-[10px] ${mtkBadgeStyle}">${student.mtkKet.toUpperCase()}</span>`;
+            document.getElementById("cardIndBadge").innerHTML = `<span class="px-3 py-1 rounded-full text-[10px] ${indBadgeStyle}">${student.indKet.toUpperCase()}</span>`;
+
+            // Personalized Recommendation Text generator
+            document.getElementById("cardRecommendationText").innerHTML = getRecommendation(student);
+
+            // Show Modal
+            document.getElementById("reportCardModal").classList.remove("hidden");
+            document.getElementById("reportCardModal").classList.add("flex");
+            document.body.style.overflow = "hidden"; // disable background body scrolling
+        }
+
+        function closeReportCard() {
+            document.getElementById("reportCardModal").classList.add("hidden");
+            document.getElementById("reportCardModal").classList.remove("flex");
+            document.body.style.overflow = "auto"; // restore scrolling
+        }
+
+        // Run setup once DOM is fully available
+        window.onload = function() {
+            calculateStatistics();
+            renderTable();
+        }
+    </script>
+</body>
+</html>cript>
+</body>
+</html>
