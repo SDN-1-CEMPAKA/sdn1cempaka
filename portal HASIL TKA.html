@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Inter Font -->
@@ -153,6 +155,20 @@
                     <div class="bg-indigo-50 p-4 rounded-xl text-indigo-600 group-hover:bg-indigo-100 transition-colors">
                         <i data-lucide="book-open" class="w-8 h-8"></i>
                     </div>
+                </div>
+                <!-- New Validation Card -->
+                <div class="md:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-emerald-100 flex items-center justify-between group hover:border-emerald-300 transition-colors">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-emerald-50 p-4 rounded-xl text-emerald-600">
+                            <i data-lucide="shield-check" class="w-8 h-8"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Validasi Data Mandiri</p>
+                            <h4 class="font-bold text-slate-800">Periksa & Konfirmasi Biodata Anda</h4>
+                            <p id="user-validation-status" class="text-xs text-amber-600 font-medium italic mt-1">Belum divalidasi</p>
+                        </div>
+                    </div>
+                    <button onclick="openValidationModalFromStudent()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md transition">Validasi Sekarang</button>
                 </div>
             </div>
         </div>
@@ -428,6 +444,12 @@
                         <input id="searchInput" type="text" placeholder="Cari nama atau NISN..." class="pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-64 transition duration-150">
                     </div>
                     
+                    <!-- Export Button (Hanya muncul untuk PTK karena header ini disembunyikan untuk siswa) -->
+                    <button id="exportBtn" onclick="exportValidationData()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition shadow-sm">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        <span>Rekap Excel</span>
+                    </button>
+
                     <!-- Subject Filter 1 (Matematika) -->
                     <select id="filterMtk" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-150">
                         <option value="">Matematika: Semua Kategori</option>
@@ -478,6 +500,7 @@
                                     <i data-lucide="chevrons-up-down" class="w-3.5 h-3.5"></i>
                                 </div>
                             </th>
+                            <th scope="col" class="px-6 py-4 text-center font-medium">Validasi</th>
                             <th scope="col" class="px-6 py-4 text-center w-28 font-medium no-print">Aksi</th>
                         </tr>
                     </thead>
@@ -667,6 +690,43 @@
         </div>
     </div>
 
+    <!-- Individual Validation Modal -->
+    <div id="validationModal" class="fixed inset-0 z-[60] overflow-y-auto hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full shadow-2xl relative border border-slate-100">
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-indigo-900">Validasi Biodata Siswa</h3>
+                    <button onclick="closeValidationModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x"></i></button>
+                </div>
+                
+                <div id="validationContent" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <!-- Content injected by JS -->
+                </div>
+
+                <div class="bg-emerald-50 rounded-2xl p-5 border border-emerald-100 mb-6">
+                    <label class="flex items-start cursor-pointer gap-3">
+                        <input type="checkbox" id="confirmCheck" class="w-5 h-5 mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
+                        <div class="text-xs text-slate-700 leading-relaxed">
+                            <span class="font-bold block mb-1">Konfirmasi Orang Tua / Wali</span>
+                            Saya menyatakan bahwa data biodata di atas telah diperiksa dan dinyatakan <strong>Benar</strong> sesuai dengan dokumen kependudukan asli.
+                        </div>
+                    </label>
+                </div>
+
+                <div class="flex justify-end gap-3">
+                    <button onclick="closeValidationModal()" class="px-5 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-bold text-sm">Batal</button>
+                    <button id="saveValidationBtn" onclick="submitValidation()" disabled class="px-6 py-2.5 bg-slate-300 text-slate-500 rounded-xl font-bold text-sm cursor-not-allowed">Konfirmasi Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] hidden bg-slate-800 text-white px-6 py-3 rounded-2xl shadow-2xl items-center gap-3 animate-bounce">
+        <i data-lucide="check-circle" class="text-emerald-400"></i>
+        <span id="toastMsg" class="text-sm font-bold">Data Berhasil Disimpan</span>
+    </div>
+
     <!-- -->
     <!-- Footer -->
     <footer id="main-footer" class="hidden bg-white border-t border-slate-200 py-8 text-center text-xs text-slate-400 no-print mt-auto">
@@ -732,10 +792,178 @@
             { id: 46, noPeserta: "T1-26-30-07-0596-0046-3", nisn: "0142888970", nama: "MUHAMAD ALI SODIKIN", ttl: "Lebak, 27 Maret 2014", mtk: 20.00, mtkKet: "Kurang", ind: 40.00, indKet: "Kurang" }
         ];
 
+        // Integrated Biodata from Validation Source
+        const biodataExtra = {
+            "0141908423": { ortu: "Maulana putra", ni: "20211987", jk: "P", status: "Belum Cek" },
+            "3141113915": { ortu: "Acim", ni: "20212015", jk: "P", status: "Belum Cek" },
+            "3140174788": { ortu: "Nursin", ni: "20212019", jk: "P", status: "Belum Cek" },
+            "3139394544": { ortu: "Wasyono", ni: "20212006", jk: "L", status: "Belum Cek" },
+            "0145397199": { ortu: "Muhamad Ali", ni: "20212003", jk: "L", status: "Belum Cek" },
+            "3137474397": { ortu: "Andi", ni: "19201944", jk: "L", status: "Belum Cek" },
+            "0143013326": { ortu: "Dedi", ni: "20211995", jk: "P", status: "Belum Cek" },
+            "3148532496": { ortu: "Eving Susanto", ni: "20212017", jk: "L", status: "Belum Cek" },
+            "0145571288": { ortu: "Sahri", ni: "20212032", jk: "P", status: "Belum Cek" },
+            "3148721931": { ortu: "Husen", ni: "20211999", jk: "P", status: "Belum Cek" },
+            "3139049906": { ortu: "Rohani", ni: "20212026", jk: "L", status: "Belum Cek" },
+            "0137502610": { ortu: "Sahroni", ni: "20212028", jk: "P", status: "Belum Cek" },
+            "3137476534": { ortu: "Rizki Ade", ni: "20211989", jk: "L", status: "Belum Cek" },
+            "0134057942": { ortu: "saman", ni: "20212029", jk: "P", status: "Belum Cek" },
+            "0146649109": { ortu: "Eka Suyatna", ni: "20212021", jk: "P", status: "Belum Cek" },
+            "0145428637": { ortu: "Yandri Kurniawan", ni: "20212011", jk: "L", status: "Belum Cek" },
+            "3131473948": { ortu: "Suhaebi", ni: "20212025", jk: "P", status: "Belum Cek" },
+            "0133788378": { ortu: "Yandi Purwandi", ni: "20212000", jk: "L", status: "Belum Cek" },
+            "0133208418": { ortu: "Agus", ni: "20212020", jk: "L", status: "Belum Cek" },
+            "0146045012": { ortu: "Ahmad Hidayat", ni: "20212024", jk: "P", status: "Belum Cek" },
+            "0133831426": { ortu: "KHOIRUL UMAM", ni: "20212013", jk: "P", status: "Belum Cek" },
+            "3136177089": { ortu: "Egi Suherlan", ni: "20211988", jk: "P", status: "Belum Cek" },
+            "3144739752": { ortu: "Jani", ni: "20212007", jk: "L", status: "Belum Cek" },
+            "0138358641": { ortu: "Nofri Adi Windra", ni: "20211998", jk: "L", status: "Belum Cek" },
+            "3132250845": { ortu: "RUSTAM NURDANI", ni: "20212035", jk: "L", status: "Belum Cek" },
+            "0143650705": { ortu: "CECEP NASARUDIN", ni: "22232135", jk: "L", status: "Belum Cek" },
+            "3142997490": { ortu: "DADANG HERMAWAN", ni: "23242185", jk: "L", status: "Belum Cek" },
+            "0145017304": { ortu: "Jumantoro", ni: "20212004", jk: "P", status: "Belum Cek" },
+            "0142145111": { ortu: "Supandi", ni: "20211997", jk: "P", status: "Belum Cek" },
+            "3131213036": { ortu: "Ateng", ni: "20212005", jk: "L", status: "Belum Cek" },
+            "0148487543": { ortu: "Andriyana", ni: "20212016", jk: "L", status: "Belum Cek" },
+            "0143479403": { ortu: "Abdul Fatah", ni: "20212012", jk: "P", status: "Belum Cek" },
+            "3129446843": { ortu: "Muhlisin", ni: "19201966", jk: "L", status: "Belum Cek" },
+            "0142810368": { ortu: "Tatang", ni: "20211993", jk: "P", status: "Belum Cek" },
+            "3137859873": { ortu: "Suherman", ni: "20212010", jk: "L", status: "Belum Cek" },
+            "0132578286": { ortu: "Ebi Suhaebi", ni: "20212018", jk: "P", status: "Belum Cek" },
+            "3137160595": { ortu: "Amri", ni: "20211990", jk: "P", status: "Belum Cek" },
+            "0141772596": { ortu: "Muhotib", ni: "20211994", jk: "P", status: "Belum Cek" },
+            "0138674277": { ortu: "NURHADI", ni: "20211996", jk: "P", status: "Belum Cek" },
+            "0149175992": { ortu: "IWAN SUPARDI", ni: "20212002", jk: "L", status: "Belum Cek" },
+            "3134535127": { ortu: "Budi Sutio", ni: "20212022", jk: "P", status: "Belum Cek" },
+            "0137724754": { ortu: "ARIF HIDAYATTULLAH", ni: "20211991", jk: "P", status: "Belum Cek" },
+            "0143749477": { ortu: "Adi Saputra", ni: "20212031", jk: "P", status: "Belum Cek" },
+            "3139007602": { ortu: "Wawan Nahwan", ni: "20212014", jk: "P", status: "Belum Cek" },
+            "3146121145": { ortu: "Sumarna", ni: "20211992", jk: "P", status: "Belum Cek" },
+            "0142888970": { ortu: "Heri", ni: "20212008", jk: "L", status: "Belum Cek" }
+        };
+
+        // Initialize extra data for all students
+        tkaData.forEach(s => {
+            if (!biodataExtra[s.nisn]) {
+                biodataExtra[s.nisn] = { ortu: "Data Belum Ada", ni: "-", jk: "-", status: "Belum Cek" };
+            }
+            // Sync initial status from local storage if exists
+            const savedStatus = localStorage.getItem(`val_${s.nisn}`);
+            if (savedStatus) biodataExtra[s.nisn].status = savedStatus;
+        });
+
         // Global State variables for search, sorting, filtering
         let displayData = [...tkaData];
         let currentSortColumn = "id";
         let isAscending = true;
+        let loggedInStudent = null;
+
+        // Validation Modal Logic
+        function openValidationModalFromStudent() {
+            if (loggedInStudent) openValidationModal(loggedInStudent.id);
+        }
+
+        function openValidationModal(id) {
+            const student = tkaData.find(s => s.id === id);
+            const extra = biodataExtra[student.nisn];
+            const content = document.getElementById('validationContent');
+            
+            const fields = [
+                { label: "Nama Lengkap", val: student.nama },
+                { label: "NISN", val: student.nisn },
+                { label: "Tempat, Tgl Lahir", val: student.ttl },
+                { label: "Nama Orang Tua", val: extra.ortu },
+                { label: "Nomor Induk", val: extra.ni },
+                { label: "Jenis Kelamin", val: extra.jk === "L" ? "Laki-laki" : "Perempuan" }
+            ];
+
+            content.innerHTML = fields.map(f => `
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                    <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">${f.label}</span>
+                    <span class="block text-sm font-bold text-slate-800">${f.val}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('validationModal').classList.remove('hidden');
+            document.getElementById('validationModal').classList.add('flex');
+            
+            // Checkbox Reset
+            const cb = document.getElementById('confirmCheck');
+            const btn = document.getElementById('saveValidationBtn');
+            cb.checked = false;
+            btn.disabled = true;
+            btn.className = "px-6 py-2.5 bg-slate-300 text-slate-500 rounded-xl font-bold text-sm cursor-not-allowed";
+            
+            cb.onchange = (e) => {
+                btn.disabled = !e.target.checked;
+                btn.className = e.target.checked 
+                    ? "px-6 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-sm shadow-lg transition" 
+                    : "px-6 py-2.5 bg-slate-300 text-slate-500 rounded-xl font-bold text-sm cursor-not-allowed";
+            };
+        }
+
+        function closeValidationModal() {
+            document.getElementById('validationModal').classList.add('hidden');
+            document.getElementById('validationModal').classList.remove('flex');
+        }
+
+        function exportValidationData() {
+            const exportData = tkaData.map(s => ({
+                "NISN": s.nisn,
+                "Nama": s.nama,
+                "Tgl Lahir": s.ttl,
+                "Nama Orang Tua": biodataExtra[s.nisn].ortu,
+                "Status Validasi": biodataExtra[s.nisn].status
+            }));
+            
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Rekap Validasi");
+            XLSX.writeFile(wb, "Rekap_Validasi_TKA_2026.xlsx");
+        }
+
+        function submitValidation() {
+            const student = loggedInStudent || tkaData.find(s => s.id === parseInt(document.getElementById('validationContent').dataset.id));
+            if (student) {
+                biodataExtra[student.nisn].status = "Sudah Validasi";
+                localStorage.setItem(`val_${student.nisn}`, "Sudah Validasi");
+                
+                showToast("Biodata Anda Berhasil Dikonfirmasi!");
+                closeValidationModal();
+                
+                if (loggedInStudent) {
+                    document.getElementById('user-validation-status').innerText = "Sudah divalidasi";
+                    document.getElementById('user-validation-status').className = "text-xs text-emerald-600 font-bold mt-1";
+                }
+                renderTable();
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = msg;
+            toast.classList.remove('hidden');
+            toast.classList.add('flex');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+                toast.classList.remove('flex');
+            }, 3000);
+        }
+
+        function exportValidationData() {
+            const exportData = tkaData.map(s => ({
+                "NISN": s.nisn,
+                "Nama": s.nama,
+                "Tgl Lahir": s.ttl,
+                "Nama Orang Tua": biodataExtra[s.nisn].ortu,
+                "Status Validasi": biodataExtra[s.nisn].status
+            }));
+            
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Rekap Validasi");
+            XLSX.writeFile(wb, "Rekap_Validasi_TKA_2026.xlsx");
+        }
 
         // Staff Data for PTK Login Verification
         const guruData = [
@@ -777,6 +1005,7 @@
             const student = tkaData.find(s => s.nisn === nisn && parseTTL(s.ttl) === dob);
 
             if (student) {
+                loggedInStudent = student;
                 error.classList.add('hidden');
                 document.getElementById('login-portal').classList.add('hidden');
                 document.getElementById('directory-view').classList.remove('hidden');
@@ -789,6 +1018,13 @@
                 document.getElementById('user-mtk-ket').innerText = student.mtkKet;
                 document.getElementById('user-ind-score').innerText = student.ind.toFixed(2);
                 document.getElementById('user-ind-ket').innerText = student.indKet;
+                
+                const valStatus = biodataExtra[student.nisn].status;
+                document.getElementById('user-validation-status').innerText = valStatus === "Sudah Validasi" ? "Terverifikasi Mandiri" : "Belum divalidasi";
+                document.getElementById('user-validation-status').className = valStatus === "Sudah Validasi" 
+                    ? "text-xs text-emerald-600 font-bold mt-1" 
+                    : "text-xs text-amber-600 font-medium italic mt-1";
+
 
                 // Tampilkan hanya baris data siswa tersebut
                 displayData = [student];
@@ -811,6 +1047,7 @@
             const staff = guruData.find(g => g.nip.replace(/\s/g, '') === nip && g.dob === dob);
 
             if (staff) {
+                loggedInStudent = null;
                 error.classList.add('hidden');
                 document.getElementById('login-portal').classList.add('hidden');
                 document.getElementById('directory-view').classList.remove('hidden');
@@ -988,6 +1225,11 @@
                                       student.indKet === "Memadai" ? "bg-indigo-50 text-indigo-700 border-indigo-100" : 
                                       "bg-rose-50 text-rose-700 border-rose-100";
 
+                const valStatus = biodataExtra[student.nisn].status;
+                const valBadge = valStatus === "Sudah Validasi"
+                    ? `<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-lg text-[10px] font-bold">VALID</span>`
+                    : `<span class="bg-slate-100 text-slate-400 px-2 py-1 rounded-lg text-[10px] font-bold">BELUM</span>`;
+
                 tr.innerHTML = `
                     <td class="px-6 py-4 font-semibold text-slate-400 no-print">${student.id}</td>
                     <td class="px-6 py-4 font-mono text-slate-500 font-medium text-[12px] whitespace-nowrap">${student.noPeserta}</td>
@@ -1005,6 +1247,7 @@
                             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border ${indBadgeColor} mt-1">${student.indKet}</span>
                         </div>
                     </td>
+                    <td class="px-6 py-4 text-center">${valBadge}</td>
                     <td class="px-6 py-4 text-center whitespace-nowrap no-print">
                         <button onclick="openReportCard(${student.id})" class="text-indigo-600 hover:text-white border border-indigo-200 hover:bg-indigo-600 px-3 py-1.5 rounded-xl text-xs font-bold transition duration-150 inline-flex items-center space-x-1 shadow-sm">
                             <i data-lucide="eye" class="w-3.5 h-3.5"></i>
