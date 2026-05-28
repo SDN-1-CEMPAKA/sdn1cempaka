@@ -1,0 +1,68 @@
+{
+  "name": "sdn1-cempaka-erapor-integration",
+  "version": "1.0.0",
+  "description": "E-Rapor Integration System for SDN 1 CEMPAKA - Serverless + GitHub Pages",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "build": "npm run build:pages && npm run build:functions",
+    "build:pages": "node build/build-pages.js",
+    "build:functions": "npm run build:functions:sync && npm run build:functions:notify",
+    "build:functions:sync": "esbuild src/functions/sync-erapor.js --bundle --platform=node --target=node18 --outfile=dist/sync-erapor.js",
+    "build:functions:notify": "esbuild src/functions/send-notification.js --bundle --platform=node --target=node18 --outfile=dist/send-notification.js",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage",
+    "lint": "eslint src/**/*.js",
+    "format": "prettier --write 'src/**/*.{js,html,css,json}'",
+    "start": "npm run dev",
+    "serve": "http-server ./dist -p 8080 -c-1",
+    "generate:env": "node scripts/generate-env.js",
+    "sync:manual": "node scripts/manual-sync.js",
+    "sync:scheduled": "node -r dotenv/config scripts/scheduled-sync.js",
+    "deploy:github-pages": "node scripts/deploy-gh-pages.js",
+    "check:security": "npm audit && npm outdated",
+    "docs:build": "node scripts/build-docs.js"
+  },
+  "keywords": [
+    "E-Rapor",
+    "education",
+    "SDN-1-CEMPAKA",
+    "firebase",
+    "serverless"
+  ],
+  "author": "SDN 1 CEMPAKA IT Team",
+  "license": "MIT",
+  "dependencies": {
+    "firebase": "^10.11.1",
+    "dotenv": "^16.4.5",
+    "node-fetch": "^3.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.19",
+    "vitest": "^1.2.0",
+    "eslint": "^8.56.0",
+    "prettier": "^3.14.0",
+    "esbuild": "^0.20.1",
+    "http-server": "^14.1.1",
+    "@vitest/coverage-v8": "^1.2.0",
+    "esbuild-plugin-polyfill-node": "^0.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SDN-1-CEMPAKA/sdn1cempaka.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SDN-1-CEMPAKA/sdn1cempaka/issues"
+  },
+  "homepage": "https://sdn-1-cempaka.github.io/sdn1cempaka/",
+  "funding": {
+    "type": "donation",
+    "url": "https://github.com/sponsors/SDN-1-CEMPAKA"
+  }
+}

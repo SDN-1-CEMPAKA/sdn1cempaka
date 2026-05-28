@@ -1,0 +1,278 @@
+/* ======================================
+   RESPONSIVE DESIGN
+   ====================================== */
+
+/* Tablet Screens (768px and below) */
+@media (max-width: 768px) {
+    .hamburger {
+        display: flex;
+    }
+
+    .nav-menu {
+        position: absolute;
+        left: -100%;
+        top: 70px;
+        flex-direction: column;
+        background-color: var(--primary-color);
+        width: 100%;
+        text-align: center;
+        transition: 0.3s;
+        box-shadow: var(--box-shadow);
+        padding: 2rem 0;
+    }
+
+    .nav-menu.active {
+        left: 0;
+    }
+
+    .nav-menu ul {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .nav-link {
+        display: block;
+        padding: 1rem 0;
+    }
+
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+
+    .hero-cta {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .steps {
+        flex-direction: column;
+    }
+
+    .step-arrow {
+        transform: rotate(90deg);
+        margin: 0.5rem 0;
+    }
+
+    .faq-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .help-content {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Small Mobile Screens (480px and below) */
+@media (max-width: 480px) {
+    .logo-text {
+        display: none;
+    }
+
+    .hero {
+        padding: 2rem 0;
+        min-height: 400px;
+    }
+
+    .hero-title {
+        font-size: 1.5rem;
+    }
+
+    .hero-subtitle {
+        font-size: 0.9rem;
+    }
+
+    .hero-image {
+        margin-top: 1.5rem;
+    }
+
+    .floating-card {
+        padding: 1.5rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .feature-card {
+        padding: 1.5rem;
+    }
+
+    .feature-icon {
+        font-size: 2.5rem;
+    }
+
+    .step {
+        padding: 1.5rem;
+        min-width: 150px;
+    }
+
+    .step-number {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+
+    .step h3 {
+        font-size: 1rem;
+    }
+
+    .step p {
+        font-size: 0.85rem;
+    }
+
+    .faq-item {
+        padding: 1rem;
+    }
+
+    .faq-question h4 {
+        font-size: 0.95rem;
+    }
+
+    .help-box {
+        padding: 1.5rem;
+    }
+
+    .help-box h3 {
+        font-size: 1.1rem;
+    }
+
+    .footer {
+        padding: 2rem 0 1rem;
+    }
+
+    .footer-content {
+        gap: 1.5rem;
+    }
+
+    .footer-bottom {
+        font-size: 0.8rem;
+    }
+}
+
+/* Extra Large Screens (1400px and above) */
+@media (min-width: 1400px) {
+    .container {
+        max-width: 1300px;
+    }
+
+    .hero {
+        min-height: 700px;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+    }
+
+    .features-grid {
+        gap: 2.5rem;
+    }
+
+    .feature-card {
+        padding: 2.5rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    body {
+        background-color: white;
+    }
+
+    .navbar,
+    .hero-cta,
+    .footer,
+    .hamburger,
+    .nav-menu {
+        display: none !important;
+    }
+
+    .feature-card,
+    .help-box {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    a {
+        text-decoration: underline;
+    }
+}
+
+/* Dark Mode Support (Optional) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --text-color: #f5f5f5;
+    }
+
+    body {
+        background-color: #121212;
+        color: #f5f5f5;
+    }
+
+    .features,
+    .how-it-works,
+    .faq {
+        background-color: #1e1e1e;
+    }
+
+    .feature-card,
+    .step,
+    .help-box {
+        background-color: #2c2c2c;
+        color: #f5f5f5;
+    }
+
+    .faq-item {
+        background-color: #2c2c2c;
+    }
+}
+
+/* Accessibility - Focus Visible */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: more) {
+    .feature-card,
+    .step,
+    .help-box {
+        border: 2px solid var(--text-color);
+    }
+
+    .btn {
+        border: 2px solid currentColor;
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+}
