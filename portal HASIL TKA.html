@@ -74,7 +74,6 @@
             .print-break {
                 page-break-before: always;
             }
-            /* Optimasi ruang agar muat 1 halaman A4 */
             #printReportArea {
                 padding: 5mm !important;
             }
@@ -83,14 +82,14 @@
             .ulasan-pedagogik { margin-bottom: 15px !important; padding: 10px !important; }
         }
 
-    /* Login styles */
-    .glass-panel {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-    }
-    #login-view {
-        min-height: calc(100vh - 80px);
-    }
+        /* Login styles */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        #login-view {
+            min-height: calc(100vh - 80px);
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
@@ -156,7 +155,7 @@
                         <i data-lucide="book-open" class="w-8 h-8"></i>
                     </div>
                 </div>
-                <!-- New Validation Card -->
+                <!-- Validation Card -->
                 <div class="md:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-emerald-100 flex items-center justify-between group hover:border-emerald-300 transition-colors">
                     <div class="flex items-center gap-4">
                         <div class="bg-emerald-50 p-4 rounded-xl text-emerald-600">
@@ -213,9 +212,7 @@
 
         <!-- Key Performance Indicators (KPIs) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 no-print">
-            
-            <!-- KPI 1: Total Students -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition duration-200 flex items-center justify-between">
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition flex items-center justify-between">
                 <div>
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Jumlah Peserta</p>
                     <p class="text-3xl font-black text-slate-900" id="statTotalStudents">46</p>
@@ -227,9 +224,7 @@
                     <i data-lucide="users" class="w-6 h-6"></i>
                 </div>
             </div>
-
-            <!-- KPI 2: Matematika Average -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition duration-200 flex items-center justify-between">
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition flex items-center justify-between">
                 <div>
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Rata-rata Matematika</p>
                     <p class="text-3xl font-black text-amber-600" id="statMtkAverage">0.00</p>
@@ -241,9 +236,7 @@
                     <i data-lucide="binary" class="w-6 h-6"></i>
                 </div>
             </div>
-
-            <!-- KPI 3: Bahasa Indonesia Average -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition duration-200 flex items-center justify-between">
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition flex items-center justify-between">
                 <div>
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Rata-rata Bhs. Indonesia</p>
                     <p class="text-3xl font-black text-indigo-600" id="statIndAverage">0.00</p>
@@ -255,8 +248,6 @@
                     <i data-lucide="book-open" class="w-6 h-6"></i>
                 </div>
             </div>
-
-            <!-- KPI 4: Top Performer Student -->
             <div class="bg-gradient-to-br from-indigo-900 to-indigo-800 border border-indigo-950 rounded-2xl p-5 shadow-sm text-white flex items-center justify-between">
                 <div>
                     <p class="text-xs font-bold text-indigo-200 uppercase tracking-wider mb-1">Peringkat 1 Sekolah</p>
@@ -366,8 +357,6 @@
 
         <!-- Visualizations and Diagnostic Insights -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8 no-print">
-            
-            <!-- Left Panel: Chart & Distribution Summary -->
             <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
                 <div class="flex items-center justify-between mb-6">
                     <h3 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
@@ -378,7 +367,6 @@
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Matematika Distribution -->
                     <div class="flex flex-col items-center p-4 bg-slate-50 rounded-xl border border-slate-100">
                         <h4 class="font-bold text-slate-700 text-sm mb-4 flex items-center space-x-1.5">
                             <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
@@ -393,8 +381,6 @@
                             <div class="text-rose-600 bg-rose-50 p-1.5 rounded">Kurang <span id="mtkKurangCount">0</span></div>
                         </div>
                     </div>
-
-                    <!-- Bahasa Indonesia Distribution -->
                     <div class="flex flex-col items-center p-4 bg-slate-50 rounded-xl border border-slate-100">
                         <h4 class="font-bold text-slate-700 text-sm mb-4 flex items-center space-x-1.5">
                             <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
@@ -412,14 +398,12 @@
                 </div>
             </div>
 
-            <!-- Right Panel: Diagnostic Summary & Curriculum Action Recommendation -->
             <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
                 <div>
                     <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center space-x-2">
                         <i data-lucide="sparkles" class="text-indigo-600"></i>
                         <span>Analisis Diagnostik & Solusi</span>
                     </h3>
-                    
                     <div class="space-y-4">
                         <div class="p-3 bg-amber-50 rounded-xl border border-amber-100">
                             <h4 class="font-bold text-amber-900 text-xs flex items-center space-x-1.5">
@@ -427,10 +411,9 @@
                                 <span>Kesenjangan Keterampilan Numerasi</span>
                             </h4>
                             <p class="text-[11px] text-amber-800 leading-relaxed mt-1">
-                                Mayoritas siswa berada pada kategori <strong>Kurang</strong> pada materi Matematika (Aritmatika, Logika Angka). Diperlukan pendampingan remedial intensif (*Remedial Teaching*) berbasis media manipulatif konkrit.
+                                Mayoritas siswa berada pada kategori <strong>Kurang</strong> pada materi Matematika (Aritmatika, Logika Angka). Diperlukan pendampingan remedial intensif berbasis media manipulatif konkrit.
                             </p>
                         </div>
-
                         <div class="p-3 bg-indigo-50 rounded-xl border border-indigo-100">
                             <h4 class="font-bold text-indigo-900 text-xs flex items-center space-x-1.5">
                                 <i data-lucide="check-circle" class="w-4 h-4 text-indigo-600"></i>
@@ -440,7 +423,6 @@
                                 Kemampuan Bahasa Indonesia siswa relatif lebih baik dengan porsi kategori <strong>Baik & Memadai</strong> mencapai di atas 60%. Hal ini mengindikasikan penalaran kontekstual verbal siswa dapat diandalkan.
                             </p>
                         </div>
-
                         <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-100">
                             <h4 class="font-bold text-emerald-950 text-xs flex items-center space-x-1.5">
                                 <i data-lucide="compass" class="w-4 h-4 text-emerald-600"></i>
@@ -452,18 +434,11 @@
                         </div>
                     </div>
                 </div>
-                
-                <div class="pt-4 border-t border-slate-100 text-center">
-                    <span class="text-[10px] text-slate-400 block">Status Akreditasi Satdik: Terdaftar Puspendik</span>
-                </div>
             </div>
-
         </div>
 
         <!-- Student Directory and Search Section -->
         <div id="directory-view" class="hidden bg-white rounded-2xl border border-slate-200 p-6 shadow-sm mb-8 print-card">
-            
-            <!-- Filters Header & Search controls -->
             <div id="directory-header" class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 no-print">
                 <div>
                     <h3 class="text-lg font-bold text-slate-900">Direktori & Hasil Belajar Siswa</h3>
@@ -471,78 +446,66 @@
                 </div>
                 
                 <div class="flex flex-col sm:flex-row gap-3">
-                    <!-- Search Input -->
                     <div class="relative">
                         <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 transform -translate-y-1/2"></i>
                         <input id="searchInput" type="text" placeholder="Cari nama atau NISN..." class="pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-64 transition duration-150 font-semibold">
                     </div>
                     
-                    <!-- Export Button (Hanya muncul untuk Admin) -->
                     <button id="exportBtn" onclick="exportValidationData()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition shadow-sm">
                         <i data-lucide="download" class="w-4 h-4"></i>
                         <span>Rekap Excel</span>
                     </button>
 
-                    <!-- Subject Filter 1 (Matematika) -->
                     <select id="filterMtk" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-150 font-semibold">
-                        <option value="">Matematika: Semua Kategori</option>
+                        <option value="">Matematika: Semua</option>
                         <option value="Baik">Matematika: Baik</option>
                         <option value="Memadai">Matematika: Memadai</option>
                         <option value="Kurang">Matematika: Kurang</option>
                     </select>
 
-                    <!-- Subject Filter 2 (Bahasa Indonesia) -->
                     <select id="filterInd" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-150 font-semibold">
-                        <option value="">Bhs. Indonesia: Semua Kategori</option>
-                        <option value="Baik">Bhs. Indonesia: Baik</option>
-                        <option value="Memadai">Bhs. Indonesia: Memadai</option>
-                        <option value="Kurang">Bhs. Indonesia: Kurang</option>
+                        <option value="">B.Indo: Semua</option>
+                        <option value="Baik">B.Indo: Baik</option>
+                        <option value="Memadai">B.Indo: Memadai</option>
+                        <option value="Kurang">B.Indo: Kurang</option>
                     </select>
                 </div>
             </div>
 
-            <!-- Interactive Data Table -->
             <div class="overflow-x-auto rounded-xl border border-slate-100 shadow-inner">
                 <table class="min-w-full divide-y divide-slate-200 text-sm">
                     <thead class="bg-slate-50">
                         <tr class="font-semibold text-slate-500 uppercase tracking-wider text-[11px]">
                             <th scope="col" class="px-6 py-4 text-left w-12 cursor-pointer no-print hover:bg-slate-100 select-none" onclick="sortTable('id')">
                                 <div class="flex items-center space-x-1">
-                                    <span>No</span>
-                                    <i data-lucide="chevrons-up-down" class="w-3.5 h-3.5"></i>
+                                    <span>No</span><i data-lucide="chevrons-up-down" class="w-3.5 h-3.5"></i>
                                 </div>
                             </th>
                             <th scope="col" class="px-6 py-4 text-left w-48 font-medium">Nomor Peserta</th>
                             <th scope="col" class="px-6 py-4 text-left w-32 font-medium">NISN</th>
                             <th scope="col" class="px-6 py-4 text-left cursor-pointer hover:bg-slate-100 select-none" onclick="sortTable('nama')">
                                 <div class="flex items-center space-x-1">
-                                    <span>Nama Lengkap Siswa</span>
-                                    <i data-lucide="chevrons-up-down" class="w-3.5 h-3.5"></i>
+                                    <span>Nama Lengkap Siswa</span><i data-lucide="chevrons-up-down" class="w-3.5 h-3.5"></i>
                                 </div>
                             </th>
                             <th scope="col" class="px-6 py-4 text-center cursor-pointer hover:bg-slate-100 select-none" onclick="sortTable('mtk')">
                                 <div class="flex items-center justify-center space-x-1">
-                                    <span>Matematika</span>
-                                    <i data-lucide="chevrons-up-down" class="w-3.5 h-3.5"></i>
+                                    <span>Matematika</span><i data-lucide="chevrons-up-down" class="w-3.5 h-3.5"></i>
                                 </div>
                             </th>
                             <th scope="col" class="px-6 py-4 text-center cursor-pointer hover:bg-slate-100 select-none" onclick="sortTable('ind')">
                                 <div class="flex items-center justify-center space-x-1">
-                                    <span>Bahasa Indonesia</span>
-                                    <i data-lucide="chevrons-up-down" class="w-3.5 h-3.5"></i>
+                                    <span>B. Indonesia</span><i data-lucide="chevrons-up-down" class="w-3.5 h-3.5"></i>
                                 </div>
                             </th>
                             <th scope="col" class="px-6 py-4 text-center font-medium">Validasi</th>
                             <th scope="col" class="px-6 py-4 text-center w-28 font-medium no-print">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="studentTableBody" class="bg-white divide-y divide-slate-100">
-                        <!-- Content generated dynamically via JavaScript -->
-                    </tbody>
+                    <tbody id="studentTableBody" class="bg-white divide-y divide-slate-100"></tbody>
                 </table>
             </div>
 
-            <!-- Empty State -->
             <div id="emptyState" class="hidden flex-col items-center justify-center py-12 px-4 text-center">
                 <div class="bg-indigo-50 p-4 rounded-full text-indigo-500 mb-3">
                     <i data-lucide="search" class="w-8 h-8"></i>
@@ -551,27 +514,20 @@
                 <p class="text-xs text-slate-400 max-w-xs">Pastikan ejaan nama atau nomor NISN sudah sesuai dengan data yang Anda cari.</p>
             </div>
 
-            <!-- Table Footer Metadata (Total results) -->
             <div class="mt-4 flex items-center justify-between text-xs text-slate-400 px-2 no-print">
                 <span id="statRecordCount">Menampilkan 46 dari 46 siswa</span>
                 <span>Sumber Data: Portal TKA Kemendikdasmen 2026</span>
             </div>
         </div>
-
     </main>
 
-    <!-- Individual Report Card Modal overlay (Pop-up/View Detail) -->
+    <!-- Individual Report Card Modal overlay -->
     <div id="reportCardModal" class="fixed inset-0 z-50 overflow-y-auto hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-3xl w-full shadow-2xl relative border border-slate-100 animate-in fade-in zoom-in duration-200">
-            
-            <!-- Close Button (Interactive UI) -->
             <button onclick="closeReportCard()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1.5 hover:bg-slate-100 rounded-full transition no-print">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
-
-            <!-- Scrollable Report Area -->
             <div class="p-8 sm:p-10 print-card" id="printReportArea">
-                <!-- PRINT HEADERS (KOP SURAT) -->
                 <div class="kop-surat flex items-center justify-between border-b-4 border-double border-slate-800 pb-5 mb-6">
                     <div class="flex items-center space-x-4">
                         <div class="w-16 h-16 rounded-full flex items-center justify-center bg-white border border-slate-200 flex-shrink-0 overflow-hidden">
@@ -590,13 +546,11 @@
                     </div>
                 </div>
 
-                <!-- Title -->
                 <div class="text-center mb-6">
                     <h4 class="text-base font-black text-slate-900 tracking-wide uppercase">Hasil Penilaian Tes Kemampuan Akademik</h4>
                     <p class="text-xs text-slate-400">Tingkat Sekolah Dasar Negeri 1 Cempaka - Tahun Pelajaran 2026/2027</p>
                 </div>
 
-                <!-- Student Information Grid -->
                 <div class="info-siswa bg-slate-50 rounded-2xl p-5 border border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div class="space-y-2 text-xs">
                         <div class="flex items-center border-b border-dashed border-slate-200 pb-1.5">
@@ -637,7 +591,6 @@
                     </div>
                 </div>
 
-                <!-- Scores Breakdown Table -->
                 <div class="mb-6">
                     <table class="min-w-full border-collapse border border-slate-300 text-xs">
                         <thead>
@@ -671,18 +624,14 @@
                     </table>
                 </div>
 
-                <!-- Custom Pedagogic Feedback -->
                 <div class="ulasan-pedagogik border border-slate-200 rounded-2xl p-5 mb-8 bg-slate-50">
                     <h5 class="text-xs font-extrabold text-indigo-950 uppercase tracking-wider mb-2 flex items-center">
                         <i data-lucide="award" class="w-4 h-4 mr-1.5 text-indigo-600"></i>
                         <span>Ulasan Rekomendasi Akademik</span>
                     </h5>
-                    <p class="text-xs text-slate-600 leading-relaxed" id="cardRecommendationText">
-                        -
-                    </p>
+                    <p class="text-xs text-slate-600 leading-relaxed" id="cardRecommendationText">-</p>
                 </div>
 
-                <!-- Signatures Panel (Official Report Layout) -->
                 <div class="grid grid-cols-2 gap-4 mt-8 pt-6 border-t border-slate-200 text-xs">
                     <div>
                         <p class="text-slate-400">Mengetahui,</p>
@@ -697,7 +646,6 @@
                         <p class="text-slate-400">Diterbitkan di Lebak,</p>
                         <p class="font-bold text-slate-800 mt-1">Kamis, 28 Mei 2026</p>
                         <div class="h-16 flex items-end justify-end">
-                            <!-- Digital stamp visual -->
                             <div class="border-2 border-indigo-200 border-dashed rounded px-2 py-1 text-[8px] font-mono text-indigo-400 tracking-wider">
                                 GENERATED BY KEMENDIKDASMEN
                             </div>
@@ -705,10 +653,8 @@
                         <p class="font-bold text-slate-400 text-[10px] mt-2">Oleh Panitia Pusat TKA-ONLINE</p>
                     </div>
                 </div>
-
             </div>
 
-            <!-- Modal Action Buttons (No-Print) -->
             <div class="p-6 bg-slate-50 rounded-b-3xl border-t border-slate-100 flex justify-end space-x-3 no-print">
                 <button onclick="closeReportCard()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-sm font-semibold transition">
                     Tutup
@@ -721,7 +667,7 @@
         </div>
     </div>
 
-    <!-- Individual Validation Modal -->
+    <!-- Validation Modal -->
     <div id="validationModal" class="fixed inset-0 z-[60] overflow-y-auto hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-2xl w-full shadow-2xl relative border border-slate-100">
             <div class="p-8">
@@ -730,9 +676,7 @@
                     <button onclick="closeValidationModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x"></i></button>
                 </div>
                 
-                <div id="validationContent" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <!-- Content injected by JS -->
-                </div>
+                <div id="validationContent" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"></div>
 
                 <div class="bg-emerald-50 rounded-2xl p-5 border border-emerald-100 mb-6">
                     <label class="flex items-start cursor-pointer gap-3">
@@ -752,13 +696,11 @@
         </div>
     </div>
 
-    <!-- Toast Notification -->
     <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] hidden bg-slate-800 text-white px-6 py-3 rounded-2xl shadow-2xl items-center gap-3 animate-bounce">
         <i data-lucide="check-circle" class="text-emerald-400"></i>
         <span id="toastMsg" class="text-sm font-bold">Data Berhasil Disimpan</span>
     </div>
 
-    <!-- Footer -->
     <footer id="main-footer" class="bg-white border-t border-slate-200 py-8 text-center text-xs text-slate-400 no-print mt-auto">
         <div class="max-w-7xl mx-auto px-4">
             <p class="font-medium text-slate-500 mb-1">Daftar Kolektif Hasil Tes Kemampuan Akademik (DKHTKA)</p>
@@ -772,33 +714,21 @@
         </div>
     </footer>
 
-    <!-- Application Logic & Scripts -->
     <script>
-        // Antarmuka penyimpanan terenkapsulasi yang aman untuk lingkungan Iframe Sandboxed
         const storageHelper = {
             getItem: function(key) {
-                try {
-                    return localStorage.getItem(key);
-                } catch (e) {
-                    console.warn("Storage access blocked, using memory instead.", e);
-                    return this._fallbackStorage[key] || null;
-                }
+                try { return localStorage.getItem(key); } 
+                catch (e) { return this._fallbackStorage[key] || null; }
             },
             setItem: function(key, value) {
-                try {
-                    localStorage.setItem(key, value);
-                } catch (e) {
-                    console.warn("Storage write blocked, using memory instead.", e);
-                    this._fallbackStorage[key] = value;
-                }
+                try { localStorage.setItem(key, value); } 
+                catch (e) { this._fallbackStorage[key] = value; }
             },
             _fallbackStorage: {}
         };
 
-        // URL Google Apps Script milik Anda untuk database online
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO2f1gpvDBxQM3b9CR5FqSdTP5vtazDgdU0w-zR5CbRJ4OllYHHHxxrq8veX5_sqOF/exec";
 
-        // Core dataset parsed perfectly from provided raw data (46 Siswa Asli)
         const tkaData = [
             { id: 1, noPeserta: "T1-26-30-07-0596-0001-8", nisn: "0141908423", nama: "ADELIA WULANDARI", ttl: "Lebak, 10 Juni 2014", mtk: 33.33, mtkKet: "Memadai", ind: 76.67, indKet: "Baik" },
             { id: 2, noPeserta: "T1-26-30-07-0596-0002-7", nisn: "3141113915", nama: "NURIYANAH", ttl: "Lebak, 26 Februari 2014", mtk: 36.67, mtkKet: "Memadai", ind: 60.00, indKet: "Memadai" },
@@ -848,7 +778,6 @@
             { id: 46, noPeserta: "T1-26-30-07-0596-0046-3", nisn: "0142888970", nama: "MUHAMAD ALI SODIKIN", ttl: "Lebak, 27 Maret 2014", mtk: 20.00, mtkKet: "Kurang", ind: 40.00, indKet: "Kurang" }
         ];
 
-        // Integrated Biodata from Validation Source
         const biodataExtra = {
             "0141908423": { ortu: "Maulana putra", ni: "20211987", jk: "P", status: "Belum Cek" },
             "3141113915": { ortu: "Acim", ni: "20212015", jk: "P", status: "Belum Cek" },
@@ -898,7 +827,6 @@
             "0142888970": { ortu: "Heri", ni: "20212008", jk: "L", status: "Belum Cek" }
         };
 
-        // Staff Data for PTK Login Verification
         const guruData = [
             { nip: "19870613 202221 1 005", dob: "1987-06-13", name: "Endrik Mukhtarudin, S.Pd." },
             { nip: "19920401 201903 2 005", dob: "1992-04-01", name: "Ira Siti Humairoh, S.Pd." },
@@ -915,76 +843,364 @@
             { nip: "19970401 202521 1 108", dob: "1997-04-01", name: "Ismail" }
         ];
 
-        // Global State variables for search, sorting, filtering
         let displayData = [...tkaData];
         let currentSortColumn = "id";
         let isAscending = true;
         let loggedInStudent = null;
 
-        // Inisialisasi awal status validasi dari storage saat aplikasi pertama kali dimuat
         syncValidationFromStorage();
 
-        // Fungsi sinkronisasi status validasi terbaru dari storage/RAM fallback
         function syncValidationFromStorage() {
             tkaData.forEach(s => {
                 if (!biodataExtra[s.nisn]) {
                     biodataExtra[s.nisn] = { ortu: "Data Belum Ada", ni: "-", jk: "-", status: "Belum Cek" };
                 }
                 const savedStatus = storageHelper.getItem(`val_${s.nisn}`);
-                if (savedStatus) {
-                    biodataExtra[s.nisn].status = savedStatus;
-                }
+                if (savedStatus) biodataExtra[s.nisn].status = savedStatus;
             });
         }
 
-        // Fungsi Sinkronisasi Data dari Google Sheets Cloud
         async function fetchCloudValidations() {
             const badge = document.getElementById("syncStatusBadge");
             try {
-                // Update badge status mendownload
                 badge.innerHTML = `<span class="w-1.5 h-1.5 bg-yellow-500 rounded-full animate-pulse"></span> Menyinkronkan Cloud...`;
                 badge.className = "bg-yellow-50 text-yellow-600 px-3 py-1 rounded-full font-mono text-[10px] border border-yellow-100 flex items-center gap-1";
 
-                // Apps Script biasanya memproses request GET jika dikonfigurasikan
                 const response = await fetch(SCRIPT_URL + "?action=readValidation");
                 if (response.ok) {
                     const resJson = await response.json();
-                    // Periksa status "sukses" dan pastikan data adalah objek (dari get_all_validation_statuses)
                     if (resJson && resJson.status === "sukses" && typeof resJson.data === 'object') {
                         for (const nisn in resJson.data) {
                             if (resJson.data.hasOwnProperty(nisn)) {
                                 const status = resJson.data[nisn];
-                                // Perbarui status validasi di biodataExtra dan localStorage
-                                // Hanya perbarui jika NISN sudah ada di biodataExtra
-                                biodataExtra[nisn].status = status;
-                                storageHelper.setItem(`val_${nisn}`, status);
+                                if (biodataExtra[nisn]) {
+                                    biodataExtra[nisn].status = status;
+                                    storageHelper.setItem(`val_${nisn}`, status);
+                                }
                             }
                         };
-                        console.log("Sinkronisasi dari Google Sheets berhasil dimuat!");
-                        
-                        // Perbarui visual badge menjadi online/tersinkronisasi
                         badge.innerHTML = `<span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Cloud Tersambung`;
                         badge.className = "bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full font-mono text-[10px] border border-emerald-100 flex items-center gap-1";
-                        
                         renderTable();
-                        calculateStatistics();
                         return;
                     }
                 }
-                throw new Error("Respons Apps Script tidak sesuai format standar.");
+                throw new Error("Format Apps Script error");
             } catch (err) {
-                console.warn("Gagal menyambung ke Google Sheets (menggunakan database lokal komputer):", err);
-                // Kembalikan ke Offline Mode
-                badge.innerHTML = `<span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span> Mode Lokal (Komputer)`;
+                badge.innerHTML = `<span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span> Mode Lokal (Offline)`;
                 badge.className = "bg-amber-50 text-amber-600 px-3 py-1 rounded-full font-mono text-[10px] border border-amber-100 flex items-center gap-1";
             }
         }
 
-        // Validation Modal Logic
+        function parseTTL(ttl) {
+            const months = {
+                "Januari": "01", "Februari": "02", "Maret": "03", "April": "04", "Mei": "05", "Juni": "06",
+                "Juli": "07", "Agustus": "08", "September": "09", "Oktober": "10", "November": "11", "Desember": "12"
+            };
+            try {
+                const parts = ttl.split(", ")[1].split(" ");
+                const day = parts[0].padStart(2, '0');
+                const month = months[parts[1]];
+                const year = parts[2];
+                return `${year}-${month}-${day}`;
+            } catch (e) { return null; }
+        }
+
+        function handleStudentLogin(e) {
+            e.preventDefault();
+            const nisn = document.getElementById('student_nisn').value.trim();
+            const dob = document.getElementById('student_dob').value;
+            const errorMsg = document.getElementById('student-error');
+            
+            const student = tkaData.find(s => s.nisn === nisn && parseTTL(s.ttl) === dob);
+            
+            if (student) {
+                errorMsg.classList.add('hidden');
+                loggedInStudent = student;
+                
+                document.getElementById('login-portal').classList.add('hidden');
+                document.getElementById('personal-summary').classList.remove('hidden');
+                document.getElementById('logoutBtn').classList.remove('hidden');
+                
+                document.getElementById('user-display-name').innerText = `Halo, ${student.nama}`;
+                document.getElementById('user-mtk-score').innerText = student.mtk.toFixed(2);
+                document.getElementById('user-mtk-ket').innerText = student.mtkKet;
+                document.getElementById('user-ind-score').innerText = student.ind.toFixed(2);
+                document.getElementById('user-ind-ket').innerText = student.indKet;
+                
+                const getCatColor = (cat) => cat === "Baik" ? "text-emerald-600" : (cat === "Memadai" ? "text-indigo-600" : "text-rose-600");
+                document.getElementById('user-mtk-ket').className = `text-xs font-bold mt-1 ${getCatColor(student.mtkKet)}`;
+                document.getElementById('user-ind-ket').className = `text-xs font-bold mt-1 ${getCatColor(student.indKet)}`;
+                
+                const valStatus = biodataExtra[student.nisn].status;
+                const valBtn = document.getElementById('user-validation-btn');
+                const valStatusEl = document.getElementById('user-validation-status');
+                
+                if (valStatus === "Sudah Validasi") {
+                    valBtn.innerText = "Data Terkunci";
+                    valBtn.disabled = true;
+                    valBtn.className = "bg-slate-300 text-slate-500 px-6 py-2.5 rounded-xl font-bold text-sm cursor-not-allowed";
+                    valStatusEl.innerText = "Terverifikasi Mandiri";
+                    valStatusEl.className = "text-xs text-emerald-600 font-bold mt-1";
+                } else {
+                    valBtn.innerText = "Validasi Sekarang";
+                    valBtn.disabled = false;
+                    valBtn.className = "bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md transition";
+                    valStatusEl.innerText = "Belum divalidasi";
+                    valStatusEl.className = "text-xs text-amber-600 font-medium italic mt-1";
+                }
+                showToast("Berhasil masuk sebagai Siswa");
+            } else {
+                errorMsg.classList.remove('hidden');
+            }
+        }
+
+        function handlePtkLogin(e) {
+            e.preventDefault();
+            const nip = document.getElementById('ptk_nip').value.trim().replace(/\s/g, '');
+            const dob = document.getElementById('ptk_dob').value;
+            const errorMsg = document.getElementById('ptk-error');
+            
+            const ptk = guruData.find(g => g.nip.replace(/\s/g, '') === nip && g.dob === dob);
+            
+            if (ptk) {
+                errorMsg.classList.add('hidden');
+                document.getElementById('login-portal').classList.add('hidden');
+                document.getElementById('directory-view').classList.remove('hidden');
+                document.getElementById('logoutBtn').classList.remove('hidden');
+                renderTable();
+                showToast(`Selamat datang, ${ptk.name}`);
+            } else {
+                errorMsg.classList.remove('hidden');
+            }
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('admin_user').value.trim();
+            const pass = document.getElementById('admin_pass').value;
+            const errorMsg = document.getElementById('admin-error');
+            
+            // Hardcoded admin (Untuk Demo/Standardisasi)
+            if (user === "admin" && pass === "cempaka2026") {
+                errorMsg.classList.add('hidden');
+                document.getElementById('login-portal').classList.add('hidden');
+                document.getElementById('directory-view').classList.remove('hidden');
+                document.getElementById('exportBtn').classList.remove('hidden');
+                document.getElementById('logoutBtn').classList.remove('hidden');
+                renderTable();
+                showToast("Login Admin Berhasil");
+            } else {
+                errorMsg.classList.remove('hidden');
+            }
+        }
+
+        function toggleAdminPassword() {
+            const input = document.getElementById('admin_pass');
+            const icon = document.getElementById('admin-pass-icon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                input.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
+
+        function logout() {
+            loggedInStudent = null;
+            document.getElementById('login-portal').classList.remove('hidden');
+            document.getElementById('personal-summary').classList.add('hidden');
+            document.getElementById('directory-view').classList.add('hidden');
+            document.getElementById('exportBtn').classList.add('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
+            
+            // Bersihkan kolom isian
+            document.getElementById('student_nisn').value = '';
+            document.getElementById('student_dob').value = '';
+            document.getElementById('ptk_nip').value = '';
+            document.getElementById('ptk_dob').value = '';
+            document.getElementById('admin_user').value = '';
+            document.getElementById('admin_pass').value = '';
+            
+            showToast("Anda telah keluar dari portal");
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('studentTableBody');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (displayData.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
+            } else {
+                emptyState.classList.add('hidden');
+                emptyState.classList.remove('flex');
+                
+                tbody.innerHTML = displayData.map((s, index) => {
+                    const status = biodataExtra[s.nisn].status;
+                    const statusBadge = status === "Sudah Validasi" 
+                        ? `<span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full text-[10px] font-bold inline-flex items-center gap-1"><i data-lucide="check-circle" class="w-3 h-3"></i> Valid</span>`
+                        : `<span class="bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full text-[10px] font-bold inline-flex items-center gap-1 cursor-pointer hover:bg-amber-200" onclick="openValidationModal(${s.id})"><i data-lucide="alert-circle" class="w-3 h-3"></i> Belum</span>`;
+                        
+                    const mtkColor = s.mtkKet === "Baik" ? "text-emerald-600" : (s.mtkKet === "Memadai" ? "text-indigo-600" : "text-rose-600");
+                    const indColor = s.indKet === "Baik" ? "text-emerald-600" : (s.indKet === "Memadai" ? "text-indigo-600" : "text-rose-600");
+                        
+                    return `
+                    <tr class="hover:bg-slate-50 transition duration-150 border-b border-slate-100">
+                        <td class="px-6 py-4 whitespace-nowrap text-slate-500 font-medium no-print">${index + 1}</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-mono text-slate-600">${s.noPeserta}</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-mono font-bold text-indigo-600">${s.nisn}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="font-bold text-slate-900">${s.nama}</div>
+                            <div class="text-[10px] text-slate-400">${s.ttl}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                            <div class="font-bold text-slate-800">${s.mtk.toFixed(2)}</div>
+                            <div class="${mtkColor} text-[10px] font-semibold uppercase">${s.mtkKet}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                            <div class="font-bold text-slate-800">${s.ind.toFixed(2)}</div>
+                            <div class="${indColor} text-[10px] font-semibold uppercase">${s.indKet}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center">${statusBadge}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium no-print">
+                            <button onclick="openReportCard(${s.id})" class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 p-2 rounded-lg transition" title="Lihat Rapor">
+                                <i data-lucide="file-text" class="w-4 h-4"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `}).join('');
+            }
+            document.getElementById('statRecordCount').innerText = `Menampilkan ${displayData.length} dari ${tkaData.length} siswa`;
+            lucide.createIcons();
+        }
+
+        function sortTable(column) {
+            isAscending = (currentSortColumn === column) ? !isAscending : true;
+            currentSortColumn = column;
+
+            displayData.sort((a, b) => {
+                let valA = a[column];
+                let valB = b[column];
+                
+                if (typeof valA === 'string') valA = valA.toLowerCase();
+                if (typeof valB === 'string') valB = valB.toLowerCase();
+
+                if (valA < valB) return isAscending ? -1 : 1;
+                if (valA > valB) return isAscending ? 1 : -1;
+                return 0;
+            });
+            renderTable();
+        }
+
+        function applyFilters() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filterMtk = document.getElementById('filterMtk').value;
+            const filterInd = document.getElementById('filterInd').value;
+
+            displayData = tkaData.filter(s => {
+                const matchSearch = s.nama.toLowerCase().includes(query) || s.nisn.includes(query);
+                const matchMtk = filterMtk === "" || s.mtkKet === filterMtk;
+                const matchInd = filterInd === "" || s.indKet === filterInd;
+                return matchSearch && matchMtk && matchInd;
+            });
+            renderTable();
+        }
+
+        // Logic Statistik & Grafik Lanjutan
+        let mtkChartInst, indChartInst;
+
+        function calculateStatistics() {
+            let mtkTotal = 0, indTotal = 0;
+            let mtkBaik = 0, mtkMemadai = 0, mtkKurang = 0;
+            let indBaik = 0, indMemadai = 0, indKurang = 0;
+            let topStudent = tkaData[0];
+            let topAvg = 0;
+
+            tkaData.forEach(s => {
+                mtkTotal += s.mtk;
+                indTotal += s.ind;
+                
+                if (s.mtkKet === "Baik") mtkBaik++;
+                else if (s.mtkKet === "Memadai") mtkMemadai++;
+                else mtkKurang++;
+
+                if (s.indKet === "Baik") indBaik++;
+                else if (s.indKet === "Memadai") indMemadai++;
+                else indKurang++;
+
+                const avg = (s.mtk + s.ind) / 2;
+                if (avg > topAvg) {
+                    topAvg = avg;
+                    topStudent = s;
+                }
+            });
+
+            const total = tkaData.length;
+            document.getElementById('statTotalStudents').innerText = total;
+            document.getElementById('statMtkAverage').innerText = (mtkTotal / total).toFixed(2);
+            document.getElementById('statIndAverage').innerText = (indTotal / total).toFixed(2);
+            
+            const mtkPassRate = ((mtkBaik + mtkMemadai) / total * 100).toFixed(1);
+            document.getElementById('statMtkPassRate').innerHTML = `<i data-lucide="alert-circle" class="w-3 h-3 mr-0.5"></i> ${mtkPassRate}% Memadai/Baik`;
+            
+            const indPassRate = ((indBaik + indMemadai) / total * 100).toFixed(1);
+            document.getElementById('statIndPassRate').innerHTML = `<i data-lucide="trending-up" class="w-3 h-3 mr-0.5"></i> ${indPassRate}% Memadai/Baik`;
+
+            document.getElementById('statTopPerformerName').innerText = topStudent.nama;
+            document.getElementById('statTopPerformerScores').innerText = `Rata-rata: ${topAvg.toFixed(2)}`;
+
+            document.getElementById('mtkBaikCount').innerText = mtkBaik;
+            document.getElementById('mtkMemadaiCount').innerText = mtkMemadai;
+            document.getElementById('mtkKurangCount').innerText = mtkKurang;
+            document.getElementById('indBaikCount').innerText = indBaik;
+            document.getElementById('indMemadaiCount').innerText = indMemadai;
+            document.getElementById('indKurangCount').innerText = indKurang;
+
+            updateCharts(mtkBaik, mtkMemadai, mtkKurang, indBaik, indMemadai, indKurang);
+        }
+
+        function initCharts() {
+            const commonOptions = {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                cutout: '70%'
+            };
+
+            const ctxMtk = document.getElementById('mtkChart').getContext('2d');
+            mtkChartInst = new Chart(ctxMtk, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Baik', 'Memadai', 'Kurang'],
+                    datasets: [{ data: [0, 0, 0], backgroundColor: ['#10b981', '#6366f1', '#f43f5e'], borderWidth: 0 }]
+                },
+                options: commonOptions
+            });
+
+            const ctxInd = document.getElementById('indChart').getContext('2d');
+            indChartInst = new Chart(ctxInd, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Baik', 'Memadai', 'Kurang'],
+                    datasets: [{ data: [0, 0, 0], backgroundColor: ['#10b981', '#6366f1', '#f43f5e'], borderWidth: 0 }]
+                },
+                options: commonOptions
+            });
+        }
+
+        function updateCharts(mb, mm, mk, ib, im, ik) {
+            if (mtkChartInst) { mtkChartInst.data.datasets[0].data = [mb, mm, mk]; mtkChartInst.update(); }
+            if (indChartInst) { indChartInst.data.datasets[0].data = [ib, im, ik]; indChartInst.update(); }
+        }
+
+        // Logika Validasi & Rapor Lanjutan
         function openValidationModalFromStudent() {
             if (loggedInStudent) {
                 const valStatus = biodataExtra[loggedInStudent.nisn].status;
-                if (valStatus === "Sudah Validasi") return; // Data sudah terkunci
+                if (valStatus === "Sudah Validasi") return; 
                 openValidationModal(loggedInStudent.id);
             }
         }
@@ -993,7 +1209,7 @@
             const student = tkaData.find(s => s.id === id);
             const extra = biodataExtra[student.nisn];
             const content = document.getElementById('validationContent');
-            content.dataset.id = id; // Store ID for reference
+            content.dataset.id = id;
 
             const fields = [
                 { label: "Nama Lengkap", val: student.nama },
@@ -1014,7 +1230,6 @@
             document.getElementById('validationModal').classList.remove('hidden');
             document.getElementById('validationModal').classList.add('flex');
             
-            // Checkbox Reset
             const cb = document.getElementById('confirmCheck');
             const btn = document.getElementById('saveValidationBtn');
             cb.checked = false;
@@ -1056,20 +1271,17 @@
             XLSX.writeFile(wb, "Rekap_Hasil_TKA_SDN1_Cempaka_2026.xlsx");
         }
 
-        // Melakukan submit dan langsung disinkronkan ke Google Sheets Spreadsheet Anda!
         async function submitValidation() {
             const studentId = parseInt(document.getElementById('validationContent').dataset.id);
             const student = loggedInStudent || tkaData.find(s => s.id === studentId);
             
             if (student) {
-                // 1. Amankan data di LocalStorage terlebih dahulu (Offline-First)
                 biodataExtra[student.nisn].status = "Sudah Validasi";
                 storageHelper.setItem(`val_${student.nisn}`, "Sudah Validasi");
                 
-                showToast("Biodata disimpan di komputer...");
+                showToast("Biodata berhasil dikunci secara lokal...");
                 closeValidationModal();
                 
-                // Perbarui antarmuka pengguna dashboard jika sedang bertindak sebagai siswa
                 if (loggedInStudent && loggedInStudent.id === student.id) {
                     const valBtn = document.getElementById('user-validation-btn');
                     valBtn.innerText = "Data Terkunci";
@@ -1082,40 +1294,24 @@
                 
                 renderTable();
 
-                // 2. Kirim data secara asinkron ke Google Sheets API Anda di latar belakang
                 try {
-                    showToast("Menghubungkan ke Cloud Google Sheets...");
-                    
-                    const payload = { // Payload disederhanakan karena submit_validation_to_gs hanya butuh nisn
-                        action: "submitValidation",
-                        nisn: student.nisn, // Hanya NISN yang diperlukan oleh fungsi GAS
-                        timestamp: new Date().toISOString()
-                    };
-
-                    // Gunakan mode: "no-cors" karena redirect Web App Google Script biasanya menyebabkan error CORS
-                    // namun data pengiriman POST form-encoded tetap berhasil dieksekusi oleh server Google Script!
+                    const payload = { action: "submitValidation", nisn: student.nisn };
                     const formBody = [];
                     for (const property in payload) {
-                        const encodedKey = encodeURIComponent(property);
-                        const encodedValue = encodeURIComponent(payload[property]);
-                        formBody.push(encodedKey + "=" + encodedValue);
+                        formBody.push(encodeURIComponent(property) + "=" + encodeURIComponent(payload[property]));
                     }
-                    const encodedPayload = formBody.join("&");
-
+                    
                     await fetch(SCRIPT_URL, {
                         method: "POST",
                         mode: "no-cors",
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded"
-                        },
-                        body: encodedPayload
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: formBody.join("&")
                     });
-
-                    showToast("Awan Terbuka: Validasi tersinkron ke Google Sheets!");
-                    fetchCloudValidations(); // Segarkan data tabel dengan pemicu cloud terbaru
+                    showToast("Tersinkronisasi dengan Database Google Sheets!");
+                    fetchCloudValidations(); 
                 } catch (err) {
-                    console.error("Gagal menyinkronkan data ke Google Sheets:", err);
-                    showToast("Gagal kirim ke Google Sheets, data tetap aman di memori lokal laptop.");
+                    console.error("Gagal menyinkronkan data:", err);
+                    showToast("Simpan ke Cloud gagal. Tersimpan di memori perangkat.");
                 }
             }
         }
@@ -1131,482 +1327,68 @@
             }, 3000);
         }
 
-        function parseTTL(ttl) {
-            const months = {
-                "Januari": "01", "Februari": "02", "Maret": "03", "April": "04", "Mei": "05", "Juni": "06",
-                "Juli": "07", "Agustus": "08", "September": "09", "Oktober": "10", "November": "11", "Desember": "12"
-            };
-            try {
-                const parts = ttl.split(", ")[1].split(" ");
-                const day = parts[0].padStart(2, '0');
-                const month = months[parts[1]];
-                const year = parts[2];
-                return `${year}-${month}-${day}`;
-            } catch (e) { return null; }
-        }
-
-        function handleStudentLogin(e) {
-            e.preventDefault();
-            const nisn = document.getElementById('student_nisn').value.trim();
-            const dob = document.getElementById('student_dob').value;
-            const error = document.getElementById('student-error');
-
-            syncValidationFromStorage();
-
-            const student = tkaData.find(s => s.nisn === nisn && parseTTL(s.ttl) === dob);
-
-            if (student) {
-                loggedInStudent = student;
-                error.classList.add('hidden');
-                document.getElementById('login-portal').classList.add('hidden');
-                document.getElementById('directory-view').classList.remove('hidden');
-                document.getElementById('personal-summary').classList.remove('hidden');
-                document.getElementById('logoutBtn').classList.remove('hidden');
-                
-                // Set Data Personal di Dashboard
-                document.getElementById('user-display-name').innerText = `Halo, ${student.nama}`;
-                document.getElementById('user-mtk-score').innerText = student.mtk.toFixed(2);
-                document.getElementById('user-mtk-ket').innerText = student.mtkKet;
-                document.getElementById('user-ind-score').innerText = student.ind.toFixed(2);
-                document.getElementById('user-ind-ket').innerText = student.indKet;
-                
-                const valStatus = biodataExtra[student.nisn].status;
-                const valBtn = document.getElementById('user-validation-btn');
-
-                document.getElementById('user-validation-status').innerText = valStatus === "Sudah Validasi" ? "Terverifikasi Mandiri" : "Belum divalidasi";
-                document.getElementById('user-validation-status').className = valStatus === "Sudah Validasi" 
-                    ? "text-xs text-emerald-600 font-bold mt-1" 
-                    : "text-xs text-amber-600 font-medium italic mt-1";
-
-                if (valStatus === "Sudah Validasi") {
-                    valBtn.innerText = "Data Terkunci";
-                    valBtn.disabled = true;
-                    valBtn.className = "bg-slate-300 text-slate-500 px-6 py-2.5 rounded-xl font-bold text-sm cursor-not-allowed";
-                } else {
-                    valBtn.innerText = "Validasi Sekarang";
-                    valBtn.disabled = false;
-                    valBtn.className = "bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md transition";
-                }
-
-                // Tampilkan hanya baris data siswa tersebut
-                displayData = [student];
-                document.getElementById('directory-header').classList.add('hidden'); 
-                renderTable();
-                
-                // Otomatis buka rapor detail
-                setTimeout(() => openReportCard(student.id), 500);
-            } else {
-                error.classList.remove('hidden');
-            }
-        }
-
-        function handlePtkLogin(e) {
-            e.preventDefault();
-            const nip = document.getElementById('ptk_nip').value.replace(/\s/g, '');
-            const dob = document.getElementById('ptk_dob').value;
-            const error = document.getElementById('ptk-error');
-
-            syncValidationFromStorage();
-
-            const staff = guruData.find(g => g.nip.replace(/\s/g, '') === nip && g.dob === dob);
-
-            if (staff) {
-                loggedInStudent = null;
-                error.classList.add('hidden');
-                document.getElementById('login-portal').classList.add('hidden');
-                document.getElementById('directory-view').classList.remove('hidden');
-                document.getElementById('logoutBtn').classList.remove('hidden');
-                
-                // Tampilkan seluruh data siswa
-                displayData = [...tkaData];
-                document.getElementById('directory-header').classList.remove('hidden');
-                renderTable();
-            } else {
-                error.classList.remove('hidden');
-            }
-        }
-
-        function toggleAdminPassword() {
-            const passwordInput = document.getElementById('admin_pass');
-            const icon = document.getElementById('admin-pass-icon');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                icon.setAttribute('data-lucide', 'eye-off');
-            } else {
-                passwordInput.type = 'password';
-                icon.setAttribute('data-lucide', 'eye');
-            }
-            lucide.createIcons();
-        }
-
-        function handleAdminLogin(e) {
-            e.preventDefault();
-            const user = document.getElementById('admin_user').value.trim();
-            const pass = document.getElementById('admin_pass').value;
-            const error = document.getElementById('admin-error');
-
-            if (user === "20602495" && pass === "Cempaka@20602495") {
-                syncValidationFromStorage();
-
-                loggedInStudent = null;
-                error.classList.add('hidden');
-                document.getElementById('login-portal').classList.add('hidden');
-                document.getElementById('directory-view').classList.remove('hidden');
-                document.getElementById('logoutBtn').classList.remove('hidden');
-                
-                displayData = [...tkaData];
-                document.getElementById('directory-header').classList.remove('hidden');
-                document.getElementById('exportBtn').classList.remove('hidden');
-                renderTable();
-            } else {
-                error.classList.remove('hidden');
-            }
-        }
-
-        function logout() {
-            // Reset state login
-            loggedInStudent = null;
-
-            // Tampilkan kembali form login
-            document.getElementById('login-portal').classList.remove('hidden');
-            
-            // Sembunyikan konten portal dan tombol logout
-            document.getElementById('directory-view').classList.add('hidden');
-            document.getElementById('personal-summary').classList.add('hidden');
-            document.getElementById('logoutBtn').classList.add('hidden');
-            
-            // Reset input form login agar bersih
-            document.getElementById('student_nisn').value = '';
-            document.getElementById('student_dob').value = '';
-            document.getElementById('ptk_nip').value = '';
-            document.getElementById('ptk_dob').value = '';
-            document.getElementById('admin_user').value = '';
-            document.getElementById('admin_pass').value = '';
-            document.getElementById('exportBtn').classList.add('hidden');
-            
-            // Reset validation button UI ke kondisi default
-            const valBtn = document.getElementById('user-validation-btn');
-            valBtn.innerText = "Validasi Sekarang";
-            valBtn.disabled = false;
-            valBtn.className = "bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md transition";
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Initialize dynamic dashboard values
-        function calculateStatistics() {
-            const total = tkaData.length;
-            
-            // Calculate averages
-            const sumMtk = tkaData.reduce((acc, current) => acc + current.mtk, 0);
-            const sumInd = tkaData.reduce((acc, current) => acc + current.ind, 0);
-            const avgMtk = (sumMtk / total).toFixed(2);
-            const avgInd = (sumInd / total).toFixed(2);
-            
-            // Calculate pass rate metrics (Memadai or Baik)
-            const passedMtk = tkaData.filter(s => s.mtkKet === "Memadai" || s.mtkKet === "Baik").length;
-            const passedInd = tkaData.filter(s => s.indKet === "Memadai" || s.indKet === "Baik").length;
-            const pctMtk = ((passedMtk / total) * 100).toFixed(0);
-            const pctInd = ((passedInd / total) * 100).toFixed(0);
-
-            // Find top performer (using sum of both scores)
-            let topStudent = tkaData[0];
-            let topCombinedScore = topStudent.mtk + topStudent.ind;
-            for(let i = 1; i < tkaData.length; i++) {
-                const combined = tkaData[i].mtk + tkaData[i].ind;
-                if(combined > topCombinedScore) {
-                    topCombinedScore = combined;
-                    topStudent = tkaData[i];
-                }
-            }
-
-            // Populate DOM Elements
-            document.getElementById("statTotalStudents").innerText = total;
-            document.getElementById("statMtkAverage").innerText = avgMtk;
-            document.getElementById("statIndAverage").innerText = avgInd;
-            
-            document.getElementById("statMtkPassRate").innerHTML = `<i data-lucide="${pctMtk > 50 ? 'trending-up' : 'alert-circle'}" class="w-3 h-3 mr-0.5"></i> ${pctMtk}% Memadai/Baik`;
-            document.getElementById("statIndPassRate").innerHTML = `<i data-lucide="${pctInd > 50 ? 'trending-up' : 'alert-circle'}" class="w-3 h-3 mr-0.5"></i> ${pctInd}% Memadai/Baik`;
-            
-            document.getElementById("statTopPerformerName").innerText = topStudent.nama;
-            document.getElementById("statTopPerformerScores").innerText = `Rata-rata: ${((topStudent.mtk + topStudent.ind)/2).toFixed(2)}`;
-
-            lucide.createIcons();
-            
-            // Build visual graphs
-            buildCharts();
-        }
-
-        // Chart configuration engine (Chart.js)
-        let mtkChartInstance = null;
-        let indChartInstance = null;
-
-        function buildCharts() {
-            // Count distribution variables
-            const mtkCounts = { Baik: 0, Memadai: 0, Kurang: 0 };
-            const indCounts = { Baik: 0, Memadai: 0, Kurang: 0 };
-
-            tkaData.forEach(student => {
-                mtkCounts[student.mtkKet]++;
-                indCounts[student.indKet]++;
-            });
-
-            // Set counters in HTML text for accessibility
-            document.getElementById("mtkBaikCount").innerText = mtkCounts.Baik;
-            document.getElementById("mtkMemadaiCount").innerText = mtkCounts.Memadai;
-            document.getElementById("mtkKurangCount").innerText = mtkCounts.Kurang;
-
-            document.getElementById("indBaikCount").innerText = indCounts.Baik;
-            document.getElementById("indMemadaiCount").innerText = indCounts.Memadai;
-            document.getElementById("indKurangCount").innerText = indCounts.Kurang;
-
-            // Chart Configuration variables
-            const colors = {
-                Baik: "#10b981",    // Emerald
-                Memadai: "#4f46e5", // Indigo
-                Kurang: "#f43f5e"   // Rose
-            };
-
-            // Matematika Chart
-            const mtkCtx = document.getElementById('mtkChart').getContext('2d');
-            if (mtkChartInstance) mtkChartInstance.destroy();
-            mtkChartInstance = new Chart(mtkCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Baik', 'Memadai', 'Kurang'],
-                    datasets: [{
-                        data: [mtkCounts.Baik, mtkCounts.Memadai, mtkCounts.Kurang],
-                        backgroundColor: [colors.Baik, colors.Memadai, colors.Kurang],
-                        borderWidth: 2,
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } }
-                }
-            });
-
-            // Bahasa Indonesia Chart
-            const indCtx = document.getElementById('indChart').getContext('2d');
-            if (indChartInstance) indChartInstance.destroy();
-            indChartInstance = new Chart(indCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Baik', 'Memadai', 'Kurang'],
-                    datasets: [{
-                        data: [indCounts.Baik, indCounts.Memadai, indCounts.Kurang],
-                        backgroundColor: [colors.Baik, colors.Memadai, colors.Kurang],
-                        borderWidth: 2,
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } }
-                }
-            });
-        }
-
-        // Render rows dynamically based on displayData array
-        function renderTable() {
-            const tableBody = document.getElementById("studentTableBody");
-            const emptyState = document.getElementById("emptyState");
-            tableBody.innerHTML = "";
-
-            // Selalu sinkronkan data sebelum render tabel agar status 'VALID' muncul
-            syncValidationFromStorage();
-
-            if (displayData.length === 0) {
-                emptyState.classList.remove("hidden");
-                emptyState.classList.add("flex");
-                return;
-            } else {
-                emptyState.classList.add("hidden");
-                emptyState.classList.remove("flex");
-            }
-
-            displayData.forEach((student, index) => {
-                const tr = document.createElement("tr");
-                tr.className = "hover:bg-slate-50/50 transition duration-150";
-
-                // Badges generator logic
-                const mtkBadgeColor = student.mtkKet === "Baik" ? "bg-emerald-50 text-emerald-700 border-emerald-100" :
-                                      student.mtkKet === "Memadai" ? "bg-indigo-50 text-indigo-700 border-indigo-100" : 
-                                      "bg-rose-50 text-rose-700 border-rose-100";
-                                      
-                const indBadgeColor = student.indKet === "Baik" ? "bg-emerald-50 text-emerald-700 border-emerald-100" :
-                                      student.indKet === "Memadai" ? "bg-indigo-50 text-indigo-700 border-indigo-100" : 
-                                      "bg-rose-50 text-rose-700 border-rose-100";
-
-                const valStatus = biodataExtra[student.nisn].status;
-                
-                // Menentukan badge validasi interaktif. Jika sebagai Admin/Guru, bisa diklik langsung untuk memvalidasi manual.
-                let valBadge = "";
-                if (valStatus === "Sudah Validasi") {
-                    valBadge = `<span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-lg text-[10px] font-bold inline-flex items-center gap-1 shadow-sm"><i data-lucide="check-circle" class="w-3 h-3"></i> VALID</span>`;
-                } else {
-                    if (loggedInStudent) {
-                        valBadge = `<span class="bg-slate-100 text-slate-400 px-2.5 py-1 rounded-lg text-[10px] font-bold">BELUM</span>`;
-                    } else {
-                        valBadge = `<button onclick="openValidationModal(${student.id})" class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-lg text-[10px] font-bold transition flex items-center justify-center gap-1 mx-auto shadow-sm">
-                            <i data-lucide="alert-circle" class="w-3 h-3"></i> BELUM (KLIK)
-                        </button>`;
-                    }
-                }
-
-                tr.innerHTML = `
-                    <td class="px-6 py-4 font-semibold text-slate-400 no-print">${student.id}</td>
-                    <td class="px-6 py-4 font-mono text-slate-500 font-medium text-[12px] whitespace-nowrap">${student.noPeserta}</td>
-                    <td class="px-6 py-4 font-mono text-slate-800 font-bold text-[12px] whitespace-nowrap">${student.nisn}</td>
-                    <td class="px-6 py-4 font-bold text-slate-900 whitespace-nowrap">${student.nama}</td>
-                    <td class="px-6 py-4 text-center whitespace-nowrap">
-                        <div class="inline-flex flex-col items-center">
-                            <span class="font-mono font-bold text-slate-800">${student.mtk.toFixed(2)}</span>
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border ${mtkBadgeColor} mt-1">${student.mtkKet}</span>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 text-center whitespace-nowrap">
-                        <div class="inline-flex flex-col items-center">
-                            <span class="font-mono font-bold text-slate-800">${student.ind.toFixed(2)}</span>
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border ${indBadgeColor} mt-1">${student.indKet}</span>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 text-center">${valBadge}</td>
-                    <td class="px-6 py-4 text-center whitespace-nowrap no-print">
-                        <button onclick="openReportCard(${student.id})" class="text-indigo-600 hover:text-white border border-indigo-200 hover:bg-indigo-600 px-3 py-1.5 rounded-xl text-xs font-bold transition duration-150 inline-flex items-center space-x-1 shadow-sm">
-                            <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                            <span>Detail Rapor</span>
-                        </button>
-                    </td>
-                `;
-                tableBody.appendChild(tr);
-            });
-
-            // Update record count text
-            document.getElementById("statRecordCount").innerText = `Menampilkan ${displayData.length} dari ${tkaData.length} siswa`;
-            lucide.createIcons();
-        }
-
-        // Search & Sieve controller
-        function filterAndSearch() {
-            const searchVal = document.getElementById("searchInput").value.toLowerCase();
-            const filterMtkVal = document.getElementById("filterMtk").value;
-            const filterIndVal = document.getElementById("filterInd").value;
-
-            displayData = tkaData.filter(student => {
-                const matchesSearch = student.nama.toLowerCase().includes(searchVal) || student.nisn.includes(searchVal);
-                const matchesMtk = filterMtkVal === "" || student.mtkKet === filterMtkVal;
-                const matchesInd = filterIndVal === "" || student.indKet === filterIndVal;
-                return matchesSearch && matchesMtk && matchesInd;
-            });
-
-            renderTable();
-        }
-
-        // Attach event listeners for inputs
-        document.getElementById("searchInput").addEventListener("keyup", filterAndSearch);
-        document.getElementById("filterMtk").addEventListener("change", filterAndSearch);
-        document.getElementById("filterInd").addEventListener("change", filterAndSearch);
-
-        // Interactive table header sorting
-        function sortTable(column) {
-            if (currentSortColumn === column) {
-                isAscending = !isAscending;
-            } else {
-                currentSortColumn = column;
-                isAscending = true;
-            }
-
-            displayData.sort((a, b) => {
-                let valA = a[column];
-                let valB = b[column];
-
-                if (column === "mtk" || column === "ind" || column === "id") {
-                    return isAscending ? valA - valB : valB - valA;
-                }
-
-                if (typeof valA === "string") {
-                    return isAscending ? valA.localeCompare(valB) : valB.localeCompare(valA);
-                }
-                return 0;
-            });
-
-            renderTable();
-        }
-
-        // Generate personalized ulasan/pedagogic recommendations based on student score profile
-        function getRecommendation(student) {
-            if (student.mtkKet === "Baik" && student.indKet === "Baik") {
-                return `Siswa atas nama <strong>${student.nama}</strong> menunjukkan pencapaian kemampuan akademik yang sangat luar biasa pada kedua aspek uji. Kemampuan berpikir analitis logis numerasi dan kebahasaan berimbang tinggi. Pertahankan prestasi dan arahkan siswa pada program bimbingan pengayaan kompetensi sains/bahasa lanjutan.`;
-            } else if (student.mtkKet === "Kurang" && student.indKet === "Kurang") {
-                return `Siswa memerlukan pendampingan pembelajaran yang intensif dan tersetruktur pada kompetensi numerasi dasar dan pemahaman bacaan. Direkomendasikan untuk diikutsertakan dalam bimbingan remedial khusus, latihan pengenalan konsep operasi angka dasar, serta peningkatan kebiasaan membaca wacana pendek secara terbimbing harian.`;
-            } else if (student.mtkKet === "Kurang" && (student.indKet === "Memadai" || student.indKet === "Baik")) {
-                return `Kemampuan literasi kebahasaan siswa sudah tergolong memadai untuk mengonstruksi pemikiran verbal. Namun, terdapat kesenjangan yang cukup besar pada aspek kompetensi Matematika logis (Numerasi). Guru dianjurkan melatih anak memvisualisasikan soal matematika ke dalam bentuk gambar konkret/deskripsi kontekstual untuk menjembatani nalar kognitifnya.`;
-            } else if ((student.mtkKet === "Memadai" || student.mtkKet === "Baik") && student.indKet === "Kurang") {
-                return `Anak menunjukkan daya nalar logika-matematika yang cukup baik dalam memecahkan soal berbasis angka. Hambatan terbesar tampaknya terletak pada pemahaman konseptual literasi teks Bahasa Indonesia. Disarankan latihan pemahaman instruksi soal secara seksama dan perbanyak porsi membaca cerita analitis terstruktur.`;
-            } else {
-                // Default Memadai / Memadai
-                return `Siswa memiliki kompetensi kognitif yang memadai pada level aman rata-rata nasional. Untuk mengoptimalkan kapasitas akademik anak, berikan pengenalan latihan soal variatif tingkat menengah secara mandiri untuk memicu adaptabilitas kognitif yang lebih fleksibel.`;
-            }
-        }
-
-        // Modal Handlers (Open, Print, Close)
         function openReportCard(id) {
             const student = tkaData.find(s => s.id === id);
-            if (!student) return;
-
-            // Populate student basic metadata
-            document.getElementById("cardName").innerText = student.nama;
-            document.getElementById("cardNoPeserta").innerText = student.noPeserta;
-            document.getElementById("cardNisn").innerText = student.nisn;
-            document.getElementById("cardTtl").innerText = student.ttl;
-
+            
+            document.getElementById('cardName').innerText = student.nama;
+            document.getElementById('cardNoPeserta').innerText = student.noPeserta;
+            document.getElementById('cardNisn').innerText = student.nisn;
+            document.getElementById('cardTtl').innerText = student.ttl;
+            
+            document.getElementById('cardMtkScore').innerText = student.mtk.toFixed(2);
+            document.getElementById('cardMtkBadge').innerHTML = getBadgeHTML(student.mtkKet);
+            
+            document.getElementById('cardIndScore').innerText = student.ind.toFixed(2);
+            document.getElementById('cardIndBadge').innerHTML = getBadgeHTML(student.indKet);
+            
             const valStatus = biodataExtra[student.nisn].status;
-            document.getElementById("cardStatusVerify").innerText = valStatus === "Sudah Validasi" ? "Terverifikasi Mandiri" : "Belum Divalidasi";
+            const valEl = document.getElementById('cardStatusVerify');
+            if (valStatus === "Sudah Validasi") {
+                valEl.innerHTML = "Terverifikasi (Valid)";
+                valEl.parentElement.className = "flex-1 flex items-center text-emerald-600 font-black";
+                valEl.previousElementSibling.className = "w-2 h-2 rounded-full bg-emerald-500 mr-1.5";
+            } else {
+                valEl.innerHTML = "Belum Terverifikasi";
+                valEl.parentElement.className = "flex-1 flex items-center text-amber-600 font-black";
+                valEl.previousElementSibling.className = "w-2 h-2 rounded-full bg-amber-500 mr-1.5";
+            }
 
-            // Populate scores
-            document.getElementById("cardMtkScore").innerText = student.mtk.toFixed(2);
-            document.getElementById("cardIndScore").innerText = student.ind.toFixed(2);
+            let rec = "";
+            if (student.mtkKet === "Kurang" && student.indKet === "Kurang") {
+                rec = "Siswa memerlukan pendampingan intensif pada aspek literasi dan numerasi dasar. Disarankan mengikuti program perbaikan terpadu.";
+            } else if (student.mtkKet === "Kurang") {
+                rec = "Kemampuan penalaran verbal sudah cukup baik, namun perlu penguatan pada logika numerasi dasar melalui soal kontekstual.";
+            } else if (student.indKet === "Kurang") {
+                rec = "Kemampuan logika angka memadai, namun pemahaman membaca perlu ditingkatkan. Disarankan memperbanyak aktivitas literasi.";
+            } else {
+                rec = "Pencapaian siswa secara umum memadai hingga baik. Lanjutkan program pengayaan untuk mengoptimalkan potensi penalaran analitis.";
+            }
+            document.getElementById('cardRecommendationText').innerText = rec;
 
-            // Badges format for Rapor table
-            const mtkBadgeStyle = student.mtkKet === "Baik" ? "bg-emerald-100 text-emerald-800 font-extrabold border border-emerald-300" :
-                                 student.mtkKet === "Memadai" ? "bg-indigo-100 text-indigo-800 font-extrabold border border-indigo-300" : 
-                                 "bg-rose-100 text-rose-800 font-extrabold border border-rose-300";
-                                 
-            const indBadgeStyle = student.indKet === "Baik" ? "bg-emerald-100 text-emerald-800 font-extrabold border border-emerald-300" :
-                                 student.indKet === "Memadai" ? "bg-indigo-100 text-indigo-800 font-extrabold border border-indigo-300" : 
-                                 "bg-rose-100 text-rose-800 font-extrabold border border-rose-300";
+            document.getElementById('reportCardModal').classList.remove('hidden');
+            lucide.createIcons();
+        }
 
-            document.getElementById("cardMtkBadge").innerHTML = `<span class="px-3 py-1 rounded-full text-[10px] ${mtkBadgeStyle}">${student.mtkKet.toUpperCase()}</span>`;
-            document.getElementById("cardIndBadge").innerHTML = `<span class="px-3 py-1 rounded-full text-[10px] ${indBadgeStyle}">${student.indKet.toUpperCase()}</span>`;
-
-            // Personalized Recommendation Text generator
-            document.getElementById("cardRecommendationText").innerHTML = getRecommendation(student);
-
-            // Show Modal
-            document.getElementById("reportCardModal").classList.remove("hidden");
-            document.getElementById("reportCardModal").classList.add("flex");
-            document.body.style.overflow = "hidden"; // disable background body scrolling
+        function getBadgeHTML(cat) {
+            if (cat === "Baik") return `<span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-md text-xs font-bold w-full block">BAIK</span>`;
+            if (cat === "Memadai") return `<span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-md text-xs font-bold w-full block">MEMADAI</span>`;
+            return `<span class="bg-rose-100 text-rose-700 px-3 py-1 rounded-md text-xs font-bold w-full block">KURANG</span>`;
         }
 
         function closeReportCard() {
-            document.getElementById("reportCardModal").classList.add("hidden");
-            document.getElementById("reportCardModal").classList.remove("flex");
-            document.body.style.overflow = "auto"; // restore scrolling
+            document.getElementById('reportCardModal').classList.add('hidden');
         }
 
-        // Run setup once DOM is fully available
-        window.onload = function() {
-            syncValidationFromStorage();
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            document.getElementById('searchInput').addEventListener('input', applyFilters);
+            document.getElementById('filterMtk').addEventListener('change', applyFilters);
+            document.getElementById('filterInd').addEventListener('change', applyFilters);
+            
+            initCharts();
             calculateStatistics();
-            renderTable();
-            // Lakukan sinkronisasi otomatis dari Google Sheets di background!
             fetchCloudValidations();
-        }
+        });
     </script>
 </body>
 </html>
