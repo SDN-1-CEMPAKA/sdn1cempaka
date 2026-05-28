@@ -271,7 +271,7 @@
         </div>
 
         <!-- Login Portal Section -->
-        <div id="login-portal" class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 no-print">
+        <div id="login-portal" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8 no-print">
             <!-- Student Login Card -->
             <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm hover:border-indigo-300 transition-colors">
                 <div class="flex items-center gap-4 mb-6">
@@ -326,6 +326,35 @@
                     </div>
                     <button type="submit" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 rounded-xl transition shadow-lg flex justify-center items-center gap-2">
                         Masuk Portal PTK <i data-lucide="lock" class="w-4 h-4"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Admin Login Card -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm hover:border-emerald-300 transition-colors">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="bg-emerald-100 text-emerald-600 p-3.5 rounded-2xl">
+                        <i data-lucide="shield-alert" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 leading-tight">Portal Admin</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Kelola data & ekspor rekapitulasi</p>
+                    </div>
+                </div>
+                <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Username</label>
+                        <input type="text" id="admin_user" placeholder="Admin ID" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Password</label>
+                        <input type="password" id="admin_pass" placeholder="••••••••" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition font-semibold">
+                    </div>
+                    <div id="admin-error" class="hidden text-[11px] font-bold text-red-500 bg-red-50 p-3 rounded-xl border border-red-100 text-center">
+                        Login Admin gagal. Cek kembali akun Anda.
+                    </div>
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl transition shadow-lg flex justify-center items-center gap-2">
+                        Masuk Portal Admin <i data-lucide="key" class="w-4 h-4"></i>
                     </button>
                 </form>
             </div>
@@ -444,8 +473,8 @@
                         <input id="searchInput" type="text" placeholder="Cari nama atau NISN..." class="pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-64 transition duration-150">
                     </div>
                     
-                    <!-- Export Button (Hanya muncul untuk PTK karena header ini disembunyikan untuk siswa) -->
-                    <button id="exportBtn" onclick="exportValidationData()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition shadow-sm">
+                    <!-- Export Button (Hanya muncul untuk Admin) -->
+                    <button id="exportBtn" onclick="exportValidationData()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition shadow-sm">
                         <i data-lucide="download" class="w-4 h-4"></i>
                         <span>Rekap Excel</span>
                     </button>
@@ -1062,6 +1091,29 @@
             }
         }
 
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('admin_user').value;
+            const pass = document.getElementById('admin_pass').value;
+            const error = document.getElementById('admin-error');
+
+            // Kredensial default admin: admin / admin123
+            if (user === "admin" && pass === "admin123") {
+                loggedInStudent = null;
+                error.classList.add('hidden');
+                document.getElementById('login-portal').classList.add('hidden');
+                document.getElementById('directory-view').classList.remove('hidden');
+                document.getElementById('logoutBtn').classList.remove('hidden');
+                
+                displayData = [...tkaData];
+                document.getElementById('directory-header').classList.remove('hidden');
+                document.getElementById('exportBtn').classList.remove('hidden');
+                renderTable();
+            } else {
+                error.classList.remove('hidden');
+            }
+        }
+
         function logout() {
             // Tampilkan kembali form login
             document.getElementById('login-portal').classList.remove('hidden');
@@ -1076,6 +1128,9 @@
             document.getElementById('student_dob').value = '';
             document.getElementById('ptk_nip').value = '';
             document.getElementById('ptk_dob').value = '';
+            document.getElementById('admin_user').value = '';
+            document.getElementById('admin_pass').value = '';
+            document.getElementById('exportBtn').classList.add('hidden');
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
