@@ -160,7 +160,7 @@
                             <p id="user-validation-status" class="text-xs text-amber-600 font-medium italic mt-1">Belum divalidasi</p>
                         </div>
                     </div>
-                    <button id="user-validation-btn" onclick="openValidationModalFromStudent()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md transition">Validasi</button>
+                    <button id="user-validation-btn" onclick="openValidationModalFromStudent()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md">Validasi Sekarang</button>
                 </div>
             </div>
         </div>
@@ -240,10 +240,29 @@
 
     <script>
         // ============================================
-        // KONFIGURASI SERVER CLOUD
+        // KONFIGURASI SERVER CLOUD - ENVIRONMENT AWARE
         // ============================================
-        const SERVER_URL = 'http://localhost:3000'; // Ubah ke domain production saat go-live
+        // Development: http://localhost:3000
+        // Production: https://yourdomain.com (update via .env)
+        
+        const getServerUrl = () => {
+            // Check if we're in development (localhost) or production
+            const isProduction = !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1');
+            
+            if (isProduction) {
+                // On production, use same domain
+                return `https://${window.location.hostname}`;
+            } else {
+                // On development, connect to localhost:3000
+                return 'http://localhost:3000';
+            }
+        };
+        
+        const SERVER_URL = getServerUrl();
         const USE_CLOUD = true; // Set ke true untuk gunakan cloud storage
+
+        console.log(`🔧 Server Configuration: ${SERVER_URL}`);
+        console.log(`📡 Cloud Storage: ${USE_CLOUD ? 'Enabled' : 'Disabled'}`);
 
         const storageHelper = {
             getItem: function(key) {
