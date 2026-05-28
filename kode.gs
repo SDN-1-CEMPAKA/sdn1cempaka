@@ -46,6 +46,14 @@ function doGet(e) {
     if (op == "update") return update_value(e, sheet, ss);
     if (op == "delete") return delete_value(e, sheet, ss);
     if (op == "readAll") return read_all_value(e, ss);
+    if (op == "readValidation") {
+      var statuses = get_all_validation_statuses();
+      return ContentService.createTextOutput(JSON.stringify({"status": "sukses", "data": statuses})).setMimeType(ContentService.MimeType.JSON);
+    }
+    if (op == "submitValidation") {
+      var nisn = e.parameter.nisn;
+      return ContentService.createTextOutput(JSON.stringify({"status": submit_validation_to_gs(nisn)})).setMimeType(ContentService.MimeType.JSON);
+    }
     if (op == "getNextID") return get_next_id(sheet);
     if (op == "getSingle") return get_single_value(e, sheet);
   }
@@ -241,4 +249,51 @@ function readData_(ss, sheetname) {
     data.push(record);
   }
   return data;
+}
+
+/**
+ * Fungsi untuk mengambil semua status validasi dari sheet "validasi_tka"
+ */
+function get_all_validation_statuses() {
+  var ss = SpreadsheetApp.openById("1DrIiuawc_qRYW3bo-FZJtPKOSkDkZ7O_4WjK4vOj4AE");
+  var sheet = ss.getSheetByName("validasi_tka");
+  if (!sheet) return {};
+  
+  var data = sheet.getDataRange().getValues();
+  var statuses = {};
+  for (var i = 1; i < data.length; i++) { // Skip header
+    statuses[data[i][0].toString()] = data[i][1];
+  }
+  return statuses;
+}
+
+/**
+ * Fungsi untuk menyimpan status validasi per NISN ke sheet "validasi_tka"
+ */
+function submit_validation_to_gs(nisn) {
+  var ss = SpreadsheetApp.openById("1DrIiuawc_qRYW3bo-FZJtPKOSkDkZ7O_4WjK4vOj4AE");
+  var sheet = ss.getSheetByName("validasi_tka");
+  
+  if (!sheet) {
+    sheet = ss.insertSheet("validasi_tka");
+    sheet.appendRow(["NISN", "Status", "Waktu Validasi"]);
+  }
+  
+  var data = sheet.getDataRange().getValues();
+  var foundRow = -1;
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][0].toString() === nisn.toString()) {
+      foundRow = i + 1;
+      break;
+    }
+  }
+  
+  var now = new Date().toLocaleString('id-ID');
+  if (foundRow > 0) {
+    sheet.getRange(foundRow, 2).setValue("Sudah Validasi");
+    sheet.getRange(foundRow, 3).setValue(now);
+  } else {
+    sheet.appendRow([nisn, "Sudah Validasi", now]);
+  }
+  return "sukses";
 }
