@@ -67,6 +67,14 @@ function doGet(e) {
 }
 
 /**
+ * Fungsi WAJIB untuk menangani request POST dari antarmuka Web (seperti Fetch API).
+ * Semua parameter POST akan diteruskan ke logika doGet agar tidak perlu membuat logika ganda.
+ */
+function doPost(e) {
+  return doGet(e);
+}
+
+/**
  * Fungsi untuk mengambil URL aplikasi secara otomatis
  */
 function getScriptUrl() {
