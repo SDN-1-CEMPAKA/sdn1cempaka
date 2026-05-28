@@ -13,7 +13,7 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Inter Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         body {
@@ -211,7 +211,6 @@
             </div>
         </div>
 
-        <!-- -->
         <!-- Key Performance Indicators (KPIs) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 no-print">
             
@@ -502,7 +501,6 @@
                 </div>
             </div>
 
-            <!-- -->
             <!-- Interactive Data Table -->
             <div class="overflow-x-auto rounded-xl border border-slate-100 shadow-inner">
                 <table class="min-w-full divide-y divide-slate-200 text-sm">
@@ -562,7 +560,6 @@
 
     </main>
 
-    <!-- -->
     <!-- Individual Report Card Modal overlay (Pop-up/View Detail) -->
     <div id="reportCardModal" class="fixed inset-0 z-50 overflow-y-auto hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-3xl w-full shadow-2xl relative border border-slate-100 animate-in fade-in zoom-in duration-200">
@@ -761,7 +758,6 @@
         <span id="toastMsg" class="text-sm font-bold">Data Berhasil Disimpan</span>
     </div>
 
-    <!-- -->
     <!-- Footer -->
     <footer id="main-footer" class="hidden bg-white border-t border-slate-200 py-8 text-center text-xs text-slate-400 no-print mt-auto">
         <div class="max-w-7xl mx-auto px-4">
@@ -773,9 +769,29 @@
         </div>
     </footer>
 
-    <!-- -->
     <!-- Application Logic & Scripts -->
     <script>
+        // Antarmuka penyimpanan terenkapsulasi yang aman untuk lingkungan Iframe Sandboxed
+        const storageHelper = {
+            getItem: function(key) {
+                try {
+                    return localStorage.getItem(key);
+                } catch (e) {
+                    console.warn("Storage access blocked, using memory instead.", e);
+                    return this._fallbackStorage[key] || null;
+                }
+            },
+            setItem: function(key, value) {
+                try {
+                    localStorage.setItem(key, value);
+                } catch (e) {
+                    console.warn("Storage write blocked, using memory instead.", e);
+                    this._fallbackStorage[key] = value;
+                }
+            },
+            _fallbackStorage: {}
+        };
+
         // Core dataset parsed perfectly from provided raw data
         const tkaData = [
             { id: 1, noPeserta: "T1-26-30-07-0596-0001-8", nisn: "0141908423", nama: "ADELIA WULANDARI", ttl: "Lebak, 10 Juni 2014", mtk: 33.33, mtkKet: "Memadai", ind: 76.67, indKet: "Baik" },
@@ -794,7 +810,7 @@
             { id: 14, noPeserta: "T1-26-30-07-0596-0014-3", nisn: "0134057942", nama: "SOPIA", ttl: "Lebak, 10 Juli 2013", mtk: 30.00, mtkKet: "Kurang", ind: 46.67, indKet: "Kurang" },
             { id: 15, noPeserta: "T1-26-30-07-0596-0015-2", nisn: "0146649109", nama: "RHESTIANI PUTRI", ttl: "Lebak, 28 September 2014", mtk: 26.67, mtkKet: "Kurang", ind: 63.33, indKet: "Memadai" },
             { id: 16, noPeserta: "T1-26-30-07-0596-0016-9", nisn: "0145428637", nama: "MUHAMMAD SYAHRONY", ttl: "Jakarta, 15 Februari 2014", mtk: 30.00, mtkKet: "Kurang", ind: 36.67, indKet: "Kurang" },
-            { id: 17, noPeserta: "T1-26-30-07-0596-0017-8", nisn: "3131473948", nama: "SEKAR AYUNDA NINGSIH", ttl: "Lebak, 16 Mei 2013", mtk: 23.33, mtkKet: "Kurang", ind: 36.67, indKet: "Kurang" },
+            { id: 17, noPeserta: "T1-26-30-07-0596-0017-8", nisn: "3131473948", nama: "SEKAR AYUNDA NINGSIH", ttl: "Lebak, 16 Mei 2013", mtk: 23.33, mtkKet: "Kurang", ind: 36.67, font: "Kurang" , indKet: "Kurang" },
             { id: 18, noPeserta: "T1-26-30-07-0596-0018-7", nisn: "0133788378", nama: "IHSAN NABIL YUNANDI", ttl: "Lebak, 3 Mei 2013", mtk: 33.33, mtkKet: "Memadai", ind: 63.33, indKet: "Memadai" },
             { id: 19, noPeserta: "T1-26-30-07-0596-0019-6", nisn: "0133208418", nama: "REHAN NARDIYANSAH", ttl: "Lebak, 31 Oktober 2013", mtk: 30.00, mtkKet: "Kurang", ind: 53.33, indKet: "Memadai" },
             { id: 20, noPeserta: "T1-26-30-07-0596-0020-5", nisn: "0146045012", nama: "RIZKY SULISTIA", ttl: "Tangerang, 27 April 2014", mtk: 30.00, mtkKet: "Kurang", ind: 76.67, indKet: "Baik" },
@@ -876,14 +892,13 @@
             "0142888970": { ortu: "Heri", ni: "20212008", jk: "L", status: "Belum Cek" }
         };
 
-        // Fungsi untuk sinkronisasi status validasi terbaru dari Local Storage
+        // Fungsi sinkronisasi status validasi terbaru dari storage/RAM fallback
         function syncValidationFromStorage() {
             tkaData.forEach(s => {
                 if (!biodataExtra[s.nisn]) {
                     biodataExtra[s.nisn] = { ortu: "Data Belum Ada", ni: "-", jk: "-", status: "Belum Cek" };
                 }
-                // Ambil status terbaru dari localStorage
-                const savedStatus = localStorage.getItem(`val_${s.nisn}`);
+                const savedStatus = storageHelper.getItem(`val_${s.nisn}`);
                 if (savedStatus) {
                     biodataExtra[s.nisn].status = savedStatus;
                 }
@@ -966,15 +981,19 @@
         }
 
         function submitValidation() {
-            const student = loggedInStudent || tkaData.find(s => s.id === parseInt(document.getElementById('validationContent').dataset.id));
+            const studentId = parseInt(document.getElementById('validationContent').dataset.id);
+            const student = loggedInStudent || tkaData.find(s => s.id === studentId);
+            
             if (student) {
+                // Tulis ke data lokal dan storage aman
                 biodataExtra[student.nisn].status = "Sudah Validasi";
-                localStorage.setItem(`val_${student.nisn}`, "Sudah Validasi");
+                storageHelper.setItem(`val_${student.nisn}`, "Sudah Validasi");
                 
                 showToast("Biodata Berhasil Dikonfirmasi & Data Dikunci!");
                 closeValidationModal();
                 
-                if (loggedInStudent) {
+                // Perbarui antarmuka pengguna dashboard jika sedang bertindak sebagai siswa
+                if (loggedInStudent && loggedInStudent.id === student.id) {
                     const valBtn = document.getElementById('user-validation-btn');
                     valBtn.innerText = "Data Terkunci";
                     valBtn.disabled = true;
@@ -983,6 +1002,7 @@
                     document.getElementById('user-validation-status').innerText = "Sudah divalidasi";
                     document.getElementById('user-validation-status').className = "text-xs text-emerald-600 font-bold mt-1";
                 }
+                
                 renderTable();
             }
         }
@@ -996,21 +1016,6 @@
                 toast.classList.add('hidden');
                 toast.classList.remove('flex');
             }, 3000);
-        }
-
-        function exportValidationData() {
-            const exportData = tkaData.map(s => ({
-                "NISN": s.nisn,
-                "Nama": s.nama,
-                "Tgl Lahir": s.ttl,
-                "Nama Orang Tua": biodataExtra[s.nisn].ortu,
-                "Status Validasi": biodataExtra[s.nisn].status
-            }));
-            
-            const ws = XLSX.utils.json_to_sheet(exportData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Rekap Validasi");
-            XLSX.writeFile(wb, "Rekap_Validasi_TKA_2026.xlsx");
         }
 
         // Staff Data for PTK Login Verification
@@ -1050,7 +1055,6 @@
             const dob = document.getElementById('student_dob').value;
             const error = document.getElementById('student-error');
 
-            // Pastikan data tersinkronisasi sebelum login cek
             syncValidationFromStorage();
 
             const student = tkaData.find(s => s.nisn === nisn && parseTTL(s.ttl) === dob);
@@ -1082,8 +1086,11 @@
                     valBtn.innerText = "Data Terkunci";
                     valBtn.disabled = true;
                     valBtn.className = "bg-slate-300 text-slate-500 px-6 py-2.5 rounded-xl font-bold text-sm cursor-not-allowed";
+                } else {
+                    valBtn.innerText = "Validasi Sekarang";
+                    valBtn.disabled = false;
+                    valBtn.className = "bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md transition";
                 }
-
 
                 // Tampilkan hanya baris data siswa tersebut
                 displayData = [student];
@@ -1103,7 +1110,6 @@
             const dob = document.getElementById('ptk_dob').value;
             const error = document.getElementById('ptk-error');
 
-            // Sinkronisasi data sebelum membuka direktori
             syncValidationFromStorage();
 
             const staff = guruData.find(g => g.nip.replace(/\s/g, '') === nip && g.dob === dob);
@@ -1144,9 +1150,7 @@
             const pass = document.getElementById('admin_pass').value;
             const error = document.getElementById('admin-error');
 
-            // Kredensial default admin: admin / admin123
             if (user === "20602495" && pass === "Cempaka@20602495") {
-                // Sinkronisasi data sebelum membuka direktori admin
                 syncValidationFromStorage();
 
                 loggedInStudent = null;
@@ -1165,10 +1169,13 @@
         }
 
         function logout() {
+            // Reset state login
+            loggedInStudent = null;
+
             // Tampilkan kembali form login
             document.getElementById('login-portal').classList.remove('hidden');
             
-            // Sembunyikan konten portal dan tombol logout itu sendiri
+            // Sembunyikan konten portal dan tombol logout
             document.getElementById('directory-view').classList.add('hidden');
             document.getElementById('personal-summary').classList.add('hidden');
             document.getElementById('logoutBtn').classList.add('hidden');
@@ -1182,7 +1189,7 @@
             document.getElementById('admin_pass').value = '';
             document.getElementById('exportBtn').classList.add('hidden');
             
-            // Reset validation button UI
+            // Reset validation button UI ke kondisi default
             const valBtn = document.getElementById('user-validation-btn');
             valBtn.innerText = "Validasi Sekarang";
             valBtn.disabled = false;
@@ -1191,7 +1198,7 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        //        // Initialize dynamic dashboard values
+        // Initialize dynamic dashboard values
         function calculateStatistics() {
             const total = tkaData.length;
             
@@ -1235,7 +1242,7 @@
             buildCharts();
         }
 
-        //        // Chart configuration engine (Chart.js)
+        // Chart configuration engine (Chart.js)
         let mtkChartInstance = null;
         let indChartInstance = null;
 
@@ -1308,7 +1315,7 @@
             });
         }
 
-        //        // Render rows dynamically based on displayData array
+        // Render rows dynamically based on displayData array
         function renderTable() {
             const tableBody = document.getElementById("studentTableBody");
             const emptyState = document.getElementById("emptyState");
@@ -1340,9 +1347,20 @@
                                       "bg-rose-50 text-rose-700 border-rose-100";
 
                 const valStatus = biodataExtra[student.nisn].status;
-                const valBadge = valStatus === "Sudah Validasi"
-                    ? `<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-lg text-[10px] font-bold">VALID</span>`
-                    : `<span class="bg-slate-100 text-slate-400 px-2 py-1 rounded-lg text-[10px] font-bold">BELUM</span>`;
+                
+                // Menentukan badge validasi interaktif. Jika sebagai Admin/Guru, BELUM bisa diklik langsung untuk memvalidasi manual.
+                let valBadge = "";
+                if (valStatus === "Sudah Validasi") {
+                    valBadge = `<span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-lg text-[10px] font-bold inline-flex items-center gap-1 shadow-sm"><i data-lucide="check-circle" class="w-3 h-3"></i> VALID</span>`;
+                } else {
+                    if (loggedInStudent) {
+                        valBadge = `<span class="bg-slate-100 text-slate-400 px-2.5 py-1 rounded-lg text-[10px] font-bold">BELUM</span>`;
+                    } else {
+                        valBadge = `<button onclick="openValidationModal(${student.id})" class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-lg text-[10px] font-bold transition flex items-center justify-center gap-1 mx-auto shadow-sm">
+                            <i data-lucide="alert-circle" class="w-3 h-3"></i> BELUM (KLIK)
+                        </button>`;
+                    }
+                }
 
                 tr.innerHTML = `
                     <td class="px-6 py-4 font-semibold text-slate-400 no-print">${student.id}</td>
@@ -1377,7 +1395,7 @@
             lucide.createIcons();
         }
 
-        //        // Search & Sieve controller
+        // Search & Sieve controller
         function filterAndSearch() {
             const searchVal = document.getElementById("searchInput").value.toLowerCase();
             const filterMtkVal = document.getElementById("filterMtk").value;
@@ -1398,7 +1416,7 @@
         document.getElementById("filterMtk").addEventListener("change", filterAndSearch);
         document.getElementById("filterInd").addEventListener("change", filterAndSearch);
 
-        //        // Interactive table header sorting
+        // Interactive table header sorting
         function sortTable(column) {
             if (currentSortColumn === column) {
                 isAscending = !isAscending;
@@ -1424,7 +1442,7 @@
             renderTable();
         }
 
-        //        // Generate personalized ulasan/pedagogic recommendations based on student score profile
+        // Generate personalized ulasan/pedagogic recommendations based on student score profile
         function getRecommendation(student) {
             const mtk = student.mtk;
             const ind = student.ind;
@@ -1443,7 +1461,7 @@
             }
         }
 
-        //        // Modal Handlers (Open, Print, Close)
+        // Modal Handlers (Open, Print, Close)
         function openReportCard(id) {
             const student = tkaData.find(s => s.id === id);
             if (!student) return;
